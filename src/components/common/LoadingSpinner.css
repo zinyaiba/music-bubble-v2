@@ -1,0 +1,127 @@
+/**
+ * LoadingSpinner スタイル
+ * 
+ * Requirements: 1.5, 11.1
+ */
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.loading-spinner-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  z-index: var(--z-index-modal);
+}
+
+.loading-spinner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(15, 23, 42, 0.8);
+  z-index: var(--z-index-modal-backdrop);
+  backdrop-filter: blur(4px);
+}
+
+.loading-spinner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-svg {
+  animation: spin 1.2s linear infinite;
+}
+
+/* サイズバリエーション */
+.loading-spinner-content.small .spinner-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-spinner-content.medium .spinner-svg {
+  width: 40px;
+  height: 40px;
+}
+
+.loading-spinner-content.large .spinner-svg {
+  width: 56px;
+  height: 56px;
+}
+
+.spinner-track {
+  stroke: var(--color-surface);
+}
+
+.spinner-circle {
+  stroke: var(--color-primary);
+  stroke-dasharray: 80, 200;
+  stroke-dashoffset: 0;
+  animation: spinner-dash 1.5s ease-in-out infinite;
+}
+
+.loading-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* アニメーション */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* 減速モーション対応 */
+@media (prefers-reduced-motion: reduce) {
+  .spinner-svg {
+    animation: none;
+  }
+
+  .spinner-circle {
+    animation: none;
+    stroke-dasharray: 80, 200;
+    stroke-dashoffset: -35;
+  }
+}

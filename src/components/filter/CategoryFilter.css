@@ -1,0 +1,89 @@
+/**
+ * カテゴリフィルタスタイル
+ * Music Bubble Explorer V2
+ */
+
+.category-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.category-filter__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.category-filter__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.category-filter__clear,
+.category-filter__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.category-filter__clear:hover,
+.category-filter__option:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
+}
+
+.category-filter__clear:focus-visible,
+.category-filter__option:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.category-filter__clear--active,
+.category-filter__option--selected {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+.category-filter__clear--active:hover,
+.category-filter__option--selected:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.category-filter__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.category-filter__text {
+  line-height: 1;
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+  .category-filter__options {
+    gap: 4px;
+  }
+
+  .category-filter__clear,
+  .category-filter__option {
+    padding: 6px 10px;
+    font-size: var(--font-size-xs);
+  }
+
+  .category-filter__icon {
+    font-size: 0.875rem;
+  }
+}

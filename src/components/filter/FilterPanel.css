@@ -1,0 +1,135 @@
+/**
+ * フィルタパネル スタイル
+ * Music Bubble Explorer V2
+ * 
+ * アーティストフィルタとジャンルフィルタを統合したパネル
+ */
+
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-lg);
+  border: var(--border-width-thin) solid var(--color-border);
+}
+
+.filter-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-panel__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.filter-panel__reset {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: transparent;
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-panel__reset:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-border-light);
+  color: var(--color-text);
+}
+
+.filter-panel__reset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filter-panel__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-xs) 0;
+}
+
+.filter-panel__section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* フィルタ結果表示 */
+.filter-panel__result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.filter-panel__result-count {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-light);
+}
+
+/* コンパクトモード */
+.filter-panel--compact {
+  padding: var(--spacing-sm);
+  gap: var(--spacing-sm);
+}
+
+.filter-panel--compact .filter-panel__title {
+  font-size: var(--font-size-sm);
+}
+
+/* 折りたたみ可能なパネル */
+.filter-panel__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-sm);
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-panel__toggle:hover {
+  color: var(--color-primary-light);
+}
+
+.filter-panel__toggle-icon {
+  transition: transform var(--transition-fast);
+}
+
+.filter-panel__toggle-icon--expanded {
+  transform: rotate(180deg);
+}
+
+.filter-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.filter-panel__content--collapsed {
+  display: none;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .filter-panel {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+}

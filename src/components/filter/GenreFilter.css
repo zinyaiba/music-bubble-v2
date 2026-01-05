@@ -1,0 +1,154 @@
+/**
+ * ジャンルフィルタ スタイル
+ * Music Bubble Explorer V2
+ * 
+ * Requirements: 4.1 - 第2フィルタとして機能するジャンルフィルタセレクタを表示
+ */
+
+.genre-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.genre-filter__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.genre-filter__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+}
+
+.genre-filter__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.genre-filter__option:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-light);
+}
+
+.genre-filter__option:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-secondary-alpha);
+}
+
+.genre-filter__option--selected {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.genre-filter__option--selected:hover {
+  background-color: var(--color-secondary-dark);
+  border-color: var(--color-secondary-dark);
+}
+
+/* 全て表示ボタン（クリアボタン） */
+.genre-filter__clear {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: transparent;
+  border: var(--border-width-thin) dashed var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.genre-filter__clear:hover {
+  border-color: var(--color-text-secondary);
+  color: var(--color-text);
+}
+
+.genre-filter__clear--active {
+  background-color: var(--color-secondary-alpha);
+  border-style: solid;
+  border-color: var(--color-secondary);
+  color: var(--color-secondary-light);
+}
+
+/* 選択中のジャンル数表示 */
+.genre-filter__count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-left: var(--spacing-sm);
+}
+
+/* ジャンルがない場合のメッセージ */
+.genre-filter__empty {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: var(--spacing-sm);
+}
+
+/* 選択されたジャンルのバッジ */
+.genre-filter__selected-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.genre-filter__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-secondary-alpha);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  color: var(--color-secondary-light);
+}
+
+.genre-filter__badge-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: none;
+  border: none;
+  color: var(--color-secondary-light);
+  cursor: pointer;
+  border-radius: var(--border-radius-full);
+  transition: all var(--transition-fast);
+}
+
+.genre-filter__badge-remove:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .genre-filter__options {
+    max-height: 150px;
+  }
+
+  .genre-filter__option {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}

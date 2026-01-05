@@ -1,0 +1,127 @@
+/**
+ * TopPage スタイル
+ * TOPページのレイアウト
+ *
+ * Requirements: 1.1, 1.5, 11.1, 11.5
+ */
+
+.top-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--color-background);
+}
+
+.top-page-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* ヘッダーとナビゲーションの高さを考慮 */
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  position: relative;
+  overflow: hidden;
+}
+
+/* セーフエリア対応 */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .top-page-main {
+    padding-top: calc(var(--header-height) + var(--safe-area-top));
+    padding-bottom: calc(var(--navigation-height) + var(--safe-area-bottom));
+  }
+}
+
+/* エラーメッセージ */
+.top-page-error {
+  position: absolute;
+  top: calc(var(--header-height) + var(--spacing-sm));
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
+  z-index: var(--z-index-dropdown);
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .top-page-error {
+    top: calc(var(--header-height) + var(--safe-area-top) + var(--spacing-sm));
+  }
+}
+
+/* インラインフィルタバー */
+.top-page-filter-bar {
+  position: absolute;
+  top: calc(var(--header-height) + var(--spacing-sm));
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
+  z-index: var(--z-index-dropdown);
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .top-page-filter-bar {
+    top: calc(var(--header-height) + var(--safe-area-top) + var(--spacing-sm));
+  }
+}
+
+/* フィルタパネル（旧） */
+.top-page-filter {
+  position: absolute;
+  top: calc(var(--header-height) + var(--spacing-sm));
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
+  z-index: var(--z-index-dropdown);
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .top-page-filter {
+    top: calc(var(--header-height) + var(--safe-area-top) + var(--spacing-sm));
+  }
+}
+
+/* シャボン玉キャンバス */
+.top-page-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 100px; /* フィルタバーの高さ分 */
+}
+
+/* レスポンシブ対応 */
+@media (min-width: 768px) {
+  .top-page-filter-bar {
+    max-width: 700px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+
+  .top-page-filter {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+
+  .top-page-error {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+  }
+}
+
+/* 大画面対応 */
+@media (min-width: 1024px) {
+  .top-page-filter-bar {
+    max-width: 900px;
+  }
+
+  .top-page-filter {
+    max-width: 800px;
+  }
+
+  .top-page-error {
+    max-width: 800px;
+  }
+}

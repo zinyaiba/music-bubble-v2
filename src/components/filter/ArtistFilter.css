@@ -1,0 +1,100 @@
+/**
+ * アーティストフィルタ スタイル
+ * Music Bubble Explorer V2
+ * 
+ * Requirements: 3.1 - TOPページにアーティストフィルタセレクタを表示
+ */
+
+.artist-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.artist-filter__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.artist-filter__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.artist-filter__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.artist-filter__option:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-light);
+}
+
+.artist-filter__option:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.artist-filter__option--selected {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.artist-filter__option--selected:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* 全て表示ボタン（クリアボタン） */
+.artist-filter__clear {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: transparent;
+  border: var(--border-width-thin) dashed var(--color-border);
+  border-radius: var(--border-radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.artist-filter__clear:hover {
+  border-color: var(--color-text-secondary);
+  color: var(--color-text);
+}
+
+.artist-filter__clear--active {
+  background-color: var(--color-primary-alpha);
+  border-style: solid;
+  border-color: var(--color-primary);
+  color: var(--color-primary-light);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .artist-filter__options {
+    flex-direction: column;
+  }
+
+  .artist-filter__option,
+  .artist-filter__clear {
+    width: 100%;
+    justify-content: center;
+  }
+}
