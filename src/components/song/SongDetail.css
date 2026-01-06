@@ -1,0 +1,473 @@
+/**
+ * SongDetail スタイル
+ * 楽曲詳細表示
+ *
+ * Requirements:
+ * - 8.1: 全ての楽曲メタデータを表示
+ * - 8.2: 埋め込みコンテンツ表示
+ * - 8.3: 外部リンク表示
+ * - 8.4: タグ表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ヘッダー */
+.song-detail__header {
+  text-align: center;
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.song-detail__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-xs) 0;
+  line-height: var(--line-height-tight);
+}
+
+.song-detail__artist {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* セクション共通 */
+.song-detail__section-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+/* 埋め込みコンテンツ */
+.song-detail__embed-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__embed-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-background-light);
+}
+
+/* iframeタグが直接挿入された場合のスタイル */
+.song-detail__embed-container iframe {
+  width: 100%;
+  min-height: 152px;
+  border: none;
+  border-radius: var(--border-radius-md);
+}
+
+/* Spotify埋め込み用の高さ調整 */
+.song-detail__embed-container iframe[src*="spotify"] {
+  min-height: 152px;
+  height: 152px;
+}
+
+/* YouTube埋め込み用のアスペクト比 */
+.song-detail__embed-container iframe[src*="youtube"],
+.song-detail__embed-container iframe[src*="youtu.be"] {
+  aspect-ratio: 16 / 9;
+  min-height: auto;
+  height: auto;
+}
+
+.song-detail__embed {
+  width: 100%;
+  min-height: 152px;
+  border: none;
+  border-radius: var(--border-radius-md);
+}
+
+/* Spotify埋め込み用の高さ調整 */
+.song-detail__embed[src*="spotify"] {
+  min-height: 152px;
+  height: 152px;
+}
+
+/* YouTube埋め込み用のアスペクト比 */
+.song-detail__embed[src*="youtube"],
+.song-detail__embed[src*="youtu.be"] {
+  aspect-ratio: 16 / 9;
+  min-height: auto;
+  height: auto;
+}
+
+.song-detail__embed-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  background: var(--color-background-light);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+}
+
+.song-detail__embed-error p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.song-detail__embed-fallback-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: background var(--transition-fast);
+}
+
+.song-detail__embed-fallback-link:hover {
+  background: var(--color-primary-dark);
+}
+
+/* クレジット情報 */
+.song-detail__credits-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__credits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+}
+
+.song-detail__credit-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.song-detail__credit-label {
+  flex-shrink: 0;
+  width: 60px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.song-detail__credit-value {
+  flex: 1;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* リリース情報 */
+.song-detail__release-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__release-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+}
+
+.song-detail__release-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.song-detail__release-label {
+  flex-shrink: 0;
+  width: 80px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.song-detail__release-value {
+  flex: 1;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* タグ */
+.song-detail__tags-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.song-detail__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-primary-alpha);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-full);
+  border: 1px solid var(--color-primary-light);
+}
+
+/* 外部リンク */
+.song-detail__links-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.song-detail__link-item {
+  margin: 0;
+}
+
+.song-detail__link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+
+.song-detail__link:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-primary-dark);
+}
+
+.song-detail__link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.song-detail__link:hover .song-detail__link-icon {
+  color: var(--color-primary);
+}
+
+.song-detail__link-label {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+}
+
+/* メモ */
+.song-detail__notes-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__notes {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  line-height: var(--line-height-relaxed);
+  white-space: pre-wrap;
+}
+
+/* アクションボタン */
+.song-detail__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.song-detail__back-button,
+.song-detail__edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-detail__back-button {
+  flex: 1;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.song-detail__back-button:hover {
+  background: var(--color-surface-hover);
+}
+
+.song-detail__back-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-detail__edit-button {
+  flex: 1;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  border: none;
+}
+
+.song-detail__edit-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.song-detail__edit-button:focus {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-detail__edit-button:active {
+  transform: translateY(0);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-detail {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+
+  .song-detail__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .song-detail__credit-label,
+  .song-detail__release-label {
+    width: 50px;
+    font-size: var(--font-size-xs);
+  }
+
+  .song-detail__credit-value,
+  .song-detail__release-value {
+    font-size: var(--font-size-sm);
+  }
+
+  .song-detail__actions {
+    flex-direction: column;
+  }
+
+  .song-detail__back-button,
+  .song-detail__edit-button {
+    width: 100%;
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .song-detail {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-xl);
+  }
+
+  .song-detail__title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .song-detail__artist {
+    font-size: var(--font-size-lg);
+  }
+
+  .song-detail__credits,
+  .song-detail__release-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .song-detail__credit-item,
+  .song-detail__release-item {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .song-detail__credit-label,
+  .song-detail__release-label {
+    width: auto;
+  }
+
+  .song-detail__links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+  }
+}
+
+/* 削除ボタン（危険ゾーン） */
+.song-detail__danger-zone {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.song-detail__delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-error);
+  background: transparent;
+  border: 1px solid var(--color-error);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-detail__delete-button:hover {
+  background: var(--color-error);
+  color: white;
+}
+
+.song-detail__delete-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}

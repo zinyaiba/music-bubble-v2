@@ -1,0 +1,294 @@
+/**
+ * SongList スタイル
+ * 楽曲一覧表示と検索・並び替え機能
+ *
+ * Requirements:
+ * - 7.1: 全ての楽曲をスクロール可能なリストで表示
+ * - 7.2: 検索機能
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--spacing-md);
+}
+
+/* 検索バー */
+.song-list__search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+}
+
+.song-list__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.song-list__search-icon {
+  position: absolute;
+  left: var(--spacing-md);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.song-list__search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-left: calc(var(--spacing-md) + 28px);
+  padding-right: calc(var(--spacing-md) + 28px);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.song-list__search-input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.song-list__search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-list__search-clear {
+  position: absolute;
+  right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-full);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-list__search-clear:hover {
+  background: var(--color-primary-alpha);
+  color: var(--color-primary);
+}
+
+.song-list__search-clear:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+/* 検索オプションと件数 */
+.song-list__search-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.song-list__search-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* タイトルのみトグル */
+.song-list__title-only-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+  user-select: none;
+}
+
+.song-list__title-only-toggle input {
+  display: none;
+}
+
+.song-list__toggle-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: var(--border-radius-full);
+  transition: background var(--transition-fast);
+}
+
+.song-list__toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: var(--border-radius-full);
+  transition: transform var(--transition-fast);
+}
+
+.song-list__title-only-toggle input:checked + .song-list__toggle-slider {
+  background: var(--color-primary);
+}
+
+.song-list__title-only-toggle input:checked + .song-list__toggle-slider::after {
+  transform: translateX(16px);
+}
+
+.song-list__toggle-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* 並び替えと表示切替 */
+.song-list__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.song-list__sort-select {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-list__sort-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.song-list__view-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: var(--font-size-lg);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-list__view-toggle:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+
+.song-list__view-toggle--active {
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 楽曲リスト */
+.song-list__items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+  padding-bottom: var(--spacing-lg);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 空の状態 */
+.song-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.song-list__empty-message {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.song-list__empty-clear {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-list__empty-clear:hover {
+  background: var(--color-primary-light);
+  color: white;
+}
+
+.song-list__empty-clear:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-list__search {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .song-list__search-input {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm);
+    padding-left: calc(var(--spacing-sm) + 28px);
+    padding-right: calc(var(--spacing-sm) + 28px);
+  }
+
+  .song-list__search-input::placeholder {
+    font-size: var(--font-size-xs);
+  }
+
+  .song-list__search-options {
+    flex-wrap: wrap;
+  }
+
+  .song-list__items {
+    padding: 0 var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .song-list__search-count {
+    font-size: var(--font-size-xs);
+  }
+
+  .song-list__sort-select {
+    font-size: var(--font-size-xs);
+  }
+
+  .song-list__view-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-md);
+  }
+}

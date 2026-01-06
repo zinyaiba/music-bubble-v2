@@ -16,3 +16,16 @@ export {
   extractAvailableGenres,
   getAvailableGenresForArtist,
 } from './filterService'
+export {
+  SongSearchService,
+  songSearchService,
+  searchSongs,
+  matchesSearchQuery,
+  matchesTitleSearch,
+  matchesArtistSearch,
+  matchesLyricistSearch,
+  matchesComposerSearch,
+  matchesArrangerSearch,
+  type SearchField,
+  type SearchOptions,
+} from './songSearchService'

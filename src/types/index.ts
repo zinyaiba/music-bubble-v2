@@ -13,8 +13,8 @@ export interface Song {
   arrangers: string[]
   tags?: string[]
   notes?: string
-  releaseYear?: number
-  releaseDate?: string
+  releaseYear?: number // 発売年（4桁の数値）
+  releaseDate?: string // 発売日（月日、MMDD形式、例: 0315）
   singleName?: string
   albumName?: string
   musicServiceEmbed?: string

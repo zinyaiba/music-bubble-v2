@@ -1,0 +1,104 @@
+/**
+ * SongListPage スタイル
+ * 楽曲一覧ページ
+ *
+ * Requirements:
+ * - 7.1: 全ての楽曲をスクロール可能なリストで表示
+ * - 7.4: 新規楽曲を追加するボタン
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-list-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.song-list-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  position: relative;
+}
+
+/* エラーメッセージ */
+.song-list-page__error {
+  padding: var(--spacing-md);
+}
+
+/* コンテンツエリア */
+.song-list-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-md);
+  overflow: hidden;
+}
+
+/* 新規追加ボタン（FAB） */
+.song-list-page__add-button {
+  position: fixed;
+  right: var(--spacing-lg);
+  bottom: calc(var(--navigation-height) + var(--spacing-lg) + var(--safe-area-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: none;
+  border-radius: var(--border-radius-full);
+  color: white;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-fast);
+  z-index: var(--z-index-sticky);
+}
+
+.song-list-page__add-button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.song-list-page__add-button:focus {
+  outline: none;
+  box-shadow: var(--shadow-xl), 0 0 0 4px var(--color-primary-alpha);
+}
+
+.song-list-page__add-button:active {
+  transform: scale(0.95);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-list-page__add-button {
+    right: var(--spacing-md);
+    bottom: calc(var(--navigation-height) + var(--spacing-md) + var(--safe-area-bottom));
+    width: 48px;
+    height: 48px;
+  }
+
+  .song-list-page__add-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .song-list-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .song-list-page__add-button {
+    right: var(--spacing-xl);
+    bottom: calc(var(--navigation-height) + var(--spacing-xl));
+  }
+}

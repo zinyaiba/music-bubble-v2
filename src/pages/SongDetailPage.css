@@ -1,0 +1,188 @@
+/**
+ * SongDetailPage スタイル
+ * 楽曲詳細ページ
+ *
+ * Requirements:
+ * - 8.5: 前のページに戻るナビゲーション
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-detail-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.song-detail-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  overflow-y: auto;
+}
+
+/* 警告メッセージ */
+.song-detail-page__warning {
+  padding: var(--spacing-md);
+  padding-bottom: 0;
+}
+
+/* コンテンツエリア */
+.song-detail-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+}
+
+/* エラーコンテナ */
+.song-detail-page__error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  flex: 1;
+}
+
+/* 楽曲一覧に戻るボタン */
+.song-detail-page__back-to-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-detail-page__back-to-list:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.song-detail-page__back-to-list:focus {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-detail-page__back-to-list:active {
+  transform: translateY(0);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-detail-page__content {
+    padding: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+  }
+
+  .song-detail-page__error-container {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .song-detail-page__content {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+  }
+}
+
+/* 削除確認ダイアログ */
+.song-detail-page__delete-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-index-modal);
+  padding: var(--spacing-md);
+}
+
+.song-detail-page__delete-dialog {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+}
+
+.song-detail-page__delete-title {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-error);
+}
+
+.song-detail-page__delete-message {
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  line-height: var(--line-height-relaxed);
+}
+
+.song-detail-page__delete-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.song-detail-page__delete-cancel,
+.song-detail-page__delete-confirm {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-detail-page__delete-cancel {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.song-detail-page__delete-cancel:hover {
+  background: var(--color-surface-hover);
+}
+
+.song-detail-page__delete-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.song-detail-page__delete-confirm {
+  background: var(--color-error);
+  color: white;
+  border: none;
+}
+
+.song-detail-page__delete-confirm:hover {
+  background: #dc2626;
+}
+
+.song-detail-page__delete-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,161 @@
+/**
+ * SongCard スタイル
+ * 楽曲情報のコンパクト表示
+ *
+ * Requirements:
+ * - 7.6: 楽曲情報をコンパクトで見やすい形式で表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.song-card:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.song-card:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-card:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* コンテンツ */
+.song-card__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* タイトル */
+.song-card__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* アーティスト */
+.song-card__artist {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* クレジット情報 */
+.song-card__credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.song-card__credit {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song-card__credit-label {
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-xs);
+}
+
+/* 発売日 */
+.song-card__release {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.song-card__release-label {
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-xs);
+}
+
+/* 矢印アイコン */
+.song-card__arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.song-card:hover .song-card__arrow {
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+/* コンパクトモード（曲名のみ） */
+.song-card--compact {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.song-card--compact .song-card__title {
+  font-size: var(--font-size-sm);
+}
+
+.song-card--compact .song-card__content {
+  gap: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-card {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .song-card__title {
+    font-size: var(--font-size-sm);
+  }
+
+  .song-card__artist {
+    font-size: var(--font-size-xs);
+  }
+
+  .song-card__credits {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .song-card__credit {
+    font-size: 10px;
+  }
+
+  .song-card__release {
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,426 @@
+/**
+ * SongForm スタイル
+ * 楽曲登録・編集フォーム
+ *
+ * Requirements:
+ * - 7.4: 新規楽曲を追加
+ * - 7.5: 既存楽曲の編集
+ * - 15.5: バリデーションメッセージ表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--color-background);
+}
+
+/* ヘッダー */
+.song-form__header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-surface);
+}
+
+.song-form__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+}
+
+/* コンテンツ */
+.song-form__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* セクション */
+.song-form__section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-form__section-title {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* フィールド */
+.song-form__field {
+  margin-bottom: var(--spacing-md);
+}
+
+.song-form__field:last-child {
+  margin-bottom: 0;
+}
+
+.song-form__field--half {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-form__field--error .song-form__input,
+.song-form__field--error .song-form__textarea {
+  border-color: var(--color-error);
+  background: rgba(248, 113, 113, 0.05);
+}
+
+.song-form__field--error .song-form__input:focus,
+.song-form__field--error .song-form__textarea:focus {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+}
+
+.song-form__row {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.song-form__row--three {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+/* ラベル */
+.song-form__label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.song-form__required {
+  color: var(--color-error);
+  margin-left: 2px;
+}
+
+/* 入力フィールド */
+.song-form__input,
+.song-form__textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.song-form__input:focus,
+.song-form__textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-form__input:disabled,
+.song-form__textarea:disabled {
+  background: var(--color-background-light);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.song-form__input::placeholder,
+.song-form__textarea::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.song-form__input--label {
+  max-width: 150px;
+}
+
+.song-form__textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: var(--line-height-relaxed);
+}
+
+/* ヒントテキスト */
+.song-form__hint {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* エラーメッセージ */
+.song-form__error {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.song-form__error::before {
+  content: '⚠';
+}
+
+/* 外部リンク */
+.song-form__urls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.song-form__url-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+}
+
+.song-form__url-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.song-form__url-fields .song-form__field {
+  margin-bottom: 0;
+}
+
+.song-form__url-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.song-form__url-remove:hover {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.song-form__url-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.song-form__url-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-form__url-add:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+}
+
+.song-form__url-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* アクションボタン */
+.song-form__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-surface);
+}
+
+.song-form__cancel-button,
+.song-form__submit-button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-form__cancel-button {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.song-form__cancel-button:hover {
+  background: var(--color-surface-hover);
+}
+
+.song-form__cancel-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-form__cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.song-form__submit-button {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  border: none;
+}
+
+.song-form__submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.song-form__submit-button:focus {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-form__submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.song-form__submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* スピナー */
+.song-form__spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: song-form-spin 0.8s linear infinite;
+}
+
+@keyframes song-form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-form__header {
+    padding: var(--spacing-sm);
+  }
+
+  .song-form__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .song-form__content {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+
+  .song-form__section {
+    padding: var(--spacing-sm);
+  }
+
+  .song-form__row {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .song-form__row--three {
+    grid-template-columns: 1fr;
+  }
+
+  .song-form__field--half {
+    flex: none;
+    width: 100%;
+  }
+
+  .song-form__input--label {
+    max-width: none;
+  }
+
+  .song-form__url-fields {
+    flex-direction: column;
+  }
+
+  .song-form__actions {
+    flex-direction: column;
+    padding: var(--spacing-sm);
+  }
+
+  .song-form__cancel-button,
+  .song-form__submit-button {
+    width: 100%;
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .song-form__content {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-xl);
+  }
+
+  .song-form__section {
+    padding: var(--spacing-lg);
+  }
+
+  .song-form__url-fields {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .song-form__url-fields .song-form__field:first-child {
+    flex: 2;
+  }
+
+  .song-form__url-fields .song-form__field:last-child {
+    flex: 1;
+  }
+
+  .song-form__input--label {
+    max-width: none;
+  }
+
+  .song-form__actions {
+    padding: var(--spacing-lg);
+  }
+}

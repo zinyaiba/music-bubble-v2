@@ -7,10 +7,15 @@
 import {
   collection,
   getDocs,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   query,
   orderBy,
   onSnapshot,
   Timestamp,
+  serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import type { Song } from '../types'
@@ -210,6 +215,88 @@ export class FirebaseService {
     } catch (error) {
       console.error('🔥 Firebase: 接続エラー', error)
       return false
+    }
+  }
+
+  /**
+   * 楽曲を追加
+   */
+  public async addSong(songData: Partial<Song>): Promise<string> {
+    try {
+      if (!this.isFirebaseAvailable() || !db) {
+        throw new Error('Firebase設定が無効です')
+      }
+
+      const docData = {
+        ...songData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        isPublic: true,
+      }
+
+      // idフィールドは除外
+      delete (docData as { id?: string }).id
+
+      const docRef = await addDoc(collection(db, this.COLLECTION_NAME), docData)
+
+      if (import.meta.env.DEV) {
+        console.log(`🔥 Firebase: 楽曲を追加しました (ID: ${docRef.id})`)
+      }
+
+      return docRef.id
+    } catch (error) {
+      console.error('🔥 Firebase: 楽曲追加エラー', error)
+      throw new Error('楽曲の追加に失敗しました')
+    }
+  }
+
+  /**
+   * 楽曲を更新
+   */
+  public async updateSong(songId: string, songData: Partial<Song>): Promise<void> {
+    try {
+      if (!this.isFirebaseAvailable() || !db) {
+        throw new Error('Firebase設定が無効です')
+      }
+
+      const docRef = doc(db, this.COLLECTION_NAME, songId)
+      const updateData = {
+        ...songData,
+        updatedAt: serverTimestamp(),
+      }
+
+      // idフィールドは除外
+      delete (updateData as { id?: string }).id
+
+      await updateDoc(docRef, updateData)
+
+      if (import.meta.env.DEV) {
+        console.log(`🔥 Firebase: 楽曲を更新しました (ID: ${songId})`)
+      }
+    } catch (error) {
+      console.error('🔥 Firebase: 楽曲更新エラー', error)
+      throw new Error('楽曲の更新に失敗しました')
+    }
+  }
+
+  /**
+   * 楽曲を削除
+   */
+  public async deleteSong(songId: string): Promise<void> {
+    try {
+      if (!this.isFirebaseAvailable() || !db) {
+        throw new Error('Firebase設定が無効です')
+      }
+
+      const docRef = doc(db, this.COLLECTION_NAME, songId)
+      await deleteDoc(docRef)
+
+      if (import.meta.env.DEV) {
+        console.log(`🔥 Firebase: 楽曲を削除しました (ID: ${songId})`)
+      }
+    } catch (error) {
+      console.error('🔥 Firebase: 楽曲削除エラー', error)
+      throw new Error('楽曲の削除に失敗しました')
     }
   }
 }

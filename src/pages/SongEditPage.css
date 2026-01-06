@@ -1,0 +1,105 @@
+/**
+ * SongEditPage スタイル
+ * 楽曲登録・編集ページ
+ *
+ * Requirements:
+ * - 7.4: 新規楽曲を追加
+ * - 7.5: 既存楽曲の編集
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.song-edit-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.song-edit-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  overflow-y: auto;
+}
+
+/* エラーメッセージ */
+.song-edit-page__error {
+  padding: var(--spacing-md);
+  padding-bottom: 0;
+}
+
+/* コンテンツエリア */
+.song-edit-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+}
+
+/* エラーコンテナ */
+.song-edit-page__error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  flex: 1;
+}
+
+/* 楽曲一覧に戻るボタン */
+.song-edit-page__back-to-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-edit-page__back-to-list:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.song-edit-page__back-to-list:focus {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-edit-page__back-to-list:active {
+  transform: translateY(0);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-edit-page__content {
+    padding: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+  }
+
+  .song-edit-page__error-container {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .song-edit-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+  }
+}

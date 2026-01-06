@@ -10,6 +10,9 @@
 
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { TopPage } from './pages/TopPage'
+import { SongListPage } from './pages/SongListPage'
+import { SongDetailPage } from './pages/SongDetailPage'
+import { SongEditPage } from './pages/SongEditPage'
 
 /**
  * プレースホルダーページ（後のフェーズで実装）
@@ -60,11 +63,19 @@ const router = createBrowserRouter(
         },
         {
           path: 'songs',
-          element: <PlaceholderPage title="楽曲一覧" />,
+          element: <SongListPage />,
+        },
+        {
+          path: 'songs/new',
+          element: <SongEditPage />,
         },
         {
           path: 'songs/:songId',
-          element: <PlaceholderPage title="楽曲詳細" />,
+          element: <SongDetailPage />,
+        },
+        {
+          path: 'songs/:songId/edit',
+          element: <SongEditPage />,
         },
         {
           path: 'tags',
