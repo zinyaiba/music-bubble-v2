@@ -1,0 +1,322 @@
+/**
+ * TagInput スタイル
+ * タグ入力・選択UI
+ *
+ * Requirements:
+ * - 5.3: 楽曲をタップした時、システムはその楽曲のタグ入力インターフェースを表示すること
+ * - 5.6: システムはタグを視覚的に区別しやすく、読みやすい形式で表示すること
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.tag-input {
+  position: relative;
+  width: 100%;
+}
+
+/* コンテナ */
+.tag-input__container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 48px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  cursor: text;
+  transition: all var(--transition-fast);
+}
+
+.tag-input__container--focused {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.tag-input__container--disabled {
+  background: var(--color-surface-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* タグ一覧 */
+.tag-input__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+/* 個別タグ */
+.tag-input__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  padding: var(--spacing-2xs) var(--spacing-sm);
+  background: var(--color-primary-alpha);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  animation: tag-input-tag-appear 0.2s ease-out;
+}
+
+@keyframes tag-input-tag-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tag-input__tag-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-input__tag-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-full);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-input__tag-remove:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tag-input__tag-remove:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+/* 入力フィールド */
+.tag-input__input {
+  flex: 1;
+  min-width: 100px;
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.tag-input__input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.tag-input__input:disabled {
+  cursor: not-allowed;
+}
+
+/* サジェストリスト */
+.tag-input__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--spacing-xs);
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-index-dropdown);
+  animation: tag-input-suggestions-appear 0.15s ease-out;
+}
+
+@keyframes tag-input-suggestions-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tag-input__suggestion {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.tag-input__suggestion:hover,
+.tag-input__suggestion--highlighted {
+  background: var(--color-surface-hover);
+}
+
+.tag-input__suggestion:focus {
+  outline: none;
+  background: var(--color-surface-hover);
+}
+
+/* ヒント */
+.tag-input__hint {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 確認ダイアログ */
+.tag-input__confirm-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-index-modal);
+  animation: tag-input-backdrop-appear 0.15s ease-out;
+}
+
+@keyframes tag-input-backdrop-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tag-input__confirm-dialog {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-md);
+  max-width: 320px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+  animation: tag-input-dialog-appear 0.2s ease-out;
+}
+
+@keyframes tag-input-dialog-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tag-input__confirm-message {
+  margin: 0 0 var(--spacing-lg);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  text-align: center;
+  word-break: break-word;
+}
+
+.tag-input__confirm-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.tag-input__confirm-cancel,
+.tag-input__confirm-ok {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-input__confirm-cancel {
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
+}
+
+.tag-input__confirm-cancel:hover {
+  background: var(--color-surface-active);
+}
+
+.tag-input__confirm-ok {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tag-input__confirm-ok:hover {
+  background: var(--color-primary-dark);
+}
+
+.tag-input__confirm-ok--danger {
+  background: var(--color-error);
+}
+
+.tag-input__confirm-ok--danger:hover {
+  background: var(--color-error-dark, #c0392b);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tag-input__container {
+    min-height: 44px;
+    padding: var(--spacing-2xs) var(--spacing-xs);
+  }
+
+  .tag-input__tag {
+    padding: var(--spacing-2xs) var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+
+  .tag-input__tag-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tag-input__tag-remove {
+    width: 16px;
+    height: 16px;
+  }
+
+  .tag-input__tag-remove svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .tag-input__input {
+    min-width: 80px;
+    font-size: var(--font-size-sm);
+  }
+
+  .tag-input__suggestion {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+}

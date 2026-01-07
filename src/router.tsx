@@ -13,6 +13,8 @@ import { TopPage } from './pages/TopPage'
 import { SongListPage } from './pages/SongListPage'
 import { SongDetailPage } from './pages/SongDetailPage'
 import { SongEditPage } from './pages/SongEditPage'
+import { TagListPage } from './pages/TagListPage'
+import { TagRegistrationPage } from './pages/TagRegistrationPage'
 
 /**
  * プレースホルダーページ（後のフェーズで実装）
@@ -79,11 +81,11 @@ const router = createBrowserRouter(
         },
         {
           path: 'tags',
-          element: <PlaceholderPage title="タグ一覧" />,
+          element: <TagListPage />,
         },
         {
           path: 'tag-registration',
-          element: <PlaceholderPage title="タグ登録" />,
+          element: <TagRegistrationPage />,
         },
         {
           path: 'info',

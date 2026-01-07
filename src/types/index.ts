@@ -34,6 +34,8 @@ export interface Tag {
   name: string
   songIds: string[]
   songCount: number
+  /** タグに関連する楽曲の最終更新日時（ISO 8601形式） */
+  lastUpdatedAt?: string
 }
 
 // シャボン玉データ

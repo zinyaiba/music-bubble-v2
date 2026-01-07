@@ -1,0 +1,544 @@
+/**
+ * TagRegistrationPage スタイル
+ * タグ登録ページ
+ *
+ * Requirements:
+ * - 5.1: 全ての楽曲と現在のタグの一覧を表示
+ * - 5.2: 検索機能
+ * - 5.3: タグ入力インターフェース
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.tag-registration-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.tag-registration-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+}
+
+/* エラーメッセージ */
+.tag-registration-page__error {
+  padding: var(--spacing-md);
+}
+
+/* コンテンツエリア */
+.tag-registration-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 検索バー */
+.tag-registration-page__search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+}
+
+.tag-registration-page__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tag-registration-page__search-icon {
+  position: absolute;
+  left: var(--spacing-md);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.tag-registration-page__search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-left: calc(var(--spacing-md) + 28px);
+  padding-right: calc(var(--spacing-md) + 28px);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.tag-registration-page__search-input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.tag-registration-page__search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.tag-registration-page__search-clear {
+  position: absolute;
+  right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-full);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-registration-page__search-clear:hover {
+  background: var(--color-primary-alpha);
+  color: var(--color-primary);
+}
+
+.tag-registration-page__search-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* 検索オプション */
+.tag-registration-page__search-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.tag-registration-page__title-only-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tag-registration-page__title-only-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tag-registration-page__toggle-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: var(--border-radius-full);
+  transition: background var(--transition-fast);
+}
+
+.tag-registration-page__toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: var(--border-radius-full);
+  transition: transform var(--transition-fast);
+}
+
+.tag-registration-page__title-only-toggle input:checked + .tag-registration-page__toggle-slider {
+  background: var(--color-primary);
+}
+
+.tag-registration-page__title-only-toggle input:checked + .tag-registration-page__toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.tag-registration-page__toggle-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* 並び替えコントロール */
+.tag-registration-page__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tag-registration-page__sort-select {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.tag-registration-page__sort-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.tag-registration-page__view-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-registration-page__view-toggle:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+
+.tag-registration-page__view-toggle--active {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-alpha);
+}
+
+/* 楽曲リスト */
+.tag-registration-page__song-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tag-registration-page__song-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: none;
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.tag-registration-page__song-item:hover {
+  background: var(--color-surface-hover);
+}
+
+.tag-registration-page__song-item:active {
+  background: var(--color-surface-active);
+}
+
+.tag-registration-page__song-item--compact {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.tag-registration-page__song-item--compact .tag-registration-page__song-item-info {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tag-registration-page__song-item--compact .tag-registration-page__song-item-title {
+  flex: 1;
+}
+
+.tag-registration-page__song-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  min-width: 0;
+  flex: 1;
+}
+
+.tag-registration-page__song-item-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-registration-page__song-item-artist {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-registration-page__song-item-tags-list {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-registration-page__song-item-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-2xs);
+}
+
+.tag-registration-page__song-item-chip {
+  display: inline-block;
+  padding: var(--spacing-2xs) var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  border-radius: var(--border-radius-full);
+  white-space: nowrap;
+}
+
+.tag-registration-page__song-item-no-tags {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.tag-registration-page__song-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.tag-registration-page__song-item-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.tag-registration-page__tag-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  padding: var(--spacing-2xs) var(--spacing-xs);
+  border-radius: var(--border-radius-full);
+}
+
+.tag-registration-page__no-tags {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 空の状態 */
+.tag-registration-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.tag-registration-page__empty-message {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.tag-registration-page__empty-clear {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-registration-page__empty-clear:hover {
+  background: var(--color-primary-light);
+  color: white;
+}
+
+/* タグ編集エリア */
+.tag-registration-page__editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--spacing-md);
+}
+
+.tag-registration-page__editor-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.tag-registration-page__back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-registration-page__back-button:hover {
+  background: var(--color-primary-alpha);
+}
+
+.tag-registration-page__song-info {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+}
+
+.tag-registration-page__song-title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.tag-registration-page__song-artist {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.tag-registration-page__tag-editor {
+  margin-bottom: var(--spacing-md);
+}
+
+.tag-registration-page__label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.tag-registration-page__save-message {
+  margin: var(--spacing-sm) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-success);
+  animation: tag-registration-page-fade-in 0.2s ease-out;
+}
+
+.tag-registration-page__save-message--error {
+  color: var(--color-error);
+}
+
+@keyframes tag-registration-page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tag-registration-page__current-tags {
+  padding: var(--spacing-sm);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-md);
+}
+
+.tag-registration-page__current-tags-label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tag-registration-page__search {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-registration-page__search-input {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm);
+    padding-left: calc(var(--spacing-sm) + 28px);
+    padding-right: calc(var(--spacing-sm) + 28px);
+  }
+
+  .tag-registration-page__song-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .tag-registration-page__song-item-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .tag-registration-page__song-item-artist {
+    font-size: var(--font-size-xs);
+  }
+
+  .tag-registration-page__editor {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-registration-page__song-info {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-registration-page__song-title {
+    font-size: var(--font-size-md);
+  }
+
+  .tag-registration-page__song-artist {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .tag-registration-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .tag-registration-page__song-list {
+    padding: 0 var(--spacing-md);
+  }
+
+  .tag-registration-page__song-item {
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-xs);
+    border: var(--border-width-thin) solid var(--color-border);
+  }
+}

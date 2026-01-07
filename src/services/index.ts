@@ -29,3 +29,19 @@ export {
   type SearchField,
   type SearchOptions,
 } from './songSearchService'
+export {
+  TagService,
+  tagService,
+  generateTagsFromSongs,
+  generateTagId,
+  getTagNameFromId,
+  sortTagsAlphabetically,
+  sortTagsBySongCount,
+  sortTags,
+  searchTags,
+  filterAndSortTags,
+  getSongsByTag,
+  getSongsByTagId,
+  type TagSortOrder,
+  type TagSearchOptions,
+} from './tagService'

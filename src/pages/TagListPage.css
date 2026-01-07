@@ -1,0 +1,64 @@
+/**
+ * TagListPage スタイル
+ * タグ一覧ページ
+ *
+ * Requirements:
+ * - 6.1: 全てのユニークなタグを表示すること
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.tag-list-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.tag-list-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  position: relative;
+}
+
+/* 詳細表示時のメイン */
+.tag-list-page__main--detail {
+  padding-top: var(--header-height);
+}
+
+/* エラーメッセージ */
+.tag-list-page__error {
+  padding: var(--spacing-md);
+}
+
+/* コンテンツエリア */
+.tag-list-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-md);
+  overflow: hidden;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tag-list-page__error {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-list-page__content {
+    padding-top: var(--spacing-sm);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .tag-list-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
