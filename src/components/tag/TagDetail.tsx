@@ -23,8 +23,9 @@ import './TagDetail.css'
  */
 function generatePostContent(tagName: string, _songs: Song[], tagId: string): string {
   // ベースURL（GitHub Pages）
-  const baseUrl = window.location.origin + import.meta.env.BASE_URL
-  const tagUrl = `${baseUrl}tags?tag=${encodeURIComponent(tagId)}`
+  const origin = window.location.origin
+  const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+  const tagUrl = `${origin}${basePath}/tags?tag=${encodeURIComponent(tagId)}`
   
   // ポスト内容を組み立て
   const line1 = '私のおすすめタグこちら'
