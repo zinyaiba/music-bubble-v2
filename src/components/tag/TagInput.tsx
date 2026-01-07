@@ -186,44 +186,52 @@ export function TagInput({
 
   return (
     <div className="tag-input">
-      <div
-        className={`tag-input__container ${isFocused ? 'tag-input__container--focused' : ''} ${disabled ? 'tag-input__container--disabled' : ''}`}
-        onClick={handleContainerClick}
-      >
-        {/* 選択されたタグ */}
-        <div className="tag-input__tags">
-          {selectedTags.map((tag) => (
-            <span key={tag} className="tag-input__tag">
-              <span className="tag-input__tag-text">#{tag}</span>
-              {!disabled && (
-                <button
-                  type="button"
-                  className="tag-input__tag-remove"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleRequestRemoveTag(tag)
-                  }}
-                  aria-label={`${tag}を削除`}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+      {/* 登録済みタグの表示領域 */}
+      {selectedTags.length > 0 && (
+        <div className="tag-input__registered">
+          <p className="tag-input__registered-label">登録済みタグ</p>
+          <div className="tag-input__registered-tags">
+            {selectedTags.map((tag) => (
+              <span key={tag} className="tag-input__tag">
+                <span className="tag-input__tag-text">#{tag}</span>
+                {!disabled && (
+                  <button
+                    type="button"
+                    className="tag-input__tag-remove"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRequestRemoveTag(tag)
+                    }}
+                    aria-label={`${tag}を削除`}
                   >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
-            </span>
-          ))}
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
-          {/* 入力フィールド */}
+      {/* タグ入力領域 */}
+      <div className="tag-input__add-section">
+        <p className="tag-input__add-label">タグを追加</p>
+        <div
+          className={`tag-input__container ${isFocused ? 'tag-input__container--focused' : ''} ${disabled ? 'tag-input__container--disabled' : ''}`}
+          onClick={handleContainerClick}
+        >
           <input
             ref={inputRef}
             type="text"
@@ -233,41 +241,41 @@ export function TagInput({
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            placeholder={selectedTags.length === 0 ? placeholder : ''}
+            placeholder={placeholder}
             disabled={disabled}
             autoComplete="off"
             aria-label="タグを入力"
           />
         </div>
+
+        {/* サジェストリスト */}
+        {showSuggestions && (
+          <div
+            ref={suggestionsRef}
+            className="tag-input__suggestions"
+            role="listbox"
+          >
+            {suggestions.map((tag, index) => (
+              <button
+                key={tag}
+                type="button"
+                className={`tag-input__suggestion ${index === highlightedIndex ? 'tag-input__suggestion--highlighted' : ''}`}
+                onClick={() => handleSuggestionClick(tag)}
+                onMouseEnter={() => setHighlightedIndex(index)}
+                role="option"
+                aria-selected={index === highlightedIndex}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ヒント */}
+        <p className="tag-input__hint">
+          Enterで追加
+        </p>
       </div>
-
-      {/* サジェストリスト */}
-      {showSuggestions && (
-        <div
-          ref={suggestionsRef}
-          className="tag-input__suggestions"
-          role="listbox"
-        >
-          {suggestions.map((tag, index) => (
-            <button
-              key={tag}
-              type="button"
-              className={`tag-input__suggestion ${index === highlightedIndex ? 'tag-input__suggestion--highlighted' : ''}`}
-              onClick={() => handleSuggestionClick(tag)}
-              onMouseEnter={() => setHighlightedIndex(index)}
-              role="option"
-              aria-selected={index === highlightedIndex}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* ヒント */}
-      <p className="tag-input__hint">
-        Enterで追加、Backspaceで削除
-      </p>
 
       {/* 確認ダイアログ */}
       {confirmDialog && (

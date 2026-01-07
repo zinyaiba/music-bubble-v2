@@ -11,6 +11,49 @@
 .tag-input {
   position: relative;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* 登録済みタグ領域 */
+.tag-input__registered {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.tag-input__registered-label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.tag-input__registered-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  min-height: 48px;
+}
+
+/* タグ追加領域 */
+.tag-input__add-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.tag-input__add-label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
 }
 
 /* コンテナ */
@@ -127,7 +170,7 @@
 /* サジェストリスト */
 .tag-input__suggestions {
   position: absolute;
-  top: 100%;
+  top: calc(100% - var(--spacing-lg));
   left: 0;
   right: 0;
   margin-top: var(--spacing-xs);
