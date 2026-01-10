@@ -28,11 +28,11 @@ function generatePostContent(tagName: string, _songs: Song[], tagId: string): st
   const tagUrl = `${origin}${basePath}/tags?tag=${encodeURIComponent(tagId)}`
   
   // ポスト内容を組み立て
-  const line1 = '私のおすすめタグこちら'
+  const line1 = '私のおすすめタグの楽曲はこちら！'
   const line2 = `🏷️${tagName}🫧`
   const line3 = '#マロバブ #栗林みな実'
   
-  return `${line1}\n${line2}\n\n${line3}\n${tagUrl}`
+  return `${line1}\n${line2}\n${tagUrl}\n\n${line3}`
 }
 
 export interface TagDetailProps {
