@@ -14,6 +14,7 @@ import type { Song } from '../types'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { errorService } from '../services/errorService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -37,6 +38,14 @@ export function SongEditPage() {
   const [isLoading, setIsLoading] = useState(isEditMode)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_曲編集, {
+      mode: isEditMode ? '編集' : '新規',
+      song_id: songId || '',
+    })
+  }, [isEditMode, songId])
 
   // 編集モードの場合、楽曲データを取得
   useEffect(() => {
@@ -122,6 +131,7 @@ export function SongEditPage() {
             () => firebaseService.updateSong(songId, songData),
             { maxRetries: 2 }
           )
+          trackEvent(AnalyticsEvents.曲_保存完了, { mode: '編集', song_id: songId })
           // キャッシュを更新
           const cachedSongs = cacheService.getCachedSongs()
           if (cachedSongs) {
@@ -138,6 +148,7 @@ export function SongEditPage() {
             () => firebaseService.addSong(songData),
             { maxRetries: 2 }
           )
+          trackEvent(AnalyticsEvents.曲_保存完了, { mode: '新規', song_id: newSongId })
           // キャッシュを更新
           const cachedSongs = cacheService.getCachedSongs() || []
           const newSong: Song = {

@@ -10,8 +10,9 @@
  * - 9.5: お知らせの既読状態をローカルストレージに保存すること
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { announcements, getReadAnnouncementIds, READ_ANNOUNCEMENTS_KEY } from '../data/announcements'
@@ -137,6 +138,11 @@ export function InfoPage() {
   
   // 既読状態を初期化時に取得
   const [readIds, setReadIds] = useState<string[]>(() => getReadAnnouncementIds())
+
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_お知らせ)
+  }, [])
 
   // お知らせを新しい順にソート (Requirements: 9.3)
   const sortedAnnouncements = useMemo(() => {

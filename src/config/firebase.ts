@@ -9,6 +9,8 @@ import { getFirestore } from 'firebase/firestore'
 import type { Firestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import type { Auth } from 'firebase/auth'
+import { getAnalytics, isSupported } from 'firebase/analytics'
+import type { Analytics } from 'firebase/analytics'
 
 // GitHub Pages用の直接設定（既存プロジェクトと同じ）
 const githubPagesConfig = {
@@ -49,12 +51,23 @@ const isFirebaseConfigured =
 let app: FirebaseApp | null = null
 let db: Firestore | null = null
 let auth: Auth | null = null
+let analytics: Analytics | null = null
 
 if (isFirebaseConfigured) {
   try {
     app = initializeApp(firebaseConfig)
     db = getFirestore(app)
     auth = getAuth(app)
+
+    // Firebase Analytics初期化（ブラウザ環境でのみ）
+    isSupported().then((supported) => {
+      if (supported && app) {
+        analytics = getAnalytics(app)
+        if (import.meta.env.DEV) {
+          console.log('📊 Firebase Analytics初期化完了')
+        }
+      }
+    })
 
     if (import.meta.env.DEV) {
       console.log('🔥 Firebase初期化完了')
@@ -66,6 +79,7 @@ if (isFirebaseConfigured) {
     app = null
     db = null
     auth = null
+    analytics = null
   }
 } else {
   if (import.meta.env.DEV) {
@@ -73,5 +87,11 @@ if (isFirebaseConfigured) {
   }
 }
 
-export { db, auth }
+/**
+ * Analytics インスタンスを取得
+ * 非同期初期化のため、使用時に取得する
+ */
+export const getAnalyticsInstance = (): Analytics | null => analytics
+
+export { db, auth, analytics }
 export default app

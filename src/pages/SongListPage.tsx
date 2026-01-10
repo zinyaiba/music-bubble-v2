@@ -8,10 +8,11 @@
  * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { SongSortType } from '../utils/songSorting'
 import type { SongDisplayMode } from '../components/song/SongCard'
+import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
 import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -37,6 +38,11 @@ export function SongListPage() {
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
 
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_曲一覧)
+  }, [])
+
   // 楽曲詳細ページへ遷移（検索状態を保持）
   const handleSongClick = useCallback(
     (songId: string) => {
@@ -54,12 +60,22 @@ export function SongListPage() {
       if (sortBy !== 'newest') params.set('sort', sortBy)
       if (displayMode !== 'all') params.set('display', displayMode)
       setSearchParams(params, { replace: true })
+
+      // 検索実行時にトラッキング
+      if (query) {
+        trackSearch('曲', query)
+      }
+      // ソート変更時にトラッキング
+      if (sortBy !== 'newest') {
+        trackEvent(AnalyticsEvents.曲_ソート変更, { sort_type: sortBy })
+      }
     },
     [setSearchParams]
   )
 
   // 新規楽曲追加ページへ遷移
   const handleAddSong = useCallback(() => {
+    trackEvent(AnalyticsEvents.曲_新規作成)
     navigate('/songs/new')
   }, [navigate])
 

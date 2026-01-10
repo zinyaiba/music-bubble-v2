@@ -97,10 +97,10 @@
   align-items: center;
   gap: var(--spacing-2xs);
   padding: var(--spacing-2xs) var(--spacing-sm);
-  background: var(--color-primary-alpha);
+  background: #e8f5e9;
   border-radius: var(--border-radius-full);
   font-size: var(--font-size-sm);
-  color: var(--color-primary);
+  color: #4a7c59;
   animation: tag-input-tag-appear 0.2s ease-out;
 }
 
@@ -131,19 +131,19 @@
   background: transparent;
   border: none;
   border-radius: var(--border-radius-full);
-  color: var(--color-primary);
+  color: #4a7c59;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .tag-input__tag-remove:hover {
-  background: var(--color-primary);
+  background: #4a7c59;
   color: white;
 }
 
 .tag-input__tag-remove:focus {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+  box-shadow: 0 0 0 2px rgba(74, 124, 89, 0.2);
 }
 
 /* 入力フィールド */

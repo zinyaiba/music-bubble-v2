@@ -9,10 +9,11 @@
  * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Song } from '../types'
 import { cacheService } from '../services/cacheService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { searchSongs } from '../services/songSearchService'
 import { sortSongs } from '../utils/songSorting'
 import type { SongSortType } from '../utils/songSorting'
@@ -49,6 +50,11 @@ export function TagRegistrationPage() {
   const [isCompactView, setIsCompactView] = useState(initialCompact)
   const [isSaving, setIsSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
+
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_タグ登録)
+  }, [])
 
   // songsが更新されたらlocalSongsも更新
   useMemo(() => {
@@ -150,6 +156,7 @@ export function TagRegistrationPage() {
   // 楽曲選択
   const handleSongSelect = useCallback(
     (songId: string) => {
+      trackEvent(AnalyticsEvents.タグ_登録開始, { song_id: songId })
       const params = new URLSearchParams(searchParams)
       params.set('song', songId)
       setSearchParams(params, { replace: true })
@@ -188,6 +195,11 @@ export function TagRegistrationPage() {
           song.id === selectedSong.id ? { ...song, tags: newTags } : song
         )
         cacheService.cacheSongs(updatedSongs)
+
+        trackEvent(AnalyticsEvents.タグ_登録完了, {
+          song_id: selectedSong.id,
+          tag_count: newTags.length,
+        })
 
         setSaveMessage('タグを保存しました')
         setTimeout(() => setSaveMessage(null), 2000)

@@ -12,10 +12,11 @@
  * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { TagSortOrder } from '../services/tagService'
 import { cacheService } from '../services/cacheService'
+import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
 import { generateTagsFromSongs, getSongsByTagId, getTagNameFromId, tagService } from '../services/tagService'
 import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
@@ -51,6 +52,11 @@ export function TagListPage() {
   // 実際に使用するsongs（オーバーライドがあればそちらを使用、なければfetchしたsongs）
   const effectiveSongs = localSongsOverride ?? songs
 
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_タグ一覧)
+  }, [])
+
   // 楽曲データからタグを生成
   const tags = useMemo(() => {
     return generateTagsFromSongs(effectiveSongs)
@@ -76,6 +82,7 @@ export function TagListPage() {
   // タグクリック時の処理
   const handleTagClick = useCallback(
     (tagId: string) => {
+      trackEvent(AnalyticsEvents.タグ_詳細表示, { tag_id: tagId })
       const params = new URLSearchParams(searchParams)
       params.set('tag', tagId)
       setSearchParams(params, { replace: true })
@@ -107,8 +114,9 @@ export function TagListPage() {
 
   // タグ編集ダイアログを開く
   const handleOpenEditDialog = useCallback(() => {
+    trackEvent(AnalyticsEvents.タグ_編集開始, { tag_id: selectedTagId || '' })
     setShowEditDialog(true)
-  }, [])
+  }, [selectedTagId])
 
   // タグ編集ダイアログを閉じる
   const handleCloseEditDialog = useCallback(() => {
@@ -119,6 +127,7 @@ export function TagListPage() {
   const handleRenameTag = useCallback(
     async (oldName: string, newName: string) => {
       await tagService.renameTag(oldName, newName, effectiveSongs)
+      trackEvent(AnalyticsEvents.タグ_編集完了, { old_name: oldName, new_name: newName })
       
       // ローカルの楽曲データを更新
       const updatedSongs = effectiveSongs.map((song) => {
@@ -147,6 +156,7 @@ export function TagListPage() {
   const handleDeleteTag = useCallback(
     async (tagName: string) => {
       await tagService.deleteTag(tagName, effectiveSongs)
+      trackEvent(AnalyticsEvents.タグ_削除, { tag_name: tagName })
       
       // ローカルの楽曲データを更新
       const updatedSongs = effectiveSongs.map((song) => {
@@ -179,6 +189,11 @@ export function TagListPage() {
       const currentTag = searchParams.get('tag')
       if (currentTag) params.set('tag', currentTag)
       setSearchParams(params, { replace: true })
+
+      // 検索実行時にトラッキング
+      if (query) {
+        trackSearch('タグ', query)
+      }
     },
     [searchParams, setSearchParams]
   )

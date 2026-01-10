@@ -13,6 +13,7 @@ import type { Song } from '../types'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { errorService } from '../services/errorService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -36,6 +37,11 @@ export function SongDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_曲詳細, { song_id: songId || '' })
+  }, [songId])
 
   // 楽曲データを取得
   useEffect(() => {
@@ -123,6 +129,7 @@ export function SongDetailPage() {
   // 編集ページへ遷移
   const handleEdit = useCallback(() => {
     if (songId) {
+      trackEvent(AnalyticsEvents.曲_編集開始, { song_id: songId })
       navigate(`/songs/${songId}/edit`)
     }
   }, [navigate, songId])

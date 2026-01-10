@@ -174,6 +174,14 @@ export function TagInput({
     [handleRequestAddTag]
   )
 
+  // サジェストのmousedown/touchstartでフォーカスが外れるのを防ぐ
+  const handleSuggestionPointerDown = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault()
+    },
+    []
+  )
+
   // コンテナクリックでインプットにフォーカス
   const handleContainerClick = useCallback(() => {
     inputRef.current?.focus()
@@ -256,6 +264,8 @@ export function TagInput({
                 type="button"
                 className={`tag-input__suggestion ${index === highlightedIndex ? 'tag-input__suggestion--highlighted' : ''}`}
                 onClick={() => handleSuggestionClick(tag)}
+                onMouseDown={handleSuggestionPointerDown}
+                onTouchStart={handleSuggestionPointerDown}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 role="option"
                 aria-selected={index === highlightedIndex}

@@ -46,3 +46,12 @@ export {
   type TagSortOrder,
   type TagSearchOptions,
 } from './tagService'
+export {
+  AnalyticsEvents,
+  trackEvent,
+  trackPageView,
+  trackSearch,
+  trackError,
+  trackConnectivityChange,
+  type AnalyticsEventName,
+} from './analyticsService'

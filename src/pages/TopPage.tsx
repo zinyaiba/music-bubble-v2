@@ -14,6 +14,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Bubble as BubbleType } from '../types'
 import { cacheService } from '../services/cacheService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { useFilter, useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -29,6 +30,11 @@ export function TopPage() {
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
+
+  // ページ閲覧トラッキング
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_トップ)
+  }, [])
 
   // アニメーション状態
   const [isPaused, setIsPaused] = useState(() => cacheService.getAnimationPaused())
@@ -78,6 +84,10 @@ export function TopPage() {
 
   // シャボン玉クリック
   const handleBubbleClick = useCallback((bubble: BubbleType) => {
+    trackEvent(AnalyticsEvents.バブル_タップ, {
+      bubble_type: bubble.type,
+      bubble_name: bubble.name,
+    })
     setSelectedBubble(bubble)
   }, [])
 
