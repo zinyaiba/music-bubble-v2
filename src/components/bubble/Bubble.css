@@ -254,3 +254,190 @@
     animation: none;
   }
 }
+
+/* ===== 栗林みな実専用：栗の形 ===== */
+.bubble-chestnut {
+  /* clip-pathで栗の形を作成: 上が尖り、下が丸い（滑らかなカーブ） */
+  clip-path: polygon(
+    50% 0%,
+    35% 8%,
+    22% 18%,
+    12% 32%,
+    5% 48%,
+    2% 62%,
+    3% 75%,
+    8% 85%,
+    18% 93%,
+    32% 98%,
+    50% 100%,
+    68% 98%,
+    82% 93%,
+    92% 85%,
+    97% 75%,
+    98% 62%,
+    95% 48%,
+    88% 32%,
+    78% 18%,
+    65% 8%
+  );
+  border-radius: 0;
+  animation: chestnut-float 3s ease-in-out infinite;
+}
+
+.bubble-chestnut .bubble-glass-layer {
+  /* 栗の形に合わせる */
+  clip-path: polygon(
+    50% 0%,
+    35% 8%,
+    22% 18%,
+    12% 32%,
+    5% 48%,
+    2% 62%,
+    3% 75%,
+    8% 85%,
+    18% 93%,
+    32% 98%,
+    50% 100%,
+    68% 98%,
+    82% 93%,
+    92% 85%,
+    97% 75%,
+    98% 62%,
+    95% 48%,
+    88% 32%,
+    78% 18%,
+    65% 8%
+  );
+  border-radius: 0;
+  /* 栗色のグラデーション */
+  background: radial-gradient(
+    ellipse at 30% 35%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.5) 15%,
+    rgba(165, 110, 60, 0.7) 35%,
+    rgba(120, 75, 40, 0.8) 70%,
+    rgba(90, 55, 25, 0.6) 100%
+  );
+  border: none;
+  --bubble-border-color: rgba(101, 67, 33, 0.8);
+}
+
+.bubble-chestnut .bubble-highlight {
+  /* ハイライトを栗の形に合わせて調整 */
+  top: 22%;
+  left: 22%;
+  width: 28%;
+  height: 28%;
+}
+
+/* 栗の座（底のザラザラした部分） */
+.bubble-chestnut-base {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55%;
+  height: 12%;
+  background: linear-gradient(
+    to top,
+    rgba(200, 180, 150, 0.95) 0%,
+    rgba(180, 160, 130, 0.9) 50%,
+    rgba(160, 140, 110, 0.6) 80%,
+    transparent 100%
+  );
+  border-radius: 0 0 45% 45% / 0 0 80% 80%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 座のザラザラ感を表現 */
+.bubble-chestnut-base::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    rgba(120, 100, 70, 0.4) 1px,
+    transparent 2px,
+    transparent 3px
+  );
+  border-radius: inherit;
+}
+
+/* 座の縁取り */
+.bubble-chestnut-base::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(101, 67, 33, 0.5) 20%,
+    rgba(101, 67, 33, 0.7) 50%,
+    rgba(101, 67, 33, 0.5) 80%,
+    transparent 100%
+  );
+  border-radius: 50%;
+}
+
+/* 栗の浮遊アニメーション（少し揺れる） */
+@keyframes chestnut-float {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0) rotate(-2deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) translateY(-3px) rotate(0deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-5px) rotate(2deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) translateY(-3px) rotate(0deg);
+  }
+}
+
+/* 栗のホバー効果 */
+@media (hover: hover) {
+  .bubble-chestnut:hover {
+    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+  }
+}
+
+/* 栗の選択インジケーター */
+.bubble-chestnut .bubble-selection-indicator {
+  clip-path: polygon(
+    50% 0%,
+    35% 8%,
+    22% 18%,
+    12% 32%,
+    5% 48%,
+    2% 62%,
+    3% 75%,
+    8% 85%,
+    18% 93%,
+    32% 98%,
+    50% 100%,
+    68% 98%,
+    82% 93%,
+    92% 85%,
+    97% 75%,
+    98% 62%,
+    95% 48%,
+    88% 32%,
+    78% 18%,
+    65% 8%
+  );
+  border-radius: 0;
+  inset: -6px;
+}
+
+/* アクセシビリティ: 動きを減らす設定（栗用） */
+@media (prefers-reduced-motion: reduce) {
+  .bubble-chestnut {
+    animation: none;
+  }
+}

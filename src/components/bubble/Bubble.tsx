@@ -19,8 +19,16 @@ interface BubbleProps {
 }
 
 /**
+ * 栗林みな実かどうかを判定
+ */
+const isKuribayashiMinami = (name: string): boolean => {
+  return name === '栗林みな実'
+}
+
+/**
  * シャボン玉コンポーネント
  * ガラスモーフィズム効果を適用したシャボン玉を描画
+ * 栗林みな実の場合は栗の形で表示
  */
 export const Bubble: React.FC<BubbleProps> = React.memo(({
   bubble,
@@ -29,6 +37,9 @@ export const Bubble: React.FC<BubbleProps> = React.memo(({
   isPaused = false,
 }) => {
   const { x, y, size, color, opacity, name, type } = bubble
+  
+  // 栗林みな実かどうか
+  const isChestnutShape = useMemo(() => isKuribayashiMinami(name), [name])
 
   // 表示名を計算（タグの場合は#プレフィックスを追加）
   const displayName = useMemo(() => {
@@ -100,7 +111,7 @@ export const Bubble: React.FC<BubbleProps> = React.memo(({
 
   return (
     <div
-      className={`bubble bubble-type-${type} ${isSelected ? 'bubble-selected' : ''}`}
+      className={`bubble bubble-type-${type} ${isSelected ? 'bubble-selected' : ''} ${isChestnutShape ? 'bubble-chestnut' : ''}`}
       style={bubbleStyle}
       onClick={handleClick}
       onTouchEnd={handleClick}
@@ -122,6 +133,11 @@ export const Bubble: React.FC<BubbleProps> = React.memo(({
       <div className="bubble-content">
         <span className="bubble-name">{displayName}</span>
       </div>
+      
+      {/* 栗の座（底の部分、栗林みな実の場合のみ） */}
+      {isChestnutShape && (
+        <div className="bubble-chestnut-base" aria-hidden="true" />
+      )}
       
       {/* 選択時のインジケーター */}
       {isSelected && (
