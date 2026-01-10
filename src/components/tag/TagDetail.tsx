@@ -242,7 +242,7 @@ export function TagDetail({
                 key={song.id}
                 song={song}
                 onClick={() => onSongClick(song.id)}
-                compact
+                displayMode="compact"
               />
             ))
           ) : (
