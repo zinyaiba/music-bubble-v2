@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState, useEffect } from 'react';
+import { getUnreadAnnouncementCount, READ_ANNOUNCEMENTS_KEY } from '../../data/announcements';
 import './Navigation.css';
 
 export interface NavItem {
@@ -26,28 +27,6 @@ export interface NavigationProps {
   items?: NavItem[];
   /** ナビゲーションクリック時のコールバック */
   onNavigate?: (path: string) => void;
-}
-
-/**
- * お知らせの未読数を取得
- */
-const READ_ANNOUNCEMENTS_KEY = 'music-bubble-v2-read-announcements';
-
-// お知らせIDリスト（InfoPageと同期）
-const ANNOUNCEMENT_IDS = [
-  'ann-2026-01-10',
-  'ann-2026-01-08',
-  'ann-2026-01-01',
-];
-
-function getUnreadAnnouncementCount(): number {
-  try {
-    const stored = localStorage.getItem(READ_ANNOUNCEMENTS_KEY);
-    const readIds: string[] = stored ? JSON.parse(stored) : [];
-    return ANNOUNCEMENT_IDS.filter(id => !readIds.includes(id)).length;
-  } catch {
-    return 0;
-  }
 }
 
 // デフォルトのナビゲーションアイテム

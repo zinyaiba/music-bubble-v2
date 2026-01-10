@@ -14,18 +14,9 @@ import { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
+import { announcements, getReadAnnouncementIds, READ_ANNOUNCEMENTS_KEY } from '../data/announcements'
+import type { Announcement } from '../data/announcements'
 import './InfoPage.css'
-
-/**
- * お知らせデータの型定義
- */
-interface Announcement {
-  id: string
-  title: string
-  content: string
-  date: string
-  type: 'update' | 'notice' | 'feature'
-}
 
 /**
  * 使い方セクションの型定義
@@ -36,45 +27,6 @@ interface HowToSection {
   content: string
   icon: string
 }
-
-/**
- * お知らせデータ（静的データ）
- * 実際の運用ではFirebaseから取得することも可能
- */
-const announcements: Announcement[] = [
-  {
-    id: 'ann-2026-01-11',
-    title: 'マロバブ ~Next Season~ リリース',
-    content: `マロバブを全面的にリニューアルしてより使いやすくしました！
-
-**主な改善点:**
-- レイアウトを一新・統一
-- サイト全体の重たい動作を改善
-- ブラウザ・端末による挙動の違いを軽減
-
-今後もアップデートを続けていきますので、よろしくお願いしますぅ！`,
-    date: '2026-01-11',
-    type: 'update',
-  },
-//   {
-//     id: 'ann-2026-01-05',
-//     title: 'タグ編集機能を追加',
-//     content: `タグの名前変更・削除機能を追加しました。
-
-// タグ一覧ページからタグを選択し、編集ボタンをタップすることで、タグの名前を変更したり、削除したりできます。`,
-//     date: '2026-01-05',
-//     type: 'feature',
-//   },
-  {
-    id: 'ann-2026-01-01',
-    title: '新年のご挨拶',
-    content: `明けましておめでとうございます！
-
-2026年もマロバブをよろしくお願いします！`,
-    date: '2026-01-01',
-    type: 'notice',
-  },
-]
 
 /**
  * 使い方セクションデータ
@@ -120,26 +72,6 @@ const howToSections: HowToSection[] = [
     icon: '🏷️',
   },
 ]
-
-/**
- * ローカルストレージのキー
- */
-const READ_ANNOUNCEMENTS_KEY = 'music-bubble-v2-read-announcements'
-
-/**
- * 既読お知らせIDを取得
- */
-function getReadAnnouncementIds(): string[] {
-  try {
-    const stored = localStorage.getItem(READ_ANNOUNCEMENTS_KEY)
-    if (stored) {
-      return JSON.parse(stored)
-    }
-  } catch (e) {
-    console.error('既読状態の取得に失敗しました:', e)
-  }
-  return []
-}
 
 /**
  * 既読お知らせIDを保存
