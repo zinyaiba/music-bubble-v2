@@ -16,13 +16,19 @@ export interface TagCardProps {
   onClick: () => void
   /** コンパクト表示モード */
   compact?: boolean
+  /** 関連する楽曲名（通常表示時に表示） */
+  songNames?: string[]
 }
 
 /**
  * TagCard コンポーネント
  * タグ情報をカード形式でコンパクトに表示
  */
-export function TagCard({ tag, onClick, compact = false }: TagCardProps) {
+export function TagCard({ tag, onClick, compact = false, songNames = [] }: TagCardProps) {
+  // 楽曲名を表示用にフォーマット（最大3曲まで表示）
+  const displaySongNames = songNames.slice(0, 3)
+  const remainingCount = songNames.length - displaySongNames.length
+
   return (
     <article
       className={`tag-card ${compact ? 'tag-card--compact' : ''}`}
@@ -55,8 +61,15 @@ export function TagCard({ tag, onClick, compact = false }: TagCardProps) {
         </div>
         <div className="tag-card__info">
           <h3 className="tag-card__name">#{tag.name}</h3>
-          {!compact && (
-            <p className="tag-card__count">{tag.songCount}曲</p>
+          {!compact && displaySongNames.length > 0 && (
+            <div className="tag-card__song-chips">
+              {displaySongNames.map((name, index) => (
+                <span key={index} className="tag-card__song-chip">{name}</span>
+              ))}
+              {remainingCount > 0 && (
+                <span className="tag-card__song-chip tag-card__song-chip--more">+{remainingCount}</span>
+              )}
+            </div>
           )}
         </div>
       </div>

@@ -265,6 +265,7 @@ export function TagListPage() {
         <div className="tag-list-page__content">
           <TagList
             tags={tags}
+            songs={effectiveSongs}
             onTagClick={handleTagClick}
             emptyMessage="タグが登録されていません"
             initialQuery={initialQuery}

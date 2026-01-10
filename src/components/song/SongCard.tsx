@@ -9,13 +9,16 @@
 import type { Song } from '../../types'
 import './SongCard.css'
 
+/** 表示モードの種類 */
+export type SongDisplayMode = 'compact' | 'artist' | 'lyricist' | 'composer' | 'arranger' | 'release' | 'all'
+
 export interface SongCardProps {
   /** 楽曲データ */
   song: Song
   /** クリック時のコールバック */
   onClick: () => void
-  /** コンパクト表示モード（曲名のみ） */
-  compact?: boolean
+  /** 表示モード */
+  displayMode?: SongDisplayMode
 }
 
 /**
@@ -50,13 +53,14 @@ function formatReleaseDate(releaseYear?: number, releaseDate?: string): string |
  * SongCard コンポーネント
  * 楽曲情報をカード形式でコンパクトに表示
  */
-export function SongCard({ song, onClick, compact = false }: SongCardProps) {
+export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) {
   const artists = formatArray(song.artists)
   const releaseDisplay = formatReleaseDate(song.releaseYear, song.releaseDate)
+  const isCompact = displayMode === 'compact'
 
   return (
     <article
-      className={`song-card ${compact ? 'song-card--compact' : ''}`}
+      className={`song-card ${isCompact ? 'song-card--compact' : ''}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -71,34 +75,39 @@ export function SongCard({ song, onClick, compact = false }: SongCardProps) {
       <div className="song-card__content">
         <h3 className="song-card__title">{song.title}</h3>
         
-        {!compact && (
+        {!isCompact && (
           <>
-            <p className="song-card__artist">{artists}</p>
+            {/* アーティスト名 */}
+            {(displayMode === 'artist' || displayMode === 'all') && (
+              <p className="song-card__artist">{artists}</p>
+            )}
             
-            {/* クレジット情報（編曲者を追加） */}
-            <div className="song-card__credits">
-              {song.lyricists && song.lyricists.length > 0 && (
-                <span className="song-card__credit">
-                  <span className="song-card__credit-label">作詞:</span>
-                  {formatArray(song.lyricists)}
-                </span>
-              )}
-              {song.composers && song.composers.length > 0 && (
-                <span className="song-card__credit">
-                  <span className="song-card__credit-label">作曲:</span>
-                  {formatArray(song.composers)}
-                </span>
-              )}
-              {song.arrangers && song.arrangers.length > 0 && (
-                <span className="song-card__credit">
-                  <span className="song-card__credit-label">編曲:</span>
-                  {formatArray(song.arrangers)}
-                </span>
-              )}
-            </div>
+            {/* クレジット情報 */}
+            {(displayMode === 'lyricist' || displayMode === 'composer' || displayMode === 'arranger' || displayMode === 'all') && (
+              <div className="song-card__credits">
+                {(displayMode === 'lyricist' || displayMode === 'all') && song.lyricists && song.lyricists.length > 0 && (
+                  <span className="song-card__credit">
+                    <span className="song-card__credit-label">作詞:</span>
+                    {formatArray(song.lyricists)}
+                  </span>
+                )}
+                {(displayMode === 'composer' || displayMode === 'all') && song.composers && song.composers.length > 0 && (
+                  <span className="song-card__credit">
+                    <span className="song-card__credit-label">作曲:</span>
+                    {formatArray(song.composers)}
+                  </span>
+                )}
+                {(displayMode === 'arranger' || displayMode === 'all') && song.arrangers && song.arrangers.length > 0 && (
+                  <span className="song-card__credit">
+                    <span className="song-card__credit-label">編曲:</span>
+                    {formatArray(song.arrangers)}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* 発売日 */}
-            {releaseDisplay && (
+            {(displayMode === 'release' || displayMode === 'all') && releaseDisplay && (
               <div className="song-card__release">
                 <span className="song-card__release-label">発売:</span>
                 {releaseDisplay}

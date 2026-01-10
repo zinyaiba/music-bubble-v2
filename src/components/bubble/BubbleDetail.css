@@ -148,6 +148,17 @@
   outline-offset: 2px;
 }
 
+/* 埋め込みコンテンツありの場合 */
+.bubble-detail-go-to-detail.has-embed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.bubble-detail-go-to-detail.has-embed:hover {
+  background: #4caf50;
+  color: white;
+}
+
 /* 楽曲詳細ページへの遷移ボタン（リスト内） */
 .bubble-detail-go-to-song {
   width: 32px;
@@ -172,6 +183,17 @@
 
 .bubble-detail-go-to-song:hover {
   background: var(--color-primary);
+  color: white;
+}
+
+/* 埋め込みコンテンツありの場合 */
+.bubble-detail-go-to-song.has-embed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.bubble-detail-go-to-song.has-embed:hover {
+  background: #4caf50;
   color: white;
 }
 

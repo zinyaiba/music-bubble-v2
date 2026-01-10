@@ -223,17 +223,24 @@ export const BubbleDetail: React.FC<BubbleDetailProps> = React.memo(({
             {/* 楽曲の場合は詳細ページへの遷移ボタンを表示 */}
             {bubble.type === 'song' && currentSong && (
               <button
-                className="bubble-detail-go-to-detail"
+                className={`bubble-detail-go-to-detail ${currentSong.musicServiceEmbed ? 'has-embed' : ''}`}
                 onClick={(e) => handleGoToSongDetail(currentSong.id, e)}
-                aria-label="楽曲詳細ページへ"
+                aria-label={currentSong.musicServiceEmbed ? '楽曲詳細ページへ（試聴あり）' : '楽曲詳細ページへ'}
                 type="button"
-                title="楽曲詳細ページへ"
+                title={currentSong.musicServiceEmbed ? '楽曲詳細ページへ（試聴あり）' : '楽曲詳細ページへ'}
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
+                {currentSong.musicServiceEmbed ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                )}
               </button>
             )}
             <button
@@ -314,17 +321,24 @@ export const BubbleDetail: React.FC<BubbleDetailProps> = React.memo(({
                         </div>
                         {item.song && (
                           <button
-                            className="bubble-detail-go-to-song"
+                            className={`bubble-detail-go-to-song ${item.song.musicServiceEmbed ? 'has-embed' : ''}`}
                             onClick={(e) => handleGoToSongDetail(item.song!.id, e)}
-                            aria-label="楽曲詳細ページへ"
+                            aria-label={item.song.musicServiceEmbed ? '楽曲詳細ページへ（試聴あり）' : '楽曲詳細ページへ'}
                             type="button"
-                            title="楽曲詳細ページへ"
+                            title={item.song.musicServiceEmbed ? '楽曲詳細ページへ（試聴あり）' : '楽曲詳細ページへ'}
                           >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                              <polyline points="15 3 21 3 21 9" />
-                              <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
+                            {item.song.musicServiceEmbed ? (
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                              </svg>
+                            ) : (
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                              </svg>
+                            )}
                           </button>
                         )}
                       </button>
@@ -356,17 +370,24 @@ export const BubbleDetail: React.FC<BubbleDetailProps> = React.memo(({
                         <span className="bubble-detail-item-name">{item.name}</span>
                         {item.song && (
                           <button
-                            className="bubble-detail-go-to-song"
+                            className={`bubble-detail-go-to-song ${item.song.musicServiceEmbed ? 'has-embed' : ''}`}
                             onClick={(e) => handleGoToSongDetail(item.song!.id, e)}
-                            aria-label="楽曲詳細ページへ"
+                            aria-label={item.song.musicServiceEmbed ? '楽曲詳細ページへ（試聴あり）' : '楽曲詳細ページへ'}
                             type="button"
-                            title="楽曲詳細ページへ"
+                            title={item.song.musicServiceEmbed ? '楽曲詳細ページへ（試聴あり）' : '楽曲詳細ページへ'}
                           >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                              <polyline points="15 3 21 3 21 9" />
-                              <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
+                            {item.song.musicServiceEmbed ? (
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                              </svg>
+                            ) : (
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                              </svg>
+                            )}
                           </button>
                         )}
                       </button>

@@ -301,16 +301,16 @@
 .tag-registration-page__song-item-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-2xs);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
 }
 
 .tag-registration-page__song-item-chip {
   display: inline-block;
-  padding: var(--spacing-2xs) var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-xs);
-  color: var(--color-primary);
-  background: var(--color-primary-alpha);
+  color: #4a7c59;
+  background: #e8f5e9;
   border-radius: var(--border-radius-full);
   white-space: nowrap;
 }

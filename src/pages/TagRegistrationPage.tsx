@@ -388,6 +388,8 @@ export function TagRegistrationPage() {
                     <option value="oldest">古い曲順</option>
                     <option value="updated">更新順</option>
                     <option value="alphabetical">五十音順</option>
+                    <option value="artist">栗林みな実を優先</option>
+                    <option value="minami">Minamiを優先</option>
                   </select>
                   <button
                     type="button"

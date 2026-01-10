@@ -13,7 +13,19 @@ import { searchSongs } from '../../services/songSearchService'
 import { sortSongs } from '../../utils/songSorting'
 import type { SongSortType } from '../../utils/songSorting'
 import { SongCard } from './SongCard'
+import type { SongDisplayMode } from './SongCard'
 import './SongList.css'
+
+/** 表示モードの定義 */
+const DISPLAY_MODES: { mode: SongDisplayMode; icon: string; label: string }[] = [
+  { mode: 'compact', icon: '☰', label: '簡易表示' },
+  { mode: 'artist', icon: '🎤', label: 'アーティスト' },
+  { mode: 'lyricist', icon: '✍', label: '作詞' },
+  { mode: 'composer', icon: '🎵', label: '作曲' },
+  { mode: 'arranger', icon: '🎹', label: '編曲' },
+  { mode: 'release', icon: '📅', label: '発売日' },
+  { mode: 'all', icon: '▤', label: 'すべて表示' },
+]
 
 export interface SongListProps {
   /** 楽曲データ配列 */
@@ -28,10 +40,10 @@ export interface SongListProps {
   initialTitleOnly?: boolean
   /** 初期並び替え */
   initialSortBy?: SongSortType
-  /** 初期コンパクト表示フラグ */
-  initialCompact?: boolean
+  /** 初期表示モード */
+  initialDisplayMode?: SongDisplayMode
   /** 検索状態変更時のコールバック */
-  onSearchStateChange?: (query: string, titleOnly: boolean, sortBy: SongSortType, compact: boolean) => void
+  onSearchStateChange?: (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode) => void
 }
 
 /**
@@ -45,18 +57,18 @@ export function SongList({
   initialQuery = '',
   initialTitleOnly = false,
   initialSortBy = 'newest',
-  initialCompact = false,
+  initialDisplayMode = 'all',
   onSearchStateChange,
 }: SongListProps) {
   const [query, setQuery] = useState(initialQuery)
   const [titleOnly, setTitleOnly] = useState(initialTitleOnly)
   const [sortBy, setSortBy] = useState<SongSortType>(initialSortBy)
-  const [isCompactView, setIsCompactView] = useState(initialCompact)
+  const [displayMode, setDisplayMode] = useState<SongDisplayMode>(initialDisplayMode)
 
   // 検索状態が変更されたら親に通知
   useEffect(() => {
-    onSearchStateChange?.(query, titleOnly, sortBy, isCompactView)
-  }, [query, titleOnly, sortBy, isCompactView, onSearchStateChange])
+    onSearchStateChange?.(query, titleOnly, sortBy, displayMode)
+  }, [query, titleOnly, sortBy, displayMode, onSearchStateChange])
 
   // 検索・並び替え結果をメモ化
   const filteredAndSortedSongs = useMemo(() => {
@@ -93,10 +105,17 @@ export function SongList({
     []
   )
 
-  // 表示モードの切り替え
-  const handleToggleCompactView = useCallback(() => {
-    setIsCompactView((prev) => !prev)
+  // 表示モードの切り替え（次のモードへ）
+  const handleCycleDisplayMode = useCallback(() => {
+    setDisplayMode((prev) => {
+      const currentIndex = DISPLAY_MODES.findIndex((m) => m.mode === prev)
+      const nextIndex = (currentIndex + 1) % DISPLAY_MODES.length
+      return DISPLAY_MODES[nextIndex].mode
+    })
   }, [])
+
+  // 現在の表示モード情報を取得
+  const currentModeInfo = DISPLAY_MODES.find((m) => m.mode === displayMode) || DISPLAY_MODES[0]
 
   return (
     <div className="song-list">
@@ -177,15 +196,17 @@ export function SongList({
             <option value="oldest">古い曲順</option>
             <option value="updated">更新順</option>
             <option value="alphabetical">五十音順</option>
+            <option value="artist">栗林みな実を優先</option>
+            <option value="minami">Minamiを優先</option>
           </select>
           <button
             type="button"
-            className={`song-list__view-toggle ${isCompactView ? 'song-list__view-toggle--active' : ''}`}
-            onClick={handleToggleCompactView}
-            aria-label={isCompactView ? '詳細表示に切り替え' : '簡易表示に切り替え'}
-            title={isCompactView ? '詳細表示' : '簡易表示'}
+            className="song-list__view-toggle"
+            onClick={handleCycleDisplayMode}
+            aria-label={`表示モード: ${currentModeInfo.label}`}
+            title={currentModeInfo.label}
           >
-            {isCompactView ? '☰' : '▤'}
+            {currentModeInfo.icon}
           </button>
         </div>
       </div>
@@ -198,7 +219,7 @@ export function SongList({
               key={song.id}
               song={song}
               onClick={() => onSongClick(song.id)}
-              compact={isCompactView}
+              displayMode={displayMode}
             />
           ))
         ) : (

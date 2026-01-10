@@ -89,6 +89,35 @@
   color: var(--color-text-secondary);
 }
 
+/* 楽曲名チップコンテナ */
+.tag-card__song-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}
+
+/* 楽曲名チップ */
+.tag-card__song-chip {
+  display: inline-block;
+  padding: 2px var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: #7c5a8a;
+  background: #f3e8f7;
+  border-radius: var(--border-radius-full);
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 残り曲数チップ */
+.tag-card__song-chip--more {
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  font-weight: var(--font-weight-medium);
+}
+
 /* メタ情報 */
 .tag-card__meta {
   flex-shrink: 0;

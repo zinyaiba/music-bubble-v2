@@ -9,7 +9,7 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import type { Tag } from '../../types'
+import type { Tag, Song } from '../../types'
 import { filterAndSortTags } from '../../services/tagService'
 import type { TagSortOrder } from '../../services/tagService'
 import { TagCard } from './TagCard'
@@ -18,6 +18,8 @@ import './TagList.css'
 export interface TagListProps {
   /** タグデータ配列 */
   tags: Tag[]
+  /** 楽曲データ配列（楽曲名表示用） */
+  songs?: Song[]
   /** タグクリック時のコールバック */
   onTagClick: (tagId: string) => void
   /** 空の場合のメッセージ */
@@ -38,6 +40,7 @@ export interface TagListProps {
  */
 export function TagList({
   tags,
+  songs = [],
   onTagClick,
   emptyMessage = 'タグが見つかりません',
   initialQuery = '',
@@ -58,6 +61,25 @@ export function TagList({
   const filteredAndSortedTags = useMemo(() => {
     return filterAndSortTags(tags, { query, sortOrder: sortBy })
   }, [tags, query, sortBy])
+
+  // 楽曲IDから楽曲名へのマップを作成
+  const songNameMap = useMemo(() => {
+    const map = new Map<string, string>()
+    songs.forEach((song) => {
+      map.set(song.id, song.title)
+    })
+    return map
+  }, [songs])
+
+  // タグIDから楽曲名配列を取得する関数
+  const getSongNamesForTag = useCallback(
+    (tag: Tag): string[] => {
+      return tag.songIds
+        .map((songId) => songNameMap.get(songId))
+        .filter((name): name is string => name !== undefined)
+    },
+    [songNameMap]
+  )
 
   // 検索クエリの変更ハンドラ
   const handleQueryChange = useCallback(
@@ -176,6 +198,7 @@ export function TagList({
               tag={tag}
               onClick={() => onTagClick(tag.id)}
               compact={isCompactView}
+              songNames={!isCompactView ? getSongNamesForTag(tag) : undefined}
             />
           ))
         ) : (

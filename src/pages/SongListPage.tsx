@@ -11,6 +11,7 @@
 import { useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { SongSortType } from '../utils/songSorting'
+import type { SongDisplayMode } from '../components/song/SongCard'
 import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -31,7 +32,7 @@ export function SongListPage() {
   const initialQuery = searchParams.get('q') || ''
   const initialTitleOnly = searchParams.get('titleOnly') === 'true'
   const initialSortBy = (searchParams.get('sort') as SongSortType) || 'newest'
-  const initialCompact = searchParams.get('compact') === 'true'
+  const initialDisplayMode = (searchParams.get('display') as SongDisplayMode) || 'all'
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
@@ -46,12 +47,12 @@ export function SongListPage() {
 
   // 検索状態の変更をURLに反映
   const handleSearchStateChange = useCallback(
-    (query: string, titleOnly: boolean, sortBy: SongSortType, compact: boolean) => {
+    (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode) => {
       const params = new URLSearchParams()
       if (query) params.set('q', query)
       if (titleOnly) params.set('titleOnly', 'true')
       if (sortBy !== 'newest') params.set('sort', sortBy)
-      if (compact) params.set('compact', 'true')
+      if (displayMode !== 'all') params.set('display', displayMode)
       setSearchParams(params, { replace: true })
     },
     [setSearchParams]
@@ -112,7 +113,7 @@ export function SongListPage() {
             initialQuery={initialQuery}
             initialTitleOnly={initialTitleOnly}
             initialSortBy={initialSortBy}
-            initialCompact={initialCompact}
+            initialDisplayMode={initialDisplayMode}
             onSearchStateChange={handleSearchStateChange}
           />
         </div>
