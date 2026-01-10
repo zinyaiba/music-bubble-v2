@@ -7,14 +7,14 @@
  * - 1.5: ローディング状態の表示
  * - 3.1: アーティストフィルタ表示（インライン）
  * - 4.1: カテゴリフィルタ表示（楽曲・作詞・作曲・編曲・タグ、複数選択可能）
+ * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { Song, Bubble as BubbleType } from '../types'
-import { firebaseService } from '../services/firebaseService'
+import type { Bubble as BubbleType } from '../types'
 import { cacheService } from '../services/cacheService'
-import { useFilter } from '../hooks/useFilter'
+import { useFilter, useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -27,10 +27,8 @@ import './TopPage.css'
 export function TopPage() {
   const navigate = useNavigate()
 
-  // 楽曲データの状態
-  const [songs, setSongs] = useState<Song[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // 楽曲データの取得（エラーハンドリング統合）
+  const { songs, isLoading, error, isOffline, retry } = useDataFetch()
 
   // アニメーション状態
   const [isPaused, setIsPaused] = useState(() => cacheService.getAnimationPaused())
@@ -52,8 +50,8 @@ export function TopPage() {
   // キャンバスサイズを計算
   useEffect(() => {
     const updateCanvasSize = () => {
-      // ヘッダー、フィルタバー、ナビゲーションの高さを考慮
-      const headerHeight = 56
+      // TOPページ用のリッチヘッダー、フィルタバー、ナビゲーションの高さを考慮
+      const headerHeight = 90 // TOPページ用のリッチヘッダー高さ
       const filterBarHeight = 100 // インラインフィルタバーの高さ
       const navigationHeight = 64
       const padding = 16
@@ -67,43 +65,6 @@ export function TopPage() {
     updateCanvasSize()
     window.addEventListener('resize', updateCanvasSize)
     return () => window.removeEventListener('resize', updateCanvasSize)
-  }, [])
-
-  // 楽曲データを取得
-  useEffect(() => {
-    const loadSongs = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        // まずキャッシュから取得を試みる
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setIsLoading(false)
-        }
-
-        // Firebaseから最新データを取得
-        const fetchedSongs = await firebaseService.getAllSongs()
-        setSongs(fetchedSongs)
-        cacheService.cacheSongs(fetchedSongs)
-        setIsLoading(false)
-      } catch (err) {
-        console.error('楽曲データの取得に失敗しました:', err)
-
-        // キャッシュがあればそれを使用
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setError('オフラインモード: キャッシュデータを表示しています')
-        } else {
-          setError('楽曲データの取得に失敗しました。再試行してください。')
-        }
-        setIsLoading(false)
-      }
-    }
-
-    loadSongs()
   }, [])
 
   // 一時停止/再開のトグル
@@ -220,16 +181,16 @@ export function TopPage() {
     [navigate]
   )
 
-  // リトライ
-  const handleRetry = useCallback(() => {
-    window.location.reload()
-  }, [])
-
   // ローディング中
   if (isLoading && songs.length === 0) {
     return (
       <div className="top-page">
-        <Header title="🫧 Music Bubble Explorer" />
+        <Header 
+          title="栗林みな実 Marron Bubbles ~Next Season~"
+          subtitle="栗家族みんなでつくる楽曲情報サイト"
+          subtitle2="楽曲の新たな魅力を発見・登録してみましょう"
+          isTopPage
+        />
         <main className="top-page-main">
           <LoadingSpinner
             size="large"
@@ -244,7 +205,12 @@ export function TopPage() {
 
   return (
     <div className="top-page">
-      <Header title="🫧 Music Bubble Explorer" />
+      <Header 
+        title="栗林みな実 Marron Bubbles ~Next Season~"
+        subtitle="栗家族みんなでつくる楽曲情報サイト"
+        subtitle2="楽曲の新たな魅力を発見・登録してみましょう"
+        isTopPage
+      />
 
       <main className="top-page-main">
         {/* エラーメッセージ */}
@@ -252,8 +218,8 @@ export function TopPage() {
           <div className="top-page-error">
             <ErrorMessage
               message={error}
-              type={error.includes('オフライン') ? 'warning' : 'error'}
-              onRetry={error.includes('オフライン') ? undefined : handleRetry}
+              type={isOffline || error.includes('オフライン') ? 'warning' : 'error'}
+              onRetry={isOffline || error.includes('オフライン') ? undefined : retry}
             />
           </div>
         )}

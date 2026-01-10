@@ -9,15 +9,15 @@
  * - 6.4: 各タグの楽曲数を表示すること
  * - 6.5: タグ情報をテキストとしてコピーするSNS共有機能を提供すること
  * - 6.6: デフォルトでタグをアルファベット順にソートし、楽曲数でのソートオプションも提供すること
+ * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { Song } from '../types'
 import type { TagSortOrder } from '../services/tagService'
-import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { generateTagsFromSongs, getSongsByTagId, getTagNameFromId, tagService } from '../services/tagService'
+import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -41,16 +41,20 @@ export function TagListPage() {
   const initialCompact = searchParams.get('compact') === 'true'
   const selectedTagId = searchParams.get('tag') || null
 
-  // データの状態
-  const [songs, setSongs] = useState<Song[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // 楽曲データの取得（エラーハンドリング統合）
+  const { songs, isLoading, error, isOffline, retry } = useDataFetch()
   const [showEditDialog, setShowEditDialog] = useState(false)
+  
+  // localSongsの更新用state（タグ編集時のローカル更新用）
+  const [localSongsOverride, setLocalSongsOverride] = useState<typeof songs | null>(null)
+  
+  // 実際に使用するsongs（オーバーライドがあればそちらを使用、なければfetchしたsongs）
+  const effectiveSongs = localSongsOverride ?? songs
 
   // 楽曲データからタグを生成
   const tags = useMemo(() => {
-    return generateTagsFromSongs(songs)
-  }, [songs])
+    return generateTagsFromSongs(effectiveSongs)
+  }, [effectiveSongs])
 
   // 既存のタグ名一覧（編集ダイアログ用）
   const existingTagNames = useMemo(() => {
@@ -66,45 +70,8 @@ export function TagListPage() {
   // 選択されたタグに関連する楽曲
   const relatedSongs = useMemo(() => {
     if (!selectedTagId) return []
-    return getSongsByTagId(songs, selectedTagId)
-  }, [songs, selectedTagId])
-
-  // 楽曲データを取得
-  useEffect(() => {
-    const loadSongs = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        // まずキャッシュから取得を試みる
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setIsLoading(false)
-        }
-
-        // Firebaseから最新データを取得
-        const fetchedSongs = await firebaseService.getAllSongs()
-        setSongs(fetchedSongs)
-        cacheService.cacheSongs(fetchedSongs)
-        setIsLoading(false)
-      } catch (err) {
-        console.error('楽曲データの取得に失敗しました:', err)
-
-        // キャッシュがあればそれを使用
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setError('オフラインモード: キャッシュデータを表示しています')
-        } else {
-          setError('データの取得に失敗しました。再試行してください。')
-        }
-        setIsLoading(false)
-      }
-    }
-
-    loadSongs()
-  }, [])
+    return getSongsByTagId(effectiveSongs, selectedTagId)
+  }, [effectiveSongs, selectedTagId])
 
   // タグクリック時の処理
   const handleTagClick = useCallback(
@@ -151,70 +118,54 @@ export function TagListPage() {
   // タグ名変更
   const handleRenameTag = useCallback(
     async (oldName: string, newName: string) => {
-      await tagService.renameTag(oldName, newName, songs)
+      await tagService.renameTag(oldName, newName, effectiveSongs)
       
       // ローカルの楽曲データを更新
-      setSongs((prevSongs) =>
-        prevSongs.map((song) => {
-          const currentTags = song.tags || []
-          if (!currentTags.includes(oldName)) return song
-          
-          // 古いタグを削除し、新しいタグを追加（重複を避ける）
-          const newTags = currentTags
-            .filter((tag) => tag !== oldName)
-            .concat(currentTags.includes(newName) ? [] : [newName])
-          return { ...song, tags: newTags }
-        })
-      )
-
-      // キャッシュも更新
-      const updatedSongs = songs.map((song) => {
+      const updatedSongs = effectiveSongs.map((song) => {
         const currentTags = song.tags || []
         if (!currentTags.includes(oldName)) return song
         
+        // 古いタグを削除し、新しいタグを追加（重複を避ける）
         const newTags = currentTags
           .filter((tag) => tag !== oldName)
           .concat(currentTags.includes(newName) ? [] : [newName])
         return { ...song, tags: newTags }
       })
+      
+      setLocalSongsOverride(updatedSongs)
+
+      // キャッシュも更新
       cacheService.cacheSongs(updatedSongs)
 
       // タグ詳細から戻る（タグが変更されたため）
       handleBackFromDetail()
     },
-    [songs, handleBackFromDetail]
+    [effectiveSongs, handleBackFromDetail]
   )
 
   // タグ削除
   const handleDeleteTag = useCallback(
     async (tagName: string) => {
-      await tagService.deleteTag(tagName, songs)
+      await tagService.deleteTag(tagName, effectiveSongs)
       
       // ローカルの楽曲データを更新
-      setSongs((prevSongs) =>
-        prevSongs.map((song) => {
-          const currentTags = song.tags || []
-          if (!currentTags.includes(tagName)) return song
-          
-          const newTags = currentTags.filter((tag) => tag !== tagName)
-          return { ...song, tags: newTags }
-        })
-      )
-
-      // キャッシュも更新
-      const updatedSongs = songs.map((song) => {
+      const updatedSongs = effectiveSongs.map((song) => {
         const currentTags = song.tags || []
         if (!currentTags.includes(tagName)) return song
         
         const newTags = currentTags.filter((tag) => tag !== tagName)
         return { ...song, tags: newTags }
       })
+      
+      setLocalSongsOverride(updatedSongs)
+
+      // キャッシュも更新
       cacheService.cacheSongs(updatedSongs)
 
       // タグ詳細から戻る（タグが削除されたため）
       handleBackFromDetail()
     },
-    [songs, handleBackFromDetail]
+    [effectiveSongs, handleBackFromDetail]
   )
 
   // 検索状態の変更をURLに反映
@@ -239,11 +190,6 @@ export function TagListPage() {
     },
     [navigate]
   )
-
-  // リトライ
-  const handleRetry = useCallback(() => {
-    window.location.reload()
-  }, [])
 
   // ローディング中
   if (isLoading && songs.length === 0) {
@@ -309,8 +255,8 @@ export function TagListPage() {
           <div className="tag-list-page__error">
             <ErrorMessage
               message={error}
-              type={error.includes('オフライン') ? 'warning' : 'error'}
-              onRetry={error.includes('オフライン') ? undefined : handleRetry}
+              type={isOffline || error.includes('オフライン') ? 'warning' : 'error'}
+              onRetry={isOffline || error.includes('オフライン') ? undefined : retry}
             />
           </div>
         )}

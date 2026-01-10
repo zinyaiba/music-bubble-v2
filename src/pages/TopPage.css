@@ -17,8 +17,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* ヘッダーとナビゲーションの高さを考慮 */
-  padding-top: var(--header-height);
+  /* TOPページ用のリッチヘッダー高さを考慮 */
+  padding-top: var(--header-height-top);
   padding-bottom: var(--navigation-height);
   position: relative;
   overflow: hidden;
@@ -27,7 +27,7 @@
 /* セーフエリア対応 */
 @supports (padding-top: env(safe-area-inset-top)) {
   .top-page-main {
-    padding-top: calc(var(--header-height) + var(--safe-area-top));
+    padding-top: calc(var(--header-height-top) + var(--safe-area-top));
     padding-bottom: calc(var(--navigation-height) + var(--safe-area-bottom));
   }
 }
@@ -35,7 +35,7 @@
 /* エラーメッセージ */
 .top-page-error {
   position: absolute;
-  top: calc(var(--header-height) + var(--spacing-sm));
+  top: calc(var(--header-height-top) + var(--spacing-sm));
   left: var(--spacing-sm);
   right: var(--spacing-sm);
   z-index: var(--z-index-dropdown);
@@ -43,14 +43,14 @@
 
 @supports (padding-top: env(safe-area-inset-top)) {
   .top-page-error {
-    top: calc(var(--header-height) + var(--safe-area-top) + var(--spacing-sm));
+    top: calc(var(--header-height-top) + var(--safe-area-top) + var(--spacing-sm));
   }
 }
 
 /* インラインフィルタバー */
 .top-page-filter-bar {
   position: absolute;
-  top: calc(var(--header-height) + var(--spacing-sm));
+  top: calc(var(--header-height-top) + var(--spacing-sm));
   left: var(--spacing-sm);
   right: var(--spacing-sm);
   z-index: var(--z-index-dropdown);
@@ -58,14 +58,14 @@
 
 @supports (padding-top: env(safe-area-inset-top)) {
   .top-page-filter-bar {
-    top: calc(var(--header-height) + var(--safe-area-top) + var(--spacing-sm));
+    top: calc(var(--header-height-top) + var(--safe-area-top) + var(--spacing-sm));
   }
 }
 
 /* フィルタパネル（旧） */
 .top-page-filter {
   position: absolute;
-  top: calc(var(--header-height) + var(--spacing-sm));
+  top: calc(var(--header-height-top) + var(--spacing-sm));
   left: var(--spacing-sm);
   right: var(--spacing-sm);
   z-index: var(--z-index-dropdown);
@@ -73,7 +73,7 @@
 
 @supports (padding-top: env(safe-area-inset-top)) {
   .top-page-filter {
-    top: calc(var(--header-height) + var(--safe-area-top) + var(--spacing-sm));
+    top: calc(var(--header-height-top) + var(--safe-area-top) + var(--spacing-sm));
   }
 }
 

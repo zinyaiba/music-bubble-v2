@@ -17,8 +17,8 @@ import './TagDetail.css'
  * ポスト内容を生成
  * フォーマット:
  * 私のおすすめタグこちら
- * 🏷️タグ名🫧
- * ＃マロバブ　#栗林みな実
+ * タグ名
+ * #マロバブ #栗林みな実
  * タグ詳細ページへのURL
  */
 function generatePostContent(tagName: string, _songs: Song[], tagId: string): string {

@@ -1,0 +1,306 @@
+/**
+ * InfoPage スタイル
+ * お知らせ・使い方ページ
+ *
+ * Requirements:
+ * - 11.1: 統一されたデザインテーマ
+ * - 11.2: 一貫したスペーシング、タイポグラフィ、カラースキーム
+ */
+
+.info-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--color-background);
+}
+
+.info-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: calc(var(--navigation-height) + var(--safe-area-bottom));
+  overflow-y: auto;
+}
+
+/* タブ切り替え */
+.info-page__tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+}
+
+.info-page__tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: transparent;
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.info-page__tab:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.info-page__tab--active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.info-page__tab--active:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.info-page__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--spacing-xs);
+  background-color: var(--color-error);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: white;
+}
+
+.info-page__tab--active .info-page__badge {
+  background-color: white;
+  color: var(--color-primary);
+}
+
+/* コンテンツエリア */
+.info-page__content {
+  flex: 1;
+  padding: var(--spacing-md);
+}
+
+/* アクションボタン */
+.info-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--spacing-md);
+}
+
+.info-page__mark-all-read {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: transparent;
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.info-page__mark-all-read:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 使い方リスト */
+.info-page__howto-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.info-page__howto-item {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.info-page__howto-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary-alpha);
+  border-radius: var(--border-radius-md);
+  font-size: 24px;
+}
+
+.info-page__howto-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-page__howto-title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.info-page__howto-text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.info-page__howto-text strong {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+/* お知らせリスト */
+.info-page__announcement-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.info-page__announcement-item {
+  padding: var(--spacing-md);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-left: 3px solid var(--color-primary);
+}
+
+.info-page__announcement-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.info-page__announcement-item--read {
+  border-left-color: var(--color-border);
+  opacity: 0.8;
+}
+
+.info-page__announcement-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.info-page__announcement-type {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.info-page__announcement-type--update {
+  background-color: var(--color-info-light);
+  color: #1e40af;
+}
+
+.info-page__announcement-type--feature {
+  background-color: var(--color-success-light);
+  color: #065f46;
+}
+
+.info-page__announcement-type--notice {
+  background-color: var(--color-warning-light);
+  color: #92400e;
+}
+
+.info-page__announcement-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.info-page__unread-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-primary);
+  border-radius: var(--border-radius-full);
+  margin-left: auto;
+}
+
+.info-page__announcement-title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.info-page__announcement-content {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.info-page__announcement-content strong {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.info-page__announcement-content a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.info-page__announcement-content a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* レスポンシブ対応 */
+@media (min-width: 768px) {
+  .info-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  .info-page__tabs {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .info-page__tab {
+    min-width: 120px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    white-space: nowrap;
+  }
+
+  .info-page__howto-item {
+    padding: var(--spacing-lg);
+  }
+
+  .info-page__howto-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .info-page__howto-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .info-page__announcement-item {
+    padding: var(--spacing-lg);
+  }
+
+  .info-page__announcement-title {
+    font-size: var(--font-size-lg);
+  }
+}

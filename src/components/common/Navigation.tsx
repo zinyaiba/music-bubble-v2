@@ -5,7 +5,7 @@
  * Requirements: 11.4, 14.1, 14.2
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import './Navigation.css';
 
 export interface NavItem {
@@ -15,6 +15,8 @@ export interface NavItem {
   label: string;
   /** アイコン */
   icon: React.ReactNode;
+  /** バッジ（未読数など） */
+  badge?: number;
 }
 
 export interface NavigationProps {
@@ -24,6 +26,28 @@ export interface NavigationProps {
   items?: NavItem[];
   /** ナビゲーションクリック時のコールバック */
   onNavigate?: (path: string) => void;
+}
+
+/**
+ * お知らせの未読数を取得
+ */
+const READ_ANNOUNCEMENTS_KEY = 'music-bubble-v2-read-announcements';
+
+// お知らせIDリスト（InfoPageと同期）
+const ANNOUNCEMENT_IDS = [
+  'ann-2026-01-10',
+  'ann-2026-01-08',
+  'ann-2026-01-01',
+];
+
+function getUnreadAnnouncementCount(): number {
+  try {
+    const stored = localStorage.getItem(READ_ANNOUNCEMENTS_KEY);
+    const readIds: string[] = stored ? JSON.parse(stored) : [];
+    return ANNOUNCEMENT_IDS.filter(id => !readIds.includes(id)).length;
+  } catch {
+    return 0;
+  }
 }
 
 // デフォルトのナビゲーションアイテム
@@ -51,7 +75,7 @@ const defaultNavItems: NavItem[] = [
   },
   {
     path: '/tags',
-    label: 'タグ',
+    label: 'タグ一覧',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
@@ -87,6 +111,34 @@ export function Navigation({
   items = defaultNavItems,
   onNavigate,
 }: NavigationProps) {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // 未読数を取得・更新
+  useEffect(() => {
+    const updateUnreadCount = () => {
+      setUnreadCount(getUnreadAnnouncementCount());
+    };
+
+    updateUnreadCount();
+
+    // ストレージの変更を監視
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === READ_ANNOUNCEMENTS_KEY) {
+        updateUnreadCount();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 定期的に更新（同一タブ内での変更を検知）
+    const interval = setInterval(updateUnreadCount, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
   const handleClick = useCallback(
     (path: string) => {
       if (onNavigate) {
@@ -104,10 +156,18 @@ export function Navigation({
     return currentPath.startsWith(path);
   };
 
+  // アイテムにバッジを追加
+  const itemsWithBadge = items.map(item => {
+    if (item.path === '/info' && unreadCount > 0) {
+      return { ...item, badge: unreadCount };
+    }
+    return item;
+  });
+
   return (
     <nav className="navigation" role="navigation" aria-label="メインナビゲーション">
       <ul className="navigation-list">
-        {items.map((item) => (
+        {itemsWithBadge.map((item) => (
           <li key={item.path} className="navigation-item">
             <button
               type="button"
@@ -115,7 +175,14 @@ export function Navigation({
               onClick={() => handleClick(item.path)}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
-              <span className="navigation-icon">{item.icon}</span>
+              <span className="navigation-icon">
+                {item.icon}
+                {item.badge && item.badge > 0 && (
+                  <span className="navigation-badge" aria-label={`${item.badge}件の未読`}>
+                    {item.badge > 9 ? '9+' : item.badge}
+                  </span>
+                )}
+              </span>
               <span className="navigation-label">{item.label}</span>
             </button>
           </li>

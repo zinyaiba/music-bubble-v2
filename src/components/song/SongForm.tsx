@@ -283,73 +283,70 @@ export function SongForm({
   /**
    * フォーム送信ハンドラ
    */
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault()
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
 
-      // 全フィールドをtouchedに
-      const allTouched: Record<string, boolean> = {}
-      Object.keys(formData).forEach((key) => {
-        allTouched[key] = true
-      })
-      setTouched(allTouched)
+    // 全フィールドをtouchedに
+    const allTouched: Record<string, boolean> = {}
+    Object.keys(formData).forEach((key) => {
+      allTouched[key] = true
+    })
+    setTouched(allTouched)
 
-      if (!validate()) {
-        return
-      }
+    if (!validate()) {
+      return
+    }
 
-      // Songオブジェクトに変換
-      const songData: Partial<Song> = {
-        title: formData.title.trim(),
-        lyricists: stringToArray(formData.lyricists),
-        composers: stringToArray(formData.composers),
-        arrangers: stringToArray(formData.arrangers),
-      }
+    // Songオブジェクトに変換
+    const songData: Partial<Song> = {
+      title: formData.title.trim(),
+      lyricists: stringToArray(formData.lyricists),
+      composers: stringToArray(formData.composers),
+      arrangers: stringToArray(formData.arrangers),
+    }
 
-      // オプショナルフィールド
-      const artists = stringToArray(formData.artists)
-      if (artists.length > 0) songData.artists = artists
+    // オプショナルフィールド
+    const artists = stringToArray(formData.artists)
+    if (artists.length > 0) songData.artists = artists
 
-      if (formData.releaseYear) {
-        songData.releaseYear = parseInt(formData.releaseYear, 10)
-      }
+    if (formData.releaseYear) {
+      songData.releaseYear = parseInt(formData.releaseYear, 10)
+    }
 
-      // 発売月日をMMDD形式で保存
-      const releaseDate = formatReleaseDate(formData.releaseMonth, formData.releaseDay)
-      if (releaseDate) {
-        songData.releaseDate = releaseDate
-      }
+    // 発売月日をMMDD形式で保存
+    const releaseDate = formatReleaseDate(formData.releaseMonth, formData.releaseDay)
+    if (releaseDate) {
+      songData.releaseDate = releaseDate
+    }
 
-      if (formData.singleName.trim()) {
-        songData.singleName = formData.singleName.trim()
-      }
+    if (formData.singleName.trim()) {
+      songData.singleName = formData.singleName.trim()
+    }
 
-      if (formData.albumName.trim()) {
-        songData.albumName = formData.albumName.trim()
-      }
+    if (formData.albumName.trim()) {
+      songData.albumName = formData.albumName.trim()
+    }
 
-      if (formData.musicServiceEmbed.trim()) {
-        songData.musicServiceEmbed = formData.musicServiceEmbed.trim()
-      }
+    if (formData.musicServiceEmbed.trim()) {
+      songData.musicServiceEmbed = formData.musicServiceEmbed.trim()
+    }
 
-      // 有効な外部リンクのみ
-      const validUrls = formData.detailPageUrls.filter((link) => link.url.trim())
-      if (validUrls.length > 0) {
-        songData.detailPageUrls = validUrls.map((link) => ({
-          url: link.url.trim(),
-          label: link.label?.trim() || undefined,
-        }))
-      }
+    // 有効な外部リンクのみ
+    const validUrls = formData.detailPageUrls.filter((link) => link.url.trim())
+    if (validUrls.length > 0) {
+      songData.detailPageUrls = validUrls.map((link) => ({
+        url: link.url.trim(),
+        label: link.label?.trim() || undefined,
+      }))
+    }
 
-      // 編集モードの場合はIDを保持
-      if (isEditMode && song?.id) {
-        songData.id = song.id
-      }
+    // 編集モードの場合はIDを保持
+    if (isEditMode && song?.id) {
+      songData.id = song.id
+    }
 
-      onSubmit(songData)
-    },
-    [formData, validate, onSubmit, isEditMode, song?.id]
-  )
+    onSubmit(songData)
+  }
 
   /**
    * エラーメッセージの表示判定

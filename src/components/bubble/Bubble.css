@@ -40,7 +40,8 @@
   );
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(250, 212, 255, 0.9);
+  /* フチ色をシャボン玉の色に合わせる（デフォルト） */
+  border: 1.5px solid var(--bubble-border-color, rgba(255, 255, 255, 0.6));
   box-shadow: 
     0 4px 10px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -94,25 +95,30 @@
   overflow: hidden;
 }
 
-/* タイプ別のカラーバリエーション（パステルカラー） */
+/* タイプ別のカラーバリエーション（パステルカラー + 自然なフチ色） */
 .bubble-type-song .bubble-glass-layer {
   --bubble-color: rgba(255, 182, 193, 0.6);  /* パステルピンク */
+  --bubble-border-color: rgba(255, 182, 193, 0.7);  /* ピンク系フチ */
 }
 
 .bubble-type-lyricist .bubble-glass-layer {
   --bubble-color: rgba(135, 206, 235, 0.6);  /* パステル水色 */
+  --bubble-border-color: rgba(135, 206, 235, 0.7);  /* 水色系フチ */
 }
 
 .bubble-type-composer .bubble-glass-layer {
   --bubble-color: rgba(221, 160, 221, 0.6);  /* パステル紫 */
+  --bubble-border-color: rgba(221, 160, 221, 0.7);  /* 紫系フチ */
 }
 
 .bubble-type-arranger .bubble-glass-layer {
   --bubble-color: rgba(255, 250, 205, 0.7);  /* パステル黄色 */
+  --bubble-border-color: rgba(255, 230, 150, 0.7);  /* 黄色系フチ */
 }
 
 .bubble-type-tag .bubble-glass-layer {
   --bubble-color: rgba(152, 251, 152, 0.6);  /* パステル黄緑 */
+  --bubble-border-color: rgba(152, 251, 152, 0.7);  /* 黄緑系フチ */
 }
 
 /* ホバー効果（デスクトップのみ） */

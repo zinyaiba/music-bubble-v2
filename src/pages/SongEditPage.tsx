@@ -5,6 +5,7 @@
  * Requirements:
  * - 7.4: 新規楽曲を追加するボタンを提供
  * - 7.5: 既存楽曲の編集機能を提供
+ * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -12,6 +13,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import type { Song } from '../types'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
+import { errorService } from '../services/errorService'
+import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -26,6 +29,7 @@ import './SongEditPage.css'
 export function SongEditPage() {
   const { songId } = useParams<{ songId: string }>()
   const navigate = useNavigate()
+  const isOnline = useOnlineStatus()
   const isEditMode = !!songId
 
   // 状態
@@ -54,8 +58,18 @@ export function SongEditPage() {
           }
         }
 
-        // Firebaseから取得
-        const allSongs = await firebaseService.getAllSongs()
+        // オフラインでキャッシュにない場合
+        if (!errorService.getOnlineStatus()) {
+          setError('オフラインです。編集するにはインターネット接続が必要です。')
+          setIsLoading(false)
+          return
+        }
+
+        // Firebaseから取得（リトライ付き）
+        const allSongs = await errorService.withRetry(
+          () => firebaseService.getAllSongs(),
+          { maxRetries: 2 }
+        )
         cacheService.cacheSongs(allSongs)
 
         const foundSong = allSongs.find((s) => s.id === songId)
@@ -65,8 +79,8 @@ export function SongEditPage() {
           setError('楽曲が見つかりませんでした')
         }
       } catch (err) {
-        console.error('楽曲データの取得に失敗しました:', err)
-        setError('楽曲データの取得に失敗しました')
+        errorService.logError(err, 'SongEditPage.loadSong')
+        setError(errorService.getUserFriendlyMessage(err))
       } finally {
         setIsLoading(false)
       }
@@ -92,13 +106,22 @@ export function SongEditPage() {
   // 送信
   const handleSubmit = useCallback(
     async (songData: Partial<Song>) => {
+      // オフラインチェック
+      if (!errorService.getOnlineStatus()) {
+        setError('オフラインです。保存するにはインターネット接続が必要です。')
+        return
+      }
+
       setIsSubmitting(true)
       setError(null)
 
       try {
         if (isEditMode && songId) {
-          // 更新
-          await firebaseService.updateSong(songId, songData)
+          // 更新（リトライ付き）
+          await errorService.withRetry(
+            () => firebaseService.updateSong(songId, songData),
+            { maxRetries: 2 }
+          )
           // キャッシュを更新
           const cachedSongs = cacheService.getCachedSongs()
           if (cachedSongs) {
@@ -110,8 +133,11 @@ export function SongEditPage() {
           // 詳細ページに戻る
           navigate(`/songs/${songId}`)
         } else {
-          // 新規登録
-          const newSongId = await firebaseService.addSong(songData)
+          // 新規登録（リトライ付き）
+          const newSongId = await errorService.withRetry(
+            () => firebaseService.addSong(songData),
+            { maxRetries: 2 }
+          )
           // キャッシュを更新
           const cachedSongs = cacheService.getCachedSongs() || []
           const newSong: Song = {
@@ -128,8 +154,8 @@ export function SongEditPage() {
           navigate(`/songs/${newSongId}`)
         }
       } catch (err) {
-        console.error('楽曲の保存に失敗しました:', err)
-        setError('楽曲の保存に失敗しました。再試行してください。')
+        errorService.logError(err, 'SongEditPage.handleSubmit')
+        setError(errorService.getUserFriendlyMessage(err))
         setIsSubmitting(false)
       }
     },
@@ -172,7 +198,10 @@ export function SongEditPage() {
         <Header title="楽曲を編集" showBackButton onBack={handleBack} />
         <main className="song-edit-page__main">
           <div className="song-edit-page__error-container">
-            <ErrorMessage message={error} type="error" />
+            <ErrorMessage
+              message={error}
+              type={!isOnline || error.includes('オフライン') ? 'warning' : 'error'}
+            />
             <button
               type="button"
               className="song-edit-page__back-to-list"
@@ -199,7 +228,10 @@ export function SongEditPage() {
         {/* エラーメッセージ */}
         {error && (
           <div className="song-edit-page__error">
-            <ErrorMessage message={error} type="error" />
+            <ErrorMessage
+              message={error}
+              type={!isOnline || error.includes('オフライン') ? 'warning' : 'error'}
+            />
           </div>
         )}
 

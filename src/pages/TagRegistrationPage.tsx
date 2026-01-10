@@ -6,17 +6,18 @@
  * - 5.1: タグ登録ページに遷移した時、システムは全ての楽曲と現在のタグの一覧を表示すること
  * - 5.2: タイトル、アーティスト、既存タグで楽曲をフィルタリングする検索機能を提供すること
  * - 5.3: 楽曲をタップした時、システムはその楽曲のタグ入力インターフェースを表示すること
+ * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Song } from '../types'
-import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { searchSongs } from '../services/songSearchService'
 import { sortSongs } from '../utils/songSorting'
 import type { SongSortType } from '../utils/songSorting'
 import { tagService, generateTagsFromSongs } from '../services/tagService'
+import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -39,10 +40,9 @@ export function TagRegistrationPage() {
   const initialCompact = searchParams.get('compact') === 'true'
   const selectedSongId = searchParams.get('song') || null
 
-  // データの状態
-  const [songs, setSongs] = useState<Song[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // 楽曲データの取得（エラーハンドリング統合）
+  const { songs, isLoading, error, isOffline, retry } = useDataFetch()
+  const [localSongs, setLocalSongs] = useState<Song[]>([])
   const [query, setQuery] = useState(initialQuery)
   const [titleOnly, setTitleOnly] = useState(initialTitleOnly)
   const [sortBy, setSortBy] = useState<SongSortType>(initialSortBy)
@@ -50,60 +50,30 @@ export function TagRegistrationPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
 
+  // songsが更新されたらlocalSongsも更新
+  useMemo(() => {
+    if (songs.length > 0) {
+      setLocalSongs(songs)
+    }
+  }, [songs])
+
   // 全タグ一覧（サジェスト用）
   const allTags = useMemo(() => {
-    const tags = generateTagsFromSongs(songs)
+    const tags = generateTagsFromSongs(localSongs)
     return tags.map((tag) => tag.name).sort((a, b) => a.localeCompare(b, 'ja'))
-  }, [songs])
+  }, [localSongs])
 
   // 検索結果
   const filteredSongs = useMemo(() => {
-    const filtered = searchSongs(songs, query, { titleOnly })
+    const filtered = searchSongs(localSongs, query, { titleOnly })
     return sortSongs(filtered, sortBy)
-  }, [songs, query, titleOnly, sortBy])
+  }, [localSongs, query, titleOnly, sortBy])
 
   // 選択された楽曲
   const selectedSong = useMemo(() => {
     if (!selectedSongId) return null
-    return songs.find((song) => song.id === selectedSongId) || null
-  }, [songs, selectedSongId])
-
-  // 楽曲データを取得
-  useEffect(() => {
-    const loadSongs = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        // まずキャッシュから取得を試みる
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setIsLoading(false)
-        }
-
-        // Firebaseから最新データを取得
-        const fetchedSongs = await firebaseService.getAllSongs()
-        setSongs(fetchedSongs)
-        cacheService.cacheSongs(fetchedSongs)
-        setIsLoading(false)
-      } catch (err) {
-        console.error('楽曲データの取得に失敗しました:', err)
-
-        // キャッシュがあればそれを使用
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setError('オフラインモード: キャッシュデータを表示しています')
-        } else {
-          setError('データの取得に失敗しました。再試行してください。')
-        }
-        setIsLoading(false)
-      }
-    }
-
-    loadSongs()
-  }, [])
+    return localSongs.find((song) => song.id === selectedSongId) || null
+  }, [localSongs, selectedSongId])
 
   // 検索クエリの変更
   const handleQueryChange = useCallback(
@@ -207,14 +177,14 @@ export function TagRegistrationPage() {
         await tagService.updateSongTags(selectedSong.id, newTags)
 
         // ローカルの楽曲データを更新
-        setSongs((prevSongs) =>
+        setLocalSongs((prevSongs) =>
           prevSongs.map((song) =>
             song.id === selectedSong.id ? { ...song, tags: newTags } : song
           )
         )
 
         // キャッシュも更新
-        const updatedSongs = songs.map((song) =>
+        const updatedSongs = localSongs.map((song) =>
           song.id === selectedSong.id ? { ...song, tags: newTags } : song
         )
         cacheService.cacheSongs(updatedSongs)
@@ -228,7 +198,7 @@ export function TagRegistrationPage() {
         setIsSaving(false)
       }
     },
-    [selectedSong, songs]
+    [selectedSong, localSongs]
   )
 
   // ナビゲーション
@@ -238,11 +208,6 @@ export function TagRegistrationPage() {
     },
     [navigate]
   )
-
-  // リトライ
-  const handleRetry = useCallback(() => {
-    window.location.reload()
-  }, [])
 
   // ローディング中
   if (isLoading && songs.length === 0) {
@@ -271,8 +236,8 @@ export function TagRegistrationPage() {
           <div className="tag-registration-page__error">
             <ErrorMessage
               message={error}
-              type={error.includes('オフライン') ? 'warning' : 'error'}
-              onRetry={error.includes('オフライン') ? undefined : handleRetry}
+              type={isOffline || error.includes('オフライン') ? 'warning' : 'error'}
+              onRetry={isOffline || error.includes('オフライン') ? undefined : retry}
             />
           </div>
         )}

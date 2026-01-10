@@ -110,6 +110,7 @@
   
   /* レイアウト */
   --header-height: 56px;
+  --header-height-top: 90px; /* TOPページ用のリッチヘッダー高さ */
   --nav-height: 56px;
   --navigation-height: 64px;
   --max-content-width: 1200px;

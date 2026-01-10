@@ -255,11 +255,10 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
     })
   }, [filteredSources, width, height])
 
-  // 初期シャボン玉を生成
-  useEffect(() => {
+  // 初期シャボン玉を生成する関数
+  const generateInitialBubbles = useCallback(() => {
     if (filteredSources.length === 0 || width <= 0 || height <= 0) {
-      setBubbles([])
-      return
+      return []
     }
 
     // カテゴリごとにソースをグループ化
@@ -272,7 +271,7 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
 
     // 各カテゴリからシャッフルしてソースを選択
     const categories = [...sourcesByCategory.keys()]
-    const initialBubbles: BubbleWithLifetime[] = []
+    const newBubbles: BubbleWithLifetime[] = []
     const count = Math.min(ANIMATION_CONFIG.maxBubbles, filteredSources.length)
     
     // カテゴリをラウンドロビンで選択し、各カテゴリ内はランダム
@@ -290,19 +289,24 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
         // ランダムに選択
         const source = availableSources[Math.floor(Math.random() * availableSources.length)]
         usedSourceIds.add(source.id)
-        initialBubbles.push(createBubble(source, width, height, instanceCounterRef.current++))
+        newBubbles.push(createBubble(source, width, height, instanceCounterRef.current++))
       } else if (categorySources.length > 0) {
         // 使い切った場合は再利用
         const source = categorySources[Math.floor(Math.random() * categorySources.length)]
-        initialBubbles.push(createBubble(source, width, height, instanceCounterRef.current++))
+        newBubbles.push(createBubble(source, width, height, instanceCounterRef.current++))
       }
       
       categoryIndex++
     }
     
     // 最終的にシャッフルして表示順をランダムに
-    setBubbles(shuffleArray(initialBubbles))
+    return shuffleArray(newBubbles)
   }, [filteredSources, width, height])
+
+  // 初期シャボン玉を設定（filteredSourcesやサイズが変わった時）
+  useEffect(() => {
+    setBubbles(generateInitialBubbles())
+  }, [generateInitialBubbles])
 
   // シャボン玉の位置と寿命を更新
   const updateBubbles = useCallback(() => {
@@ -311,7 +315,8 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
     setBubbles(prevBubbles => {
       return prevBubbles
         .map(bubble => {
-          let { x, y, vx, vy, size, opacity, createdAt, lifetime, fadeOutStart } = bubble
+          const { size, createdAt, lifetime } = bubble
+          let { x, y, vx, vy, opacity, fadeOutStart } = bubble
           const radius = size / 2
 
           // 寿命チェック（個別の寿命を使用）

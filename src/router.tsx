@@ -15,6 +15,7 @@ import { SongDetailPage } from './pages/SongDetailPage'
 import { SongEditPage } from './pages/SongEditPage'
 import { TagListPage } from './pages/TagListPage'
 import { TagRegistrationPage } from './pages/TagRegistrationPage'
+import { InfoPage } from './pages/InfoPage'
 
 /**
  * プレースホルダーページ（後のフェーズで実装）
@@ -89,7 +90,7 @@ const router = createBrowserRouter(
         },
         {
           path: 'info',
-          element: <PlaceholderPage title="お知らせ・使い方" />,
+          element: <InfoPage />,
         },
         {
           path: '*',

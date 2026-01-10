@@ -70,11 +70,40 @@
   justify-content: center;
   width: 24px;
   height: 24px;
+  position: relative;
 }
 
 .navigation-icon svg {
   width: 24px;
   height: 24px;
+}
+
+/* 未読バッジ */
+.navigation-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  line-height: 16px;
+  text-align: center;
+  color: white;
+  background-color: var(--color-error);
+  border-radius: var(--border-radius-full);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .navigation-label {

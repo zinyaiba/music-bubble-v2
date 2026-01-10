@@ -4,6 +4,7 @@
  *
  * Requirements:
  * - 8.5: 前のページに戻るナビゲーションを提供
+ * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -11,6 +12,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import type { Song } from '../types'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
+import { errorService } from '../services/errorService'
+import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -25,6 +28,7 @@ import './SongDetailPage.css'
 export function SongDetailPage() {
   const { songId } = useParams<{ songId: string }>()
   const navigate = useNavigate()
+  const isOnline = useOnlineStatus()
 
   // 楽曲データの状態
   const [song, setSong] = useState<Song | null>(null)
@@ -53,12 +57,27 @@ export function SongDetailPage() {
           if (cachedSong) {
             setSong(cachedSong)
             setIsLoading(false)
-            return
+            
+            // オフラインの場合はキャッシュのみ使用
+            if (!errorService.getOnlineStatus()) {
+              setError('オフラインモード: キャッシュデータを表示しています')
+              return
+            }
           }
         }
 
-        // キャッシュになければFirebaseから取得
-        const allSongs = await firebaseService.getAllSongs()
+        // オフラインでキャッシュにない場合
+        if (!errorService.getOnlineStatus()) {
+          setError('オフラインです。インターネット接続を確認してください。')
+          setIsLoading(false)
+          return
+        }
+
+        // Firebaseから取得（リトライ付き）
+        const allSongs = await errorService.withRetry(
+          () => firebaseService.getAllSongs(),
+          { maxRetries: 2 }
+        )
         cacheService.cacheSongs(allSongs)
 
         const foundSong = allSongs.find((s) => s.id === songId)
@@ -69,7 +88,7 @@ export function SongDetailPage() {
         }
         setIsLoading(false)
       } catch (err) {
-        console.error('楽曲データの取得に失敗しました:', err)
+        errorService.logError(err, 'SongDetailPage.loadSong')
 
         // キャッシュから再度検索
         const cachedSongs = cacheService.getCachedSongs()
@@ -83,7 +102,7 @@ export function SongDetailPage() {
           }
         }
 
-        setError('楽曲データの取得に失敗しました。再試行してください。')
+        setError(errorService.getUserFriendlyMessage(err))
         setIsLoading(false)
       }
     }
@@ -124,7 +143,10 @@ export function SongDetailPage() {
 
     setIsDeleting(true)
     try {
-      await firebaseService.deleteSong(songId)
+      await errorService.withRetry(
+        () => firebaseService.deleteSong(songId),
+        { maxRetries: 2 }
+      )
       
       // キャッシュから削除
       const cachedSongs = cacheService.getCachedSongs()
@@ -136,8 +158,8 @@ export function SongDetailPage() {
       // 楽曲一覧に戻る
       navigate('/songs')
     } catch (err) {
-      console.error('楽曲の削除に失敗しました:', err)
-      setError('楽曲の削除に失敗しました。再試行してください。')
+      errorService.logError(err, 'SongDetailPage.handleDeleteConfirm')
+      setError(errorService.getUserFriendlyMessage(err))
       setIsDeleting(false)
       setShowDeleteConfirm(false)
     }
@@ -182,8 +204,8 @@ export function SongDetailPage() {
           <div className="song-detail-page__error-container">
             <ErrorMessage
               message={error}
-              type="error"
-              onRetry={error.includes('オフライン') ? undefined : handleRetry}
+              type={!isOnline || error.includes('オフライン') ? 'warning' : 'error'}
+              onRetry={!isOnline || error.includes('オフライン') ? undefined : handleRetry}
             />
             <button
               type="button"

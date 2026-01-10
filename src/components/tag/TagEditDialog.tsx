@@ -73,10 +73,23 @@ export function TagEditDialog({
     }
 
     // 名称変更を実行
-    handleRename(trimmedName)
-  }, [newTagName, tag.name, existingTagNames, onClose])
+    setIsProcessing(true)
+    setError(null)
 
-  // 名称変更の実行
+    onRename(tag.name, trimmedName)
+      .then(() => {
+        onClose()
+      })
+      .catch((err) => {
+        console.error('タグの名称変更に失敗しました:', err)
+        setError('タグの名称変更に失敗しました')
+      })
+      .finally(() => {
+        setIsProcessing(false)
+      })
+  }, [newTagName, tag.name, existingTagNames, onClose, onRename])
+
+  // 名称変更の実行（統合時用）
   const handleRename = useCallback(async (newName: string) => {
     setIsProcessing(true)
     setError(null)

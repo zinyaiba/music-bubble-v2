@@ -5,14 +5,13 @@
  * Requirements:
  * - 7.1: 全ての楽曲をスクロール可能なリストで表示
  * - 7.4: 新規楽曲を追加するボタンを提供
+ * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { Song } from '../types'
 import type { SongSortType } from '../utils/songSorting'
-import { firebaseService } from '../services/firebaseService'
-import { cacheService } from '../services/cacheService'
+import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -34,47 +33,8 @@ export function SongListPage() {
   const initialSortBy = (searchParams.get('sort') as SongSortType) || 'newest'
   const initialCompact = searchParams.get('compact') === 'true'
 
-  // 楽曲データの状態
-  const [songs, setSongs] = useState<Song[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // 楽曲データを取得
-  useEffect(() => {
-    const loadSongs = async () => {
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        // まずキャッシュから取得を試みる
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setIsLoading(false)
-        }
-
-        // Firebaseから最新データを取得
-        const fetchedSongs = await firebaseService.getAllSongs()
-        setSongs(fetchedSongs)
-        cacheService.cacheSongs(fetchedSongs)
-        setIsLoading(false)
-      } catch (err) {
-        console.error('楽曲データの取得に失敗しました:', err)
-
-        // キャッシュがあればそれを使用
-        const cachedSongs = cacheService.getCachedSongs()
-        if (cachedSongs && cachedSongs.length > 0) {
-          setSongs(cachedSongs)
-          setError('オフラインモード: キャッシュデータを表示しています')
-        } else {
-          setError('楽曲データの取得に失敗しました。再試行してください。')
-        }
-        setIsLoading(false)
-      }
-    }
-
-    loadSongs()
-  }, [])
+  // 楽曲データの取得（エラーハンドリング統合）
+  const { songs, isLoading, error, isOffline, retry } = useDataFetch()
 
   // 楽曲詳細ページへ遷移（検索状態を保持）
   const handleSongClick = useCallback(
@@ -110,11 +70,6 @@ export function SongListPage() {
     [navigate]
   )
 
-  // リトライ
-  const handleRetry = useCallback(() => {
-    window.location.reload()
-  }, [])
-
   // ローディング中
   if (isLoading && songs.length === 0) {
     return (
@@ -142,8 +97,8 @@ export function SongListPage() {
           <div className="song-list-page__error">
             <ErrorMessage
               message={error}
-              type={error.includes('オフライン') ? 'warning' : 'error'}
-              onRetry={error.includes('オフライン') ? undefined : handleRetry}
+              type={isOffline || error.includes('オフライン') ? 'warning' : 'error'}
+              onRetry={isOffline || error.includes('オフライン') ? undefined : retry}
             />
           </div>
         )}

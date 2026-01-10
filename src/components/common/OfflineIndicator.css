@@ -1,0 +1,102 @@
+/**
+ * OfflineIndicator スタイル
+ * 
+ * Requirements: 15.4
+ */
+
+.offline-indicator {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-toast, 1000);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  animation: slideIn 0.3s ease-out;
+}
+
+.offline-indicator--top {
+  top: 0;
+}
+
+.offline-indicator--bottom {
+  bottom: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.offline-indicator--bottom {
+  animation-name: slideInBottom;
+}
+
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.offline-indicator__content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  padding: var(--spacing-xs, 4px) var(--spacing-md, 12px);
+  border-radius: 0 0 var(--border-radius-md, 8px) var(--border-radius-md, 8px);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  pointer-events: auto;
+}
+
+.offline-indicator--top .offline-indicator__content {
+  border-radius: 0 0 var(--border-radius-md, 8px) var(--border-radius-md, 8px);
+}
+
+.offline-indicator--bottom .offline-indicator__content {
+  border-radius: var(--border-radius-md, 8px) var(--border-radius-md, 8px) 0 0;
+}
+
+.offline-indicator--offline .offline-indicator__content {
+  background-color: var(--color-warning, #f59e0b);
+  color: #000;
+}
+
+.offline-indicator--online .offline-indicator__content {
+  background-color: var(--color-success, #10b981);
+  color: #fff;
+}
+
+.offline-indicator__icon {
+  flex-shrink: 0;
+}
+
+.offline-indicator__text {
+  white-space: nowrap;
+}
+
+/* アニメーション終了後にオンライン表示を自動的に非表示にする */
+.offline-indicator--online {
+  animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-out 2s forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

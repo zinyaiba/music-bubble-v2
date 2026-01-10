@@ -5,6 +5,7 @@
 
 export { FirebaseService, firebaseService } from './firebaseService'
 export { CacheService, cacheService } from './cacheService'
+export { ErrorService, errorService } from './errorService'
 export {
   FilterService,
   filterService,

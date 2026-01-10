@@ -7,7 +7,7 @@
  * - 5.6: システムはタグを視覚的に区別しやすく、読みやすい形式で表示すること
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import './TagInput.css'
 
 export interface TagInputProps {
@@ -70,11 +70,6 @@ export function TagInput({
 
   // サジェストを表示するかどうか
   const showSuggestions = isFocused && suggestions.length > 0 && !confirmDialog
-
-  // ハイライトインデックスをリセット
-  useEffect(() => {
-    setHighlightedIndex(-1)
-  }, [inputValue, suggestions])
 
   // タグ追加の確認ダイアログを表示
   const handleRequestAddTag = useCallback(

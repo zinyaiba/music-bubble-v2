@@ -13,3 +13,6 @@ export type { LoadingSpinnerProps, SpinnerSize } from './LoadingSpinner';
 
 export { ErrorMessage } from './ErrorMessage';
 export type { ErrorMessageProps, ErrorType } from './ErrorMessage';
+
+export { OfflineIndicator } from './OfflineIndicator';
+export type { OfflineIndicatorProps } from './OfflineIndicator';
