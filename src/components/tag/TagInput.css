@@ -174,8 +174,9 @@
   left: 0;
   right: 0;
   margin-top: var(--spacing-xs);
-  max-height: 200px;
+  max-height: 280px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--color-surface);
   border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--border-radius-md);
@@ -196,27 +197,47 @@
 }
 
 .tag-input__suggestion {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: 48px;
+  padding: var(--spacing-md) var(--spacing-lg);
   font-size: var(--font-size-md);
   font-family: var(--font-family);
   color: var(--color-text);
   background: transparent;
   border: none;
+  border-bottom: var(--border-width-thin) solid var(--color-border);
   text-align: left;
   cursor: pointer;
   transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.tag-input__suggestion:last-child {
+  border-bottom: none;
 }
 
 .tag-input__suggestion:hover,
 .tag-input__suggestion--highlighted {
-  background: var(--color-surface-hover);
+  background: var(--color-primary-alpha);
+}
+
+.tag-input__suggestion:active {
+  background: var(--color-primary-light);
+  color: white;
 }
 
 .tag-input__suggestion:focus {
   outline: none;
-  background: var(--color-surface-hover);
+  background: var(--color-primary-alpha);
+}
+
+.tag-input__suggestion-icon {
+  margin-right: var(--spacing-sm);
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 /* ヒント */
@@ -358,8 +379,14 @@
     font-size: var(--font-size-sm);
   }
 
+  /* スマホ向けサジェスト改善 */
+  .tag-input__suggestions {
+    max-height: 240px;
+  }
+
   .tag-input__suggestion {
-    padding: var(--spacing-sm);
-    font-size: var(--font-size-sm);
+    min-height: 52px;
+    padding: var(--spacing-md) var(--spacing-md);
+    font-size: var(--font-size-md);
   }
 }
