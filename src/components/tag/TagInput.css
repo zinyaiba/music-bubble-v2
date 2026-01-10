@@ -151,7 +151,8 @@
   flex: 1;
   min-width: 100px;
   padding: var(--spacing-xs);
-  font-size: var(--font-size-md);
+  /* 16px以上でiOSのオートズームを防止 */
+  font-size: max(16px, var(--font-size-md));
   font-family: var(--font-family);
   color: var(--color-text);
   background: transparent;
@@ -376,7 +377,8 @@
 
   .tag-input__input {
     min-width: 80px;
-    font-size: var(--font-size-sm);
+    /* 16px以上でiOSのオートズームを防止 */
+    font-size: 16px;
   }
 
   /* スマホ向けサジェスト改善 */
