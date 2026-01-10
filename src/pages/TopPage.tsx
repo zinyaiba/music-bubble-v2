@@ -141,6 +141,9 @@ export function TopPage() {
       arranger: '#FFFACD',
     }
     
+    // 栗林みな実の場合は大きめのサイズ
+    const bubbleSize = personName === '栗林みな実' ? 110 : 80
+    
     const newBubble: BubbleType = {
       id: `${type}-${personName}-${Date.now()}`,
       type,
@@ -149,7 +152,7 @@ export function TopPage() {
       y: 0,
       vx: 0,
       vy: 0,
-      size: 80,
+      size: bubbleSize,
       color: colorMap[type],
       opacity: 1,
       relatedCount,

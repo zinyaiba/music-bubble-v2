@@ -132,17 +132,27 @@ const createBubble = (
   const isMobile = width <= 768
   const margin = isMobile ? 50 : 80
   
+  // 栗林みな実の場合は特別に大きいサイズ
+  const isKuribayashi = source.name === '栗林みな実'
+  
   // 文字数に応じてサイズを調整（スマホは小さめ）
   // スマホ: 最小55px、1文字あたり+8px、最大95px
   // PC: 最小80px、1文字あたり+12px、最大140px
-  const minSize = isMobile ? 55 : 80
-  const charMultiplier = isMobile ? 8 : 12
-  const maxSize = isMobile ? 95 : 140
-  const baseOffset = isMobile ? 35 : 50
-  const randomVariation = isMobile ? 10 : 20
+  // 栗林みな実: スマホ110px、PC140px（固定）
+  let size: number
+  if (isKuribayashi) {
+    size = isMobile ? 110 : 140
+  } else {
+    const minSize = isMobile ? 55 : 80
+    const charMultiplier = isMobile ? 8 : 12
+    const maxSize = isMobile ? 95 : 140
+    const baseOffset = isMobile ? 35 : 50
+    const randomVariation = isMobile ? 10 : 20
+    
+    const baseSize = Math.max(minSize, baseOffset + source.name.length * charMultiplier)
+    size = Math.min(maxSize, baseSize + Math.random() * randomVariation)
+  }
   
-  const baseSize = Math.max(minSize, baseOffset + source.name.length * charMultiplier)
-  const size = Math.min(maxSize, baseSize + Math.random() * randomVariation)
   // 寿命にばらつきを持たせる
   const lifetime = ANIMATION_CONFIG.bubbleLifetimeBase + 
     Math.random() * ANIMATION_CONFIG.bubbleLifetimeVariance
