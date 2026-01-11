@@ -20,8 +20,10 @@ export interface SongDetailProps {
   onEdit?: () => void
   /** 削除ボタンクリック時のコールバック */
   onDelete?: () => void
-  /** 戻るボタンクリック時のコールバック */
+  /** 楽曲一覧へ戻るボタンクリック時のコールバック */
   onBack: () => void
+  /** ひとつ前に戻るボタンクリック時のコールバック */
+  onGoBack?: () => void
 }
 
 /**
@@ -106,7 +108,7 @@ function formatReleaseDate(releaseYear?: number, releaseDate?: string): string |
  * SongDetail コンポーネント
  * 楽曲の詳細情報を表示
  */
-export function SongDetail({ song, onEdit, onDelete, onBack }: SongDetailProps) {
+export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDetailProps) {
   const hasEmbed = !!song.musicServiceEmbed && song.musicServiceEmbed.trim().length > 0
   const hasLinks = song.detailPageUrls && song.detailPageUrls.length > 0
   const hasTags = song.tags && song.tags.length > 0
@@ -279,11 +281,33 @@ export function SongDetail({ song, onEdit, onDelete, onBack }: SongDetailProps) 
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M19 12H5" />
-            <path d="M12 19l-7-7 7-7" />
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
           楽曲一覧へ戻る
         </button>
+        {onGoBack && (
+          <button
+            type="button"
+            className="song-detail__goback-button"
+            onClick={onGoBack}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+            </svg>
+            ひとつ前に戻る
+          </button>
+        )}
         {onEdit && (
           <button
             type="button"

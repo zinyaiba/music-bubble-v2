@@ -126,6 +126,16 @@ export function SongDetailPage() {
     }
   }, [navigate])
 
+  // ひとつ前に戻る（ヒストリーバック）
+  const handleGoBack = useCallback(() => {
+    if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      // 履歴がない場合は楽曲一覧へ
+      handleBack()
+    }
+  }, [navigate, handleBack])
+
   // 編集ページへ遷移
   const handleEdit = useCallback(() => {
     if (songId) {
@@ -252,6 +262,7 @@ export function SongDetailPage() {
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
               onBack={handleBack}
+              onGoBack={handleGoBack}
             />
           </div>
         )}

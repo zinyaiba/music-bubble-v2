@@ -316,6 +316,7 @@
 }
 
 .song-detail__back-button,
+.song-detail__goback-button,
 .song-detail__edit-button {
   display: inline-flex;
   align-items: center;
@@ -329,18 +330,21 @@
   transition: all var(--transition-fast);
 }
 
-.song-detail__back-button {
+.song-detail__back-button,
+.song-detail__goback-button {
   flex: 1;
   background: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
 }
 
-.song-detail__back-button:hover {
+.song-detail__back-button:hover,
+.song-detail__goback-button:hover {
   background: var(--color-surface-hover);
 }
 
-.song-detail__back-button:focus {
+.song-detail__back-button:focus,
+.song-detail__goback-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px var(--color-primary-alpha);
 }
@@ -393,6 +397,7 @@
   }
 
   .song-detail__back-button,
+  .song-detail__goback-button,
   .song-detail__edit-button {
     width: 100%;
   }
