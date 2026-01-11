@@ -152,6 +152,20 @@
   transform: translateX(2px);
 }
 
+/* 埋め込みコンテンツありの場合 */
+.song-card__arrow--has-embed {
+  width: 28px;
+  height: 28px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: var(--border-radius-sm);
+}
+
+.song-card:hover .song-card__arrow--has-embed {
+  background: #4caf50;
+  color: white;
+}
+
 /* コンパクトモード（曲名のみ） */
 .song-card--compact {
   padding: var(--spacing-sm) var(--spacing-md);

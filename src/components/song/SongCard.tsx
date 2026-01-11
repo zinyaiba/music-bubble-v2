@@ -57,6 +57,7 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
   const artists = formatArray(song.artists)
   const releaseDisplay = formatReleaseDate(song.releaseYear, song.releaseDate)
   const isCompact = displayMode === 'compact'
+  const hasEmbed = !!song.musicServiceEmbed && song.musicServiceEmbed.trim().length > 0
 
   return (
     <article
@@ -117,7 +118,7 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
         )}
       </div>
 
-      <div className="song-card__arrow">
+      <div className={`song-card__arrow ${hasEmbed ? 'song-card__arrow--has-embed' : ''}`}>
         <svg
           width="20"
           height="20"

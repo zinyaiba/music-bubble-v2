@@ -142,7 +142,7 @@ export const CATEGORY_OPTIONS: { value: CategoryFilterValue; label: string; icon
   { value: 'song', label: '楽曲', icon: '🎵' },
   { value: 'lyricist', label: '作詞', icon: '✍️' },
   { value: 'composer', label: '作曲', icon: '🎼' },
-  { value: 'arranger', label: '編曲', icon: '🎹' },
+  { value: 'arranger', label: '編曲', icon: '🎧' },
   { value: 'tag', label: 'タグ', icon: '🏷️' },
 ]
 

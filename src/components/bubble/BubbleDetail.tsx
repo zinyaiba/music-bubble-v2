@@ -50,7 +50,7 @@ const getTypeIcon = (type: string): string => {
     case 'song': return '🎵'
     case 'lyricist': return '✍️'
     case 'composer': return '🎼'
-    case 'arranger': return '🎹'
+    case 'arranger': return '🎧'
     case 'tag': return '🏷️'
     default: return '💫'
   }
