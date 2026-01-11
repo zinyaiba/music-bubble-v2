@@ -22,6 +22,7 @@
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background: var(--color-background);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -212,6 +213,7 @@
   padding: 0 var(--spacing-md);
   padding-bottom: var(--spacing-lg);
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   min-height: 0;
 }

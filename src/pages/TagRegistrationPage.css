@@ -229,7 +229,13 @@
 /* 楽曲リスト */
 .tag-registration-page__song-list {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+  padding-bottom: var(--spacing-lg);
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   min-height: 0;
 }
@@ -241,33 +247,27 @@
   width: 100%;
   padding: var(--spacing-md);
   background: var(--color-surface);
-  border: none;
-  border-bottom: var(--border-width-thin) solid var(--color-border);
+  border: var(--border-width-thin) solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
   text-align: left;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .tag-registration-page__song-item:hover {
   background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .tag-registration-page__song-item:active {
-  background: var(--color-surface-active);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .tag-registration-page__song-item--compact {
   padding: var(--spacing-sm) var(--spacing-md);
-}
-
-.tag-registration-page__song-item--compact .tag-registration-page__song-item-info {
-  flex-direction: row;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.tag-registration-page__song-item--compact .tag-registration-page__song-item-title {
-  flex: 1;
 }
 
 .tag-registration-page__song-item-info {

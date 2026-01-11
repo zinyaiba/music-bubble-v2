@@ -18,6 +18,17 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-01-12',
+    title: 'アップデート情報',
+    content: `以下のアップデートを行いました。
+
+**主な改善点:**
+- タグ登録一覧画面でスクロールがしづらい問題を改善
+- レイアウトの微調整`,
+    date: '2026-01-12',
+    type: 'update',
+  },
+  {
     id: 'ann-2026-01-11-3',
     title: 'アーティスト名是正ご協力のお願い',
     content: `新機能の追加に伴い、アーティスト名を登録いただけると助かります！
