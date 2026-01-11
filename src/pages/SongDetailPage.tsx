@@ -116,11 +116,11 @@ export function SongDetailPage() {
     loadSong()
   }, [songId])
 
-  // 戻るナビゲーション
+  // 戻るナビゲーション（常に楽曲一覧へ、検索状態を復元）
   const handleBack = useCallback(() => {
-    // ブラウザ履歴があれば戻る、なければ楽曲一覧へ
-    if (window.history.length > 1) {
-      navigate(-1)
+    const savedParams = sessionStorage.getItem('songListParams')
+    if (savedParams) {
+      navigate(`/songs?${savedParams}`)
     } else {
       navigate('/songs')
     }

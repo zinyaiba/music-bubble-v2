@@ -98,10 +98,11 @@ export function SongEditPage() {
     loadSong()
   }, [songId, isEditMode])
 
-  // 戻る
+  // 戻る（楽曲一覧へ、検索状態を復元）
   const handleBack = useCallback(() => {
-    if (window.history.length > 1) {
-      navigate(-1)
+    const savedParams = sessionStorage.getItem('songListParams')
+    if (savedParams) {
+      navigate(`/songs?${savedParams}`)
     } else {
       navigate('/songs')
     }
@@ -140,8 +141,13 @@ export function SongEditPage() {
             )
             cacheService.cacheSongs(updatedSongs)
           }
-          // 詳細ページに戻る
-          navigate(`/songs/${songId}`)
+          // 楽曲一覧へ戻る（検索状態を復元）
+          const savedParams = sessionStorage.getItem('songListParams')
+          if (savedParams) {
+            navigate(`/songs?${savedParams}`)
+          } else {
+            navigate('/songs')
+          }
         } else {
           // 新規登録（リトライ付き）
           const newSongId = await errorService.withRetry(

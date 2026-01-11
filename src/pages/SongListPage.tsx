@@ -46,9 +46,16 @@ export function SongListPage() {
   // 楽曲詳細ページへ遷移（検索状態を保持）
   const handleSongClick = useCallback(
     (songId: string) => {
+      // 現在の検索状態をsessionStorageに保存
+      const currentParams = searchParams.toString()
+      if (currentParams) {
+        sessionStorage.setItem('songListParams', currentParams)
+      } else {
+        sessionStorage.removeItem('songListParams')
+      }
       navigate(`/songs/${songId}`)
     },
-    [navigate]
+    [navigate, searchParams]
   )
 
   // 検索状態の変更をURLに反映
@@ -75,9 +82,16 @@ export function SongListPage() {
 
   // 新規楽曲追加ページへ遷移
   const handleAddSong = useCallback(() => {
+    // 現在の検索状態をsessionStorageに保存
+    const currentParams = searchParams.toString()
+    if (currentParams) {
+      sessionStorage.setItem('songListParams', currentParams)
+    } else {
+      sessionStorage.removeItem('songListParams')
+    }
     trackEvent(AnalyticsEvents.曲_新規作成)
     navigate('/songs/new')
-  }, [navigate])
+  }, [navigate, searchParams])
 
   // ナビゲーション
   const handleNavigate = useCallback(

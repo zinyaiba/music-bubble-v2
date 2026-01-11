@@ -282,7 +282,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack }: SongDetailProps) 
             <path d="M19 12H5" />
             <path d="M12 19l-7-7 7-7" />
           </svg>
-          戻る
+          楽曲一覧へ戻る
         </button>
         {onEdit && (
           <button
