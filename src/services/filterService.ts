@@ -41,9 +41,15 @@ export function matchesArtistFilter(
       // アーティスト名に「Minami」を含む楽曲
       return artistString.includes('Minami')
 
+    case 'wild3':
+      // アーティスト名に「ワイルド三人娘」を含む楽曲
+      return artistString.includes('ワイルド三人娘')
+
     case 'other':
-      // 「栗林みな実」「Minami」を含まない楽曲
-      return !artistString.includes('栗林みな実') && !artistString.includes('Minami')
+      // 「栗林みな実」「Minami」「ワイルド三人娘」を含まない楽曲
+      return !artistString.includes('栗林みな実') && 
+             !artistString.includes('Minami') && 
+             !artistString.includes('ワイルド三人娘')
 
     default:
       return true

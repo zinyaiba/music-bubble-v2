@@ -39,6 +39,9 @@ export function TopPage() {
   // アニメーション状態
   const [isPaused, setIsPaused] = useState(() => cacheService.getAnimationPaused())
 
+  // シャボン玉表示数
+  const [bubbleCount, setBubbleCount] = useState(() => cacheService.getBubbleCount())
+
   // 選択中のシャボン玉
   const [selectedBubble, setSelectedBubble] = useState<BubbleType | null>(null)
 
@@ -80,6 +83,13 @@ export function TopPage() {
       cacheService.setAnimationPaused(newValue)
       return newValue
     })
+  }, [])
+
+  // シャボン玉表示数の変更
+  const handleBubbleCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newCount = parseInt(e.target.value, 10)
+    setBubbleCount(newCount)
+    cacheService.setBubbleCount(newCount)
   }, [])
 
   // シャボン玉クリック
@@ -247,6 +257,25 @@ export function TopPage() {
           />
         </div>
 
+        {/* シャボン玉表示数スライダー */}
+        <div className="top-page-bubble-slider">
+          <label htmlFor="bubble-count-slider" className="bubble-slider-label">
+            <span className="bubble-slider-icon">🫧</span>
+            <span className="bubble-slider-text">表示数</span>
+          </label>
+          <input
+            id="bubble-count-slider"
+            type="range"
+            min="1"
+            max="15"
+            value={bubbleCount}
+            onChange={handleBubbleCountChange}
+            className="bubble-slider-input"
+            aria-label={`シャボン玉の表示数: ${bubbleCount}個`}
+          />
+          <span className="bubble-slider-value">{bubbleCount}</span>
+        </div>
+
         {/* シャボン玉キャンバス */}
         <div className="top-page-canvas">
           {canvasSize.width > 0 && canvasSize.height > 0 && (
@@ -258,6 +287,7 @@ export function TopPage() {
               width={canvasSize.width}
               height={canvasSize.height}
               categoryFilter={filterState.categories}
+              maxBubbles={bubbleCount}
             />
           )}
         </div>

@@ -402,6 +402,7 @@ export function TagRegistrationPage() {
                     <option value="alphabetical">五十音順</option>
                     <option value="artist">栗林みな実を優先</option>
                     <option value="minami">Minamiを優先</option>
+                    <option value="wild3">ワイルド三人娘を優先</option>
                   </select>
                   <button
                     type="button"

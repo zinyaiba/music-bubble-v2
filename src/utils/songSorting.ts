@@ -8,38 +8,57 @@ import type { Song } from '../types'
 /**
  * 楽曲の並び替えタイプ
  */
-export type SongSortType = 'newest' | 'oldest' | 'updated' | 'alphabetical' | 'artist' | 'minami'
+export type SongSortType = 'newest' | 'oldest' | 'updated' | 'alphabetical' | 'artist' | 'minami' | 'wild3'
 
 /**
  * アーティスト名の優先順位を取得（栗林みな実優先）
- * 栗林みな実のみ → Minimiのみ → その他（複数アーティストや他のアーティスト）
+ * 栗林みな実（完全一致）→ Minami（完全一致）→ ワイルド三人娘（完全一致）→ その他
  */
 function getArtistPriorityKuribayashi(artists: string[] | undefined): number {
-  if (!artists || artists.length === 0) return 3
+  if (!artists || artists.length === 0) return 4
   
-  // 複数アーティストの場合は「その他」
-  if (artists.length > 1) return 2
-  
-  const artist = artists[0]
-  if (artist === '栗林みな実') return 0
-  if (artist === 'Minami') return 1
-  return 2
+  // 単一アーティストで完全一致のみ優先
+  if (artists.length === 1) {
+    const artist = artists[0]
+    if (artist === '栗林みな実') return 0
+    if (artist === 'Minami') return 1
+    if (artist === 'ワイルド三人娘') return 2
+  }
+  return 3
 }
 
 /**
  * アーティスト名の優先順位を取得（Minami優先）
- * Minimiのみ → 栗林みな実のみ → その他（複数アーティストや他のアーティスト）
+ * Minami（完全一致）→ 栗林みな実（完全一致）→ ワイルド三人娘（完全一致）→ その他
  */
 function getArtistPriorityMinami(artists: string[] | undefined): number {
-  if (!artists || artists.length === 0) return 3
+  if (!artists || artists.length === 0) return 4
   
-  // 複数アーティストの場合は「その他」
-  if (artists.length > 1) return 2
+  // 単一アーティストで完全一致のみ優先
+  if (artists.length === 1) {
+    const artist = artists[0]
+    if (artist === 'Minami') return 0
+    if (artist === '栗林みな実') return 1
+    if (artist === 'ワイルド三人娘') return 2
+  }
+  return 3
+}
+
+/**
+ * アーティスト名の優先順位を取得（ワイルド三人娘優先）
+ * ワイルド三人娘（完全一致）→ 栗林みな実（完全一致）→ Minami（完全一致）→ その他
+ */
+function getArtistPriorityWild3(artists: string[] | undefined): number {
+  if (!artists || artists.length === 0) return 4
   
-  const artist = artists[0]
-  if (artist === 'Minami') return 0
-  if (artist === '栗林みな実') return 1
-  return 2
+  // 単一アーティストで完全一致のみ優先
+  if (artists.length === 1) {
+    const artist = artists[0]
+    if (artist === 'ワイルド三人娘') return 0
+    if (artist === '栗林みな実') return 1
+    if (artist === 'Minami') return 2
+  }
+  return 3
 }
 
 /**
@@ -103,7 +122,7 @@ export function sortSongs(songs: Song[], sortBy: SongSortType): Song[] {
       break
 
     case 'artist':
-      // 栗林みな実を優先（栗林みな実 → Minami → その他（五十音順））
+      // 栗林みな実を優先（栗林みな実 → Minami → ワイルド三人娘 → その他（五十音順））
       sorted.sort((a, b) => {
         const priorityA = getArtistPriorityKuribayashi(a.artists)
         const priorityB = getArtistPriorityKuribayashi(b.artists)
@@ -114,7 +133,7 @@ export function sortSongs(songs: Song[], sortBy: SongSortType): Song[] {
         }
 
         // 同じ優先順位の場合、「その他」グループは五十音順
-        if (priorityA === 2) {
+        if (priorityA === 3) {
           const artistA = a.artists?.[0] || ''
           const artistB = b.artists?.[0] || ''
           return artistA.localeCompare(artistB, 'ja')
@@ -126,7 +145,7 @@ export function sortSongs(songs: Song[], sortBy: SongSortType): Song[] {
       break
 
     case 'minami':
-      // Minamiを優先（Minami → 栗林みな実 → その他（五十音順））
+      // Minamiを優先（Minami → 栗林みな実 → ワイルド三人娘 → その他（五十音順））
       sorted.sort((a, b) => {
         const priorityA = getArtistPriorityMinami(a.artists)
         const priorityB = getArtistPriorityMinami(b.artists)
@@ -137,7 +156,30 @@ export function sortSongs(songs: Song[], sortBy: SongSortType): Song[] {
         }
 
         // 同じ優先順位の場合、「その他」グループは五十音順
-        if (priorityA === 2) {
+        if (priorityA === 3) {
+          const artistA = a.artists?.[0] || ''
+          const artistB = b.artists?.[0] || ''
+          return artistA.localeCompare(artistB, 'ja')
+        }
+
+        // 同じアーティストの場合はタイトルで並び替え
+        return a.title.localeCompare(b.title, 'ja')
+      })
+      break
+
+    case 'wild3':
+      // ワイルド三人娘を優先（ワイルド三人娘 → 栗林みな実 → Minami → その他（五十音順））
+      sorted.sort((a, b) => {
+        const priorityA = getArtistPriorityWild3(a.artists)
+        const priorityB = getArtistPriorityWild3(b.artists)
+
+        // 優先順位が異なる場合
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB
+        }
+
+        // 同じ優先順位の場合、「その他」グループは五十音順
+        if (priorityA === 3) {
           const artistA = a.artists?.[0] || ''
           const artistB = b.artists?.[0] || ''
           return artistA.localeCompare(artistB, 'ja')

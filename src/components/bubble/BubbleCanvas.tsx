@@ -24,6 +24,7 @@ interface BubbleCanvasProps {
   height: number
   className?: string
   categoryFilter?: CategoryFilterValue[]
+  maxBubbles?: number
 }
 
 // シャボン玉の色定義（パステルカラー）
@@ -43,7 +44,7 @@ const ANIMATION_CONFIG = {
   minSize: 60,
   maxSize: 100,
   sizeVariation: 20,
-  maxBubbles: 10,           // 最大シャボン玉数
+  defaultMaxBubbles: 10,  // デフォルト最大シャボン玉数
   bubbleLifetimeBase: 6000, // シャボン玉の基本寿命（ミリ秒）
   bubbleLifetimeVariance: 4000, // 寿命のばらつき（ミリ秒）
   fadeOutDuration: 1000,    // フェードアウト時間（ミリ秒）
@@ -198,6 +199,7 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
   height,
   className = '',
   categoryFilter = [],
+  maxBubbles = ANIMATION_CONFIG.defaultMaxBubbles,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number | null>(null)
@@ -228,7 +230,7 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
     setBubbles(prev => {
       // 最大数に達している場合は追加しない
       const activeBubbles = prev.filter(b => !b.fadeOutStart)
-      if (activeBubbles.length >= ANIMATION_CONFIG.maxBubbles) {
+      if (activeBubbles.length >= maxBubbles) {
         return prev
       }
 
@@ -263,7 +265,7 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
       
       return [...prev, newBubble]
     })
-  }, [filteredSources, width, height])
+  }, [filteredSources, width, height, maxBubbles])
 
   // 初期シャボン玉を生成する関数
   const generateInitialBubbles = useCallback(() => {
@@ -282,7 +284,7 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
     // 各カテゴリからシャッフルしてソースを選択
     const categories = [...sourcesByCategory.keys()]
     const newBubbles: BubbleWithLifetime[] = []
-    const count = Math.min(ANIMATION_CONFIG.maxBubbles, filteredSources.length)
+    const count = Math.min(maxBubbles, filteredSources.length)
     
     // カテゴリをラウンドロビンで選択し、各カテゴリ内はランダム
     let categoryIndex = 0
@@ -311,7 +313,7 @@ export const BubbleCanvas: React.FC<BubbleCanvasProps> = React.memo(({
     
     // 最終的にシャッフルして表示順をランダムに
     return shuffleArray(newBubbles)
-  }, [filteredSources, width, height])
+  }, [filteredSources, width, height, maxBubbles])
 
   // 初期シャボン玉を設定（filteredSourcesやサイズが変わった時）
   useEffect(() => {

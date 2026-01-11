@@ -24,6 +24,7 @@ interface InlineFilterBarProps {
 const ARTIST_OPTIONS: { value: ArtistFilterValue; label: string }[] = [
   { value: '栗林みな実', label: '栗林みな実' },
   { value: 'Minami', label: 'Minami' },
+  { value: 'wild3', label: 'ワイルド三人娘' },
   { value: 'other', label: 'その他' },
 ]
 

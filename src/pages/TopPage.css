@@ -87,6 +87,87 @@
   margin-top: 100px; /* フィルタバーの高さ分 */
 }
 
+/* シャボン玉表示数スライダー */
+.top-page-bubble-slider {
+  position: absolute;
+  bottom: calc(var(--navigation-height) + var(--spacing-md));
+  left: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-index-dropdown);
+  backdrop-filter: blur(8px);
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .top-page-bubble-slider {
+    bottom: calc(var(--navigation-height) + var(--safe-area-bottom) + var(--spacing-md));
+  }
+}
+
+.bubble-slider-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.bubble-slider-icon {
+  font-size: 14px;
+}
+
+.bubble-slider-text {
+  font-weight: 500;
+}
+
+.bubble-slider-input {
+  width: 80px;
+  height: 4px;
+  appearance: none;
+  background: linear-gradient(to right, var(--color-primary-light), var(--color-primary));
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.bubble-slider-input::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.bubble-slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.bubble-slider-input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bubble-slider-value {
+  min-width: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+}
+
 /* レスポンシブ対応 */
 @media (min-width: 768px) {
   .top-page-filter-bar {
@@ -109,6 +190,10 @@
     transform: translateX(-50%);
     right: auto;
   }
+
+  .top-page-bubble-slider {
+    left: calc(50% - 350px + var(--spacing-md));
+  }
 }
 
 /* 大画面対応 */
@@ -123,5 +208,25 @@
 
   .top-page-error {
     max-width: 800px;
+  }
+
+  .top-page-bubble-slider {
+    left: calc(50% - 450px + var(--spacing-md));
+  }
+}
+
+/* スマホ向け調整 */
+@media (max-width: 480px) {
+  .top-page-bubble-slider {
+    left: var(--spacing-sm);
+    padding: 4px 10px;
+  }
+
+  .bubble-slider-text {
+    display: none;
+  }
+
+  .bubble-slider-input {
+    width: 60px;
   }
 }

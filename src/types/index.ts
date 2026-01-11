@@ -56,7 +56,7 @@ export interface Bubble {
 }
 
 // フィルタ状態
-export type ArtistFilterValue = '栗林みな実' | 'Minami' | 'other' | null
+export type ArtistFilterValue = '栗林みな実' | 'Minami' | 'wild3' | 'other' | null
 
 // 第2フィルタのカテゴリ（楽曲・作詞・作曲・編曲・タグ）
 export type CategoryFilterValue = 'song' | 'lyricist' | 'composer' | 'arranger' | 'tag'

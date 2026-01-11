@@ -11,6 +11,7 @@ const CACHE_KEYS = {
   TAGS: 'music-bubble-v2-tags',
   TIMESTAMP: 'music-bubble-v2-cache-timestamp',
   ANIMATION_STATE: 'music-bubble-v2-animation-paused',
+  BUBBLE_COUNT: 'music-bubble-v2-bubble-count',
 } as const
 
 // キャッシュの有効期限（ミリ秒）- 1時間
@@ -212,6 +213,43 @@ export class CacheService {
       return value ? JSON.parse(value) : false
     } catch {
       return false
+    }
+  }
+
+  /**
+   * シャボン玉表示数を保存
+   */
+  public setBubbleCount(count: number): void {
+    if (!this.isStorageAvailable()) {
+      return
+    }
+
+    try {
+      // 1〜15の範囲に制限
+      const validCount = Math.max(1, Math.min(15, count))
+      localStorage.setItem(CACHE_KEYS.BUBBLE_COUNT, JSON.stringify(validCount))
+    } catch (error) {
+      console.error('💾 Cache: シャボン玉数保存エラー', error)
+    }
+  }
+
+  /**
+   * シャボン玉表示数を取得
+   */
+  public getBubbleCount(): number {
+    if (!this.isStorageAvailable()) {
+      return 10 // デフォルト値
+    }
+
+    try {
+      const value = localStorage.getItem(CACHE_KEYS.BUBBLE_COUNT)
+      if (value) {
+        const count = JSON.parse(value)
+        return Math.max(1, Math.min(15, count))
+      }
+      return 10 // デフォルト値
+    } catch {
+      return 10 // デフォルト値
     }
   }
 
