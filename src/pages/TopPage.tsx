@@ -92,6 +92,23 @@ export function TopPage() {
     cacheService.setBubbleCount(newCount)
   }, [])
 
+  // シャボン玉表示数を増減
+  const handleBubbleCountIncrement = useCallback(() => {
+    setBubbleCount((prev) => {
+      const newCount = Math.min(15, prev + 1)
+      cacheService.setBubbleCount(newCount)
+      return newCount
+    })
+  }, [])
+
+  const handleBubbleCountDecrement = useCallback(() => {
+    setBubbleCount((prev) => {
+      const newCount = Math.max(1, prev - 1)
+      cacheService.setBubbleCount(newCount)
+      return newCount
+    })
+  }, [])
+
   // シャボン玉クリック
   const handleBubbleClick = useCallback((bubble: BubbleType) => {
     trackEvent(AnalyticsEvents.バブル_タップ, {
@@ -263,6 +280,15 @@ export function TopPage() {
             <span className="bubble-slider-icon">🫧</span>
             <span className="bubble-slider-text">表示数</span>
           </label>
+          <button
+            type="button"
+            className="bubble-slider-btn"
+            onClick={handleBubbleCountDecrement}
+            disabled={bubbleCount <= 1}
+            aria-label="シャボン玉を減らす"
+          >
+            −
+          </button>
           <input
             id="bubble-count-slider"
             type="range"
@@ -273,6 +299,15 @@ export function TopPage() {
             className="bubble-slider-input"
             aria-label={`シャボン玉の表示数: ${bubbleCount}個`}
           />
+          <button
+            type="button"
+            className="bubble-slider-btn"
+            onClick={handleBubbleCountIncrement}
+            disabled={bubbleCount >= 15}
+            aria-label="シャボン玉を増やす"
+          >
+            +
+          </button>
           <span className="bubble-slider-value">{bubbleCount}</span>
         </div>
 
