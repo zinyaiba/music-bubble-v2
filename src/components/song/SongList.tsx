@@ -21,8 +21,8 @@ const DISPLAY_MODES: { mode: SongDisplayMode; icon: string; label: string }[] = 
   { mode: 'compact', icon: '☰', label: '簡易表示' },
   { mode: 'artist', icon: '🎤', label: 'アーティスト' },
   { mode: 'lyricist', icon: '✍', label: '作詞' },
-  { mode: 'composer', icon: '🎵', label: '作曲' },
-  { mode: 'arranger', icon: '🎹', label: '編曲' },
+  { mode: 'composer', icon: '🎼', label: '作曲' },
+  { mode: 'arranger', icon: '🎧', label: '編曲' },
   { mode: 'release', icon: '📅', label: '発売日' },
   { mode: 'all', icon: 'ALL', label: 'すべて表示' },
 ]
