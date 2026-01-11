@@ -384,7 +384,7 @@ export function TagRegistrationPage() {
                       onChange={handleTitleOnlyChange}
                     />
                     <span className="tag-registration-page__toggle-slider"></span>
-                    <span className="tag-registration-page__toggle-label">曲名のみ</span>
+                    <span className="tag-registration-page__toggle-label">曲名のみ検索</span>
                   </label>
                 </div>
 

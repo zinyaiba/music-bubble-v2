@@ -180,7 +180,7 @@ export function SongList({
               onChange={handleTitleOnlyChange}
             />
             <span className="song-list__toggle-slider"></span>
-            <span className="song-list__toggle-label">曲名のみ</span>
+            <span className="song-list__toggle-label">曲名のみ検索</span>
           </label>
         </div>
 

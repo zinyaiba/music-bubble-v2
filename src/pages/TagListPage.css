@@ -10,9 +10,10 @@
 .tag-list-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--color-background);
+  overflow: hidden;
 }
 
 .tag-list-page__main {
@@ -22,6 +23,7 @@
   padding-top: var(--header-height);
   padding-bottom: var(--navigation-height);
   position: relative;
+  overflow: hidden;
 }
 
 /* 詳細表示時のメイン */

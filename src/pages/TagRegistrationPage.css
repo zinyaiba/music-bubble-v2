@@ -12,9 +12,10 @@
 .tag-registration-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--color-background);
+  overflow: hidden;
 }
 
 .tag-registration-page__main {
@@ -23,6 +24,7 @@
   flex-direction: column;
   padding-top: var(--header-height);
   padding-bottom: var(--navigation-height);
+  overflow: hidden;
 }
 
 /* エラーメッセージ */
@@ -46,6 +48,7 @@
   padding: var(--spacing-md);
   background: var(--color-surface);
   border-bottom: var(--border-width-thin) solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .tag-registration-page__search-input-wrapper {
@@ -228,6 +231,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 .tag-registration-page__song-item {
