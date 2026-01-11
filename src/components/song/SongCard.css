@@ -86,8 +86,33 @@
 }
 
 .song-card__credit-label {
-  color: var(--color-text-secondary);
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-medium);
   margin-right: var(--spacing-xs);
+  border: 1px solid;
+}
+
+/* 作詞ラベル - シアン系 */
+.song-card__credit-label--lyricist {
+  background: #e0f7fa;
+  color: #00838f;
+  border-color: #80deea;
+}
+
+/* 作曲ラベル - パープル系 */
+.song-card__credit-label--composer {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border-color: #ce93d8;
+}
+
+/* 編曲ラベル - イエロー系 */
+.song-card__credit-label--arranger {
+  background: #fffde7;
+  color: #f57f17;
+  border-color: #fff59d;
 }
 
 /* 発売日 */
@@ -98,8 +123,16 @@
 }
 
 .song-card__release-label {
-  color: var(--color-text-secondary);
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-medium);
   margin-right: var(--spacing-xs);
+  border: 1px solid;
+  /* 発売日 - ブルーグレー系 */
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
 }
 
 /* 矢印アイコン */

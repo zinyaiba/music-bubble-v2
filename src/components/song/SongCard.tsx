@@ -87,19 +87,19 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
               <div className="song-card__credits">
                 {(displayMode === 'lyricist' || displayMode === 'all') && song.lyricists && song.lyricists.length > 0 && (
                   <span className="song-card__credit">
-                    <span className="song-card__credit-label">作詞:</span>
+                    <span className="song-card__credit-label song-card__credit-label--lyricist">作詞</span>
                     {formatArray(song.lyricists)}
                   </span>
                 )}
                 {(displayMode === 'composer' || displayMode === 'all') && song.composers && song.composers.length > 0 && (
                   <span className="song-card__credit">
-                    <span className="song-card__credit-label">作曲:</span>
+                    <span className="song-card__credit-label song-card__credit-label--composer">作曲</span>
                     {formatArray(song.composers)}
                   </span>
                 )}
                 {(displayMode === 'arranger' || displayMode === 'all') && song.arrangers && song.arrangers.length > 0 && (
                   <span className="song-card__credit">
-                    <span className="song-card__credit-label">編曲:</span>
+                    <span className="song-card__credit-label song-card__credit-label--arranger">編曲</span>
                     {formatArray(song.arrangers)}
                   </span>
                 )}
@@ -109,7 +109,7 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
             {/* 発売日 */}
             {(displayMode === 'release' || displayMode === 'all') && releaseDisplay && (
               <div className="song-card__release">
-                <span className="song-card__release-label">発売:</span>
+                <span className="song-card__release-label">発売</span>
                 {releaseDisplay}
               </div>
             )}

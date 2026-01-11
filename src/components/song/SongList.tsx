@@ -24,7 +24,7 @@ const DISPLAY_MODES: { mode: SongDisplayMode; icon: string; label: string }[] = 
   { mode: 'composer', icon: '🎵', label: '作曲' },
   { mode: 'arranger', icon: '🎹', label: '編曲' },
   { mode: 'release', icon: '📅', label: '発売日' },
-  { mode: 'all', icon: '▤', label: 'すべて表示' },
+  { mode: 'all', icon: 'ALL', label: 'すべて表示' },
 ]
 
 export interface SongListProps {

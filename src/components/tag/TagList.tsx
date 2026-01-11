@@ -184,7 +184,7 @@ export function TagList({
             aria-label={isCompactView ? '詳細表示に切り替え' : '簡易表示に切り替え'}
             title={isCompactView ? '詳細表示' : '簡易表示'}
           >
-            {isCompactView ? '☰' : '▤'}
+            {isCompactView ? '☰' : 'ALL'}
           </button>
         </div>
       </div>

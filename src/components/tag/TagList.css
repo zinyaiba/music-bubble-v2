@@ -44,8 +44,8 @@
   padding-right: calc(var(--spacing-md) + 28px);
   font-size: var(--font-size-md);
   font-family: var(--font-family);
-  color: var(--color-text);
-  background: var(--color-surface);
+  color: #1a1a2e;
+  background: #fff5f8;
   border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--border-radius-lg);
   outline: none;
@@ -131,10 +131,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  min-width: 36px;
   height: 36px;
-  padding: 0;
-  font-size: var(--font-size-lg);
+  padding: 0 var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   background: var(--color-surface);
   border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--border-radius-md);
