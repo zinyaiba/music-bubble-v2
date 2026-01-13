@@ -71,6 +71,9 @@ export function TagInput({
   // サジェストを表示するかどうか
   const showSuggestions = isFocused && suggestions.length > 0 && !confirmDialog
 
+  // 追加ボタンが有効かどうか
+  const canAddTag = inputValue.trim() && !selectedTags.includes(inputValue.trim())
+
   // タグ追加の確認ダイアログを表示
   const handleRequestAddTag = useCallback(
     (tag: string) => {
@@ -79,7 +82,6 @@ export function TagInput({
       if (selectedTags.includes(trimmedTag)) return
 
       setConfirmDialog({ type: 'add', tagName: trimmedTag })
-      setInputValue('')
       setHighlightedIndex(-1)
     },
     [selectedTags]
@@ -99,6 +101,7 @@ export function TagInput({
 
     if (confirmDialog.type === 'add') {
       onChange([...selectedTags, confirmDialog.tagName])
+      setInputValue('')
     } else if (confirmDialog.type === 'remove') {
       onChange(selectedTags.filter((tag) => tag !== confirmDialog.tagName))
     }
@@ -121,21 +124,27 @@ export function TagInput({
     []
   )
 
+  // 追加ボタンクリックハンドラ
+  const handleAddButtonClick = useCallback(() => {
+    if (canAddTag) {
+      handleRequestAddTag(inputValue)
+    }
+  }, [canAddTag, inputValue, handleRequestAddTag])
+
   // キーボードイベントハンドラ
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
         e.preventDefault()
         if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
-          // サジェストから選択
-          handleRequestAddTag(suggestions[highlightedIndex])
+          // サジェストから選択 → 入力欄に入力
+          setInputValue(suggestions[highlightedIndex])
+          setHighlightedIndex(-1)
+          setIsFocused(false)
         } else if (inputValue.trim()) {
-          // 新規タグを追加
+          // 追加ボタンと同じ動作
           handleRequestAddTag(inputValue)
         }
-      } else if (e.key === 'Backspace' && !inputValue && selectedTags.length > 0) {
-        // 入力が空の状態でBackspaceを押すと最後のタグを削除確認
-        handleRequestRemoveTag(selectedTags[selectedTags.length - 1])
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
         setHighlightedIndex((prev) =>
@@ -149,7 +158,7 @@ export function TagInput({
         inputRef.current?.blur()
       }
     },
-    [inputValue, selectedTags, suggestions, highlightedIndex, handleRequestAddTag, handleRequestRemoveTag]
+    [inputValue, suggestions, highlightedIndex, handleRequestAddTag]
   )
 
   // フォーカスハンドラ
@@ -166,12 +175,14 @@ export function TagInput({
     setIsFocused(false)
   }, [])
 
-  // サジェストクリックハンドラ
+  // サジェストクリックハンドラ - 入力欄に入力するだけ
   const handleSuggestionClick = useCallback(
     (tag: string) => {
-      handleRequestAddTag(tag)
+      setInputValue(tag)
+      setIsFocused(false)
+      setHighlightedIndex(-1)
     },
-    [handleRequestAddTag]
+    []
   )
 
   // サジェストのmousedown/touchstartでフォーカスが外れるのを防ぐ
@@ -189,10 +200,74 @@ export function TagInput({
 
   return (
     <div className="tag-input">
-      {/* 登録済みタグの表示領域 */}
+      {/* タグ追加領域（上部に配置） */}
+      <div className="tag-input__add-section">
+        <p className="tag-input__add-label">タグを追加</p>
+        <div className="tag-input__add-row">
+          <div
+            className={`tag-input__container ${isFocused ? 'tag-input__container--focused' : ''} ${disabled ? 'tag-input__container--disabled' : ''}`}
+            onClick={handleContainerClick}
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              className="tag-input__input"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              placeholder={placeholder}
+              disabled={disabled}
+              autoComplete="off"
+              aria-label="タグを入力"
+            />
+          </div>
+          <button
+            type="button"
+            className={`tag-input__add-button ${canAddTag ? '' : 'tag-input__add-button--disabled'}`}
+            onClick={handleAddButtonClick}
+            disabled={disabled || !canAddTag}
+          >
+            追加
+          </button>
+        </div>
+
+        {/* サジェストリスト */}
+        {showSuggestions && (
+          <div
+            ref={suggestionsRef}
+            className="tag-input__suggestions"
+            role="listbox"
+          >
+            {suggestions.map((tag, index) => (
+              <button
+                key={tag}
+                type="button"
+                className={`tag-input__suggestion ${index === highlightedIndex ? 'tag-input__suggestion--highlighted' : ''}`}
+                onClick={() => handleSuggestionClick(tag)}
+                onMouseDown={handleSuggestionPointerDown}
+                onTouchStart={handleSuggestionPointerDown}
+                onMouseEnter={() => setHighlightedIndex(index)}
+                role="option"
+                aria-selected={index === highlightedIndex}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ヒント */}
+        <p className="tag-input__hint">
+          サジェストから選択、またはEnterで入力確定後「追加」ボタンを押してください
+        </p>
+      </div>
+
+      {/* 登録済みタグの表示領域（下部に配置、スクロール可能） */}
       {selectedTags.length > 0 && (
         <div className="tag-input__registered">
-          <p className="tag-input__registered-label">登録済みタグ</p>
+          <p className="tag-input__registered-label">登録済みタグ ({selectedTags.length}件)</p>
           <div className="tag-input__registered-tags">
             {selectedTags.map((tag) => (
               <span key={tag} className="tag-input__tag">
@@ -227,74 +302,6 @@ export function TagInput({
           </div>
         </div>
       )}
-
-      {/* タグ入力領域 */}
-      <div className="tag-input__add-section">
-        <p className="tag-input__add-label">タグを追加</p>
-        <div
-          className={`tag-input__container ${isFocused ? 'tag-input__container--focused' : ''} ${disabled ? 'tag-input__container--disabled' : ''}`}
-          onClick={handleContainerClick}
-        >
-          <input
-            ref={inputRef}
-            type="text"
-            className="tag-input__input"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            placeholder={placeholder}
-            disabled={disabled}
-            autoComplete="off"
-            aria-label="タグを入力"
-          />
-        </div>
-
-        {/* サジェストリスト */}
-        {showSuggestions && (
-          <div
-            ref={suggestionsRef}
-            className="tag-input__suggestions"
-            role="listbox"
-          >
-            {suggestions.map((tag, index) => (
-              <button
-                key={tag}
-                type="button"
-                className={`tag-input__suggestion ${index === highlightedIndex ? 'tag-input__suggestion--highlighted' : ''}`}
-                onClick={() => handleSuggestionClick(tag)}
-                onMouseDown={handleSuggestionPointerDown}
-                onTouchStart={handleSuggestionPointerDown}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                role="option"
-                aria-selected={index === highlightedIndex}
-              >
-                <svg
-                  className="tag-input__suggestion-icon"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                #{tag}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ヒント */}
-        <p className="tag-input__hint">
-          Enterで追加
-        </p>
-      </div>
 
       {/* 確認ダイアログ */}
       {confirmDialog && (

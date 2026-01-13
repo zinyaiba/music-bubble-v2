@@ -18,6 +18,17 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-01-14',
+    title: 'アップデート情報',
+    content: `以下のアップデートを行いました。
+
+**主な改善点:**
+- タグ登録画面でタグが登録しづらい問題を改善
+- 検索入力欄をタップした際、ズームしないように改善`,
+    date: '2026-01-14',
+    type: 'update',
+  },
+  {
     id: 'ann-2026-01-12-2',
     title: 'ワイルド三人娘のフィルタを追加',
     content: `以下の機能を追加しました。
@@ -36,7 +47,7 @@ export const announcements: Announcement[] = [
 **主な改善点:**
 - タグ登録一覧画面でスクロールがしづらい問題を改善
 - レイアウトの微調整
-- シャボン玉の数を変更可能に`,
+- シャボン玉の数を変更可能にcd music-bubble-v2`,
     date: '2026-01-12',
     type: 'update',
   },

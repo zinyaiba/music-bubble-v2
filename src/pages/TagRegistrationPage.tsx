@@ -293,9 +293,6 @@ export function TagRegistrationPage() {
               </div>
 
               <div className="tag-registration-page__tag-editor">
-                <label className="tag-registration-page__label">
-                  タグを編集
-                </label>
                 <TagInput
                   existingTags={allTags}
                   selectedTags={selectedSong.tags || []}
@@ -311,15 +308,6 @@ export function TagRegistrationPage() {
                   </p>
                 )}
               </div>
-
-              {/* 現在のタグ表示 */}
-              {selectedSong.tags && selectedSong.tags.length > 0 && (
-                <div className="tag-registration-page__current-tags">
-                  <p className="tag-registration-page__current-tags-label">
-                    現在のタグ: {selectedSong.tags.length}個
-                  </p>
-                </div>
-              )}
             </div>
           ) : (
             <>

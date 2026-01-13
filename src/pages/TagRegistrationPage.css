@@ -494,7 +494,8 @@
   }
 
   .tag-registration-page__search-input {
-    font-size: var(--font-size-sm);
+    /* 16px以上でiOSの自動ズームを防止 */
+    font-size: 16px;
     padding: var(--spacing-sm);
     padding-left: calc(var(--spacing-sm) + 28px);
     padding-right: calc(var(--spacing-sm) + 28px);
