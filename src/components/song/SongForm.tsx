@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import type { Song, DetailPageUrl } from '../../types'
+import type { Song, DetailPageUrl, MusicServiceEmbed } from '../../types'
 import './SongForm.css'
 
 export interface SongFormProps {
@@ -34,7 +34,7 @@ interface FormData {
   releaseDay: string
   singleName: string
   albumName: string
-  musicServiceEmbed: string
+  musicServiceEmbeds: MusicServiceEmbed[]
   detailPageUrls: DetailPageUrl[]
 }
 
@@ -76,6 +76,41 @@ function isValidUrl(url: string): boolean {
   } catch {
     return false
   }
+}
+
+/**
+ * 埋め込み内容からサービス名を自動判定
+ */
+function getServiceNameFromEmbed(embed: string): string {
+  const lowerEmbed = embed.toLowerCase()
+  if (lowerEmbed.includes('spotify')) return 'Spotify'
+  if (lowerEmbed.includes('youtube') || lowerEmbed.includes('youtu.be')) return 'YouTube'
+  if (lowerEmbed.includes('apple')) return 'Apple Music'
+  if (lowerEmbed.includes('soundcloud')) return 'SoundCloud'
+  if (lowerEmbed.includes('bandcamp')) return 'Bandcamp'
+  if (lowerEmbed.includes('nicovideo') || lowerEmbed.includes('nico.ms')) return 'ニコニコ動画'
+  return '埋め込みコンテンツ'
+}
+
+/**
+ * URLからリンクラベルを自動判定
+ */
+function getLinkLabelFromUrl(url: string): string {
+  const lowerUrl = url.toLowerCase()
+  if (lowerUrl.includes('spotify')) return 'Spotify'
+  if (lowerUrl.includes('youtube') || lowerUrl.includes('youtu.be')) return 'YouTube'
+  if (lowerUrl.includes('apple')) return 'Apple Music'
+  if (lowerUrl.includes('amazon')) return 'Amazon Music'
+  if (lowerUrl.includes('aniuta')) return 'ANiUTa'
+  if (lowerUrl.includes('mora')) return 'mora'
+  if (lowerUrl.includes('recochoku')) return 'レコチョク'
+  if (lowerUrl.includes('oricon')) return 'ORICON'
+  if (lowerUrl.includes('utaten')) return 'UtaTen'
+  if (lowerUrl.includes('uta-net')) return 'Uta-Net'
+  if (lowerUrl.includes('joysound')) return 'JOYSOUND'
+  if (lowerUrl.includes('dam')) return 'DAM'
+  if (lowerUrl.includes('nicovideo') || lowerUrl.includes('nico.ms')) return 'ニコニコ動画'
+  return 'リンク'
 }
 
 /**
@@ -132,6 +167,21 @@ function formatReleaseDate(month: string, day: string): string | undefined {
 }
 
 /**
+ * 既存データから埋め込みコンテンツ配列を生成（後方互換性対応）
+ */
+function getInitialEmbeds(song?: Song): MusicServiceEmbed[] {
+  // 新形式があればそれを使用
+  if (song?.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
+    return song.musicServiceEmbeds
+  }
+  // 旧形式からの変換
+  if (song?.musicServiceEmbed) {
+    return [{ embed: song.musicServiceEmbed }]
+  }
+  return []
+}
+
+/**
  * SongForm コンポーネント
  * 楽曲の登録・編集フォーム
  */
@@ -157,7 +207,7 @@ export function SongForm({
       releaseDay: day,
       singleName: song?.singleName || '',
       albumName: song?.albumName || '',
-      musicServiceEmbed: song?.musicServiceEmbed || '',
+      musicServiceEmbeds: getInitialEmbeds(song),
       detailPageUrls: song?.detailPageUrls || [],
     }
   }, [song])
@@ -189,6 +239,41 @@ export function SongForm({
   const handleBlur = useCallback((field: string) => () => {
     setTouched((prev) => ({ ...prev, [field]: true }))
   }, [])
+
+  /**
+   * 埋め込みコンテンツの追加
+   */
+  const handleAddEmbed = useCallback(() => {
+    setFormData((prev) => ({
+      ...prev,
+      musicServiceEmbeds: [...prev.musicServiceEmbeds, { embed: '', label: '' }],
+    }))
+  }, [])
+
+  /**
+   * 埋め込みコンテンツの削除
+   */
+  const handleRemoveEmbed = useCallback((index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      musicServiceEmbeds: prev.musicServiceEmbeds.filter((_, i) => i !== index),
+    }))
+  }, [])
+
+  /**
+   * 埋め込みコンテンツの変更
+   */
+  const handleEmbedChange = useCallback(
+    (index: number, field: 'embed' | 'label', value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        musicServiceEmbeds: prev.musicServiceEmbeds.map((item, i) =>
+          i === index ? { ...item, [field]: value } : item
+        ),
+      }))
+    },
+    []
+  )
 
   /**
    * 外部リンクの追加
@@ -327,18 +412,31 @@ export function SongForm({
       songData.albumName = formData.albumName.trim()
     }
 
-    if (formData.musicServiceEmbed.trim()) {
-      songData.musicServiceEmbed = formData.musicServiceEmbed.trim()
-    }
+    // 有効な埋め込みコンテンツのみ（空の場合も明示的に空配列を設定）
+    const validEmbeds = formData.musicServiceEmbeds.filter((item) => item.embed.trim())
+    songData.musicServiceEmbeds = validEmbeds.map((item) => {
+      const embed = item.embed.trim()
+      const label = item.label?.trim()
+      // ラベルが空の場合は埋め込み内容から自動判定
+      const autoLabel = label || getServiceNameFromEmbed(embed)
+      return {
+        embed,
+        label: autoLabel,
+      }
+    })
 
-    // 有効な外部リンクのみ
+    // 有効な外部リンクのみ（空の場合も明示的に空配列を設定）
     const validUrls = formData.detailPageUrls.filter((link) => link.url.trim())
-    if (validUrls.length > 0) {
-      songData.detailPageUrls = validUrls.map((link) => ({
-        url: link.url.trim(),
-        label: link.label?.trim() || undefined,
-      }))
-    }
+    songData.detailPageUrls = validUrls.map((link) => {
+      const url = link.url.trim()
+      const label = link.label?.trim()
+      // ラベルが空の場合はURLから自動判定
+      const autoLabel = label || getLinkLabelFromUrl(url)
+      return {
+        url,
+        label: autoLabel,
+      }
+    })
 
     // 編集モードの場合はIDを保持
     if (isEditMode && song?.id) {
@@ -592,24 +690,85 @@ export function SongForm({
         <section className="song-form__section">
           <h3 className="song-form__section-title">埋め込みコンテンツ</h3>
 
-          <div className="song-form__field">
-            <label htmlFor="musicServiceEmbed" className="song-form__label">
-              iframeタグ
-            </label>
-            <textarea
-              id="musicServiceEmbed"
-              className="song-form__textarea"
-              value={formData.musicServiceEmbed}
-              onChange={handleChange('musicServiceEmbed')}
-              onBlur={handleBlur('musicServiceEmbed')}
-              placeholder="Spotify、YouTube等の埋め込みiframeタグを貼り付け"
+          <div className="song-form__embeds">
+            {formData.musicServiceEmbeds.map((item, index) => (
+              <div key={index} className="song-form__embed-item">
+                <div className="song-form__embed-fields">
+                  <div className="song-form__field">
+                    <input
+                      type="text"
+                      className="song-form__input song-form__input--embed-label"
+                      value={item.label || ''}
+                      onChange={(e) =>
+                        handleEmbedChange(index, 'label', e.target.value)
+                      }
+                      placeholder="ラベル（例: Spotify, YouTube）"
+                      disabled={isSubmitting}
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="song-form__field">
+                    <textarea
+                      className="song-form__textarea song-form__textarea--embed"
+                      value={item.embed}
+                      onChange={(e) =>
+                        handleEmbedChange(index, 'embed', e.target.value)
+                      }
+                      placeholder="iframeタグを貼り付け"
+                      disabled={isSubmitting}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="song-form__embed-remove"
+                  onClick={() => handleRemoveEmbed(index)}
+                  disabled={isSubmitting}
+                  aria-label="埋め込みコンテンツを削除"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="song-form__embed-add"
+              onClick={handleAddEmbed}
               disabled={isSubmitting}
-              rows={3}
-            />
-            <p className="song-form__hint">
-              例: &lt;iframe src="https://open.spotify.com/embed/track/..."&gt;&lt;/iframe&gt;
-            </p>
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              埋め込みコンテンツを追加
+            </button>
           </div>
+          <p className="song-form__hint">
+            Spotify、YouTube等の埋め込みiframeタグを貼り付けてください
+          </p>
         </section>
 
         {/* 外部リンクセクション */}

@@ -10,7 +10,7 @@
  * - 8.6: 欠落または無効な埋め込みコンテンツを適切に処理
  */
 
-import type { Song } from '../../types'
+import type { Song, MusicServiceEmbed } from '../../types'
 import './SongDetail.css'
 
 export interface SongDetailProps {
@@ -37,12 +37,28 @@ function formatArray(arr: string[] | undefined, fallback = '-'): string {
 /**
  * 埋め込みコンテンツからサービス名を判定
  */
-function getEmbedServiceName(embedContent: string): string {
+function getEmbedServiceName(embedContent: string, label?: string): string {
+  if (label) return label
   if (embedContent.includes('spotify')) return 'Spotify'
   if (embedContent.includes('youtube') || embedContent.includes('youtu.be')) return 'YouTube'
   if (embedContent.includes('apple')) return 'Apple Music'
   if (embedContent.includes('soundcloud')) return 'SoundCloud'
   return '音楽サービス'
+}
+
+/**
+ * 埋め込みコンテンツ配列を取得（後方互換性対応）
+ */
+function getEmbeds(song: Song): MusicServiceEmbed[] {
+  // 新形式があればそれを使用
+  if (song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
+    return song.musicServiceEmbeds
+  }
+  // 旧形式からの変換
+  if (song.musicServiceEmbed && song.musicServiceEmbed.trim()) {
+    return [{ embed: song.musicServiceEmbed }]
+  }
+  return []
 }
 
 /**
@@ -109,7 +125,8 @@ function formatReleaseDate(releaseYear?: number, releaseDate?: string): string |
  * 楽曲の詳細情報を表示
  */
 export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDetailProps) {
-  const hasEmbed = !!song.musicServiceEmbed && song.musicServiceEmbed.trim().length > 0
+  const embeds = getEmbeds(song)
+  const hasEmbeds = embeds.length > 0
   const hasLinks = song.detailPageUrls && song.detailPageUrls.length > 0
   const hasTags = song.tags && song.tags.length > 0
   const releaseDisplayDate = formatReleaseDate(song.releaseYear, song.releaseDate)
@@ -123,29 +140,36 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
       </header>
 
       {/* 埋め込みコンテンツ */}
-      {hasEmbed && (
+      {hasEmbeds && (
         <section className="song-detail__embed-section">
-          <h2 className="song-detail__section-title">
-            {getEmbedServiceName(song.musicServiceEmbed!)}
-          </h2>
-          {isIframeTag(song.musicServiceEmbed) ? (
-            // iframeタグをそのまま表示
-            <div
-              className="song-detail__embed-container"
-              dangerouslySetInnerHTML={{ __html: song.musicServiceEmbed! }}
-            />
-          ) : (
-            // URLの場合はiframeで表示
-            <div className="song-detail__embed-container">
-              <iframe
-                src={song.musicServiceEmbed}
-                className="song-detail__embed"
-                title={`${song.title} - ${getEmbedServiceName(song.musicServiceEmbed!)}`}
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-              />
-            </div>
-          )}
+          <h2 className="song-detail__section-title">埋め込みコンテンツ</h2>
+          <div className="song-detail__embeds">
+            {embeds.map((item, index) => (
+              <div key={index} className="song-detail__embed-item">
+                <h3 className="song-detail__embed-label">
+                  {getEmbedServiceName(item.embed, item.label)}
+                </h3>
+                {isIframeTag(item.embed) ? (
+                  // iframeタグをそのまま表示
+                  <div
+                    className="song-detail__embed-container"
+                    dangerouslySetInnerHTML={{ __html: item.embed }}
+                  />
+                ) : (
+                  // URLの場合はiframeで表示
+                  <div className="song-detail__embed-container">
+                    <iframe
+                      src={item.embed}
+                      className="song-detail__embed"
+                      title={`${song.title} - ${getEmbedServiceName(item.embed, item.label)}`}
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
       )}
 

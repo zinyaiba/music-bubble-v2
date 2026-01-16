@@ -57,7 +57,10 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
   const artists = formatArray(song.artists)
   const releaseDisplay = formatReleaseDate(song.releaseYear, song.releaseDate)
   const isCompact = displayMode === 'compact'
-  const hasEmbed = !!song.musicServiceEmbed && song.musicServiceEmbed.trim().length > 0
+  // 旧形式と新形式の両方をチェック
+  const hasEmbed = 
+    (!!song.musicServiceEmbed && song.musicServiceEmbed.trim().length > 0) ||
+    (!!song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0)
 
   return (
     <article

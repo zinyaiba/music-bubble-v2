@@ -57,6 +57,25 @@
   padding: var(--spacing-md);
 }
 
+.song-detail__embeds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.song-detail__embed-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.song-detail__embed-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
 .song-detail__embed-container {
   position: relative;
   width: 100%;

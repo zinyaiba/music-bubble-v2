@@ -3,6 +3,12 @@
  * Music Bubble Explorer V2
  */
 
+// 埋め込みコンテンツ
+export interface MusicServiceEmbed {
+  embed: string // iframeタグまたはURL
+  label?: string // 表示ラベル（任意）
+}
+
 // 楽曲データ（既存Firebase構造を継承）
 export interface Song {
   id: string
@@ -17,7 +23,10 @@ export interface Song {
   releaseDate?: string // 発売日（月日、MMDD形式、例: 0315）
   singleName?: string
   albumName?: string
+  /** @deprecated 後方互換性のため残存。新規は musicServiceEmbeds を使用 */
   musicServiceEmbed?: string
+  /** 複数の埋め込みコンテンツ */
+  musicServiceEmbeds?: MusicServiceEmbed[]
   detailPageUrls?: DetailPageUrl[]
   createdAt?: string
   updatedAt?: string

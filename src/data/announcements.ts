@@ -18,8 +18,19 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-01-17',
+    title: '埋め込みコンテンツを複数登録可能に',
+    content: `以下のアップデートを行いました。
+
+**主な改善点:**
+- 埋め込みコンテンツを複数登録することが可能になりました
+- 楽曲詳細ページにも複数表示されるようになります`,
+    date: '2026-01-17',
+    type: 'update',
+  },
+  {
     id: 'ann-2026-01-14',
-    title: 'アップデート情報',
+    title: '使用感の向上を行いました',
     content: `以下のアップデートを行いました。
 
 **主な改善点:**
@@ -47,7 +58,7 @@ export const announcements: Announcement[] = [
 **主な改善点:**
 - タグ登録一覧画面でスクロールがしづらい問題を改善
 - レイアウトの微調整
-- シャボン玉の数を変更可能にcd music-bubble-v2`,
+- シャボン玉の数を変更可能に`,
     date: '2026-01-12',
     type: 'update',
   },

@@ -100,6 +100,7 @@ export class FirebaseService {
     if (data.singleName) song.singleName = data.singleName
     if (data.albumName) song.albumName = data.albumName
     if (data.musicServiceEmbed) song.musicServiceEmbed = data.musicServiceEmbed
+    if (data.musicServiceEmbeds) song.musicServiceEmbeds = data.musicServiceEmbeds
     if (data.detailPageUrls) song.detailPageUrls = data.detailPageUrls
 
     return song
