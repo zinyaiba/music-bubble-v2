@@ -378,20 +378,37 @@ export function TagRegistrationPage() {
 
                 {/* 並び替え */}
                 <div className="tag-registration-page__controls">
-                  <select
-                    className="tag-registration-page__sort-select"
-                    value={sortBy}
-                    onChange={handleSortChange}
-                    aria-label="並び替え"
-                  >
-                    <option value="newest">新曲順</option>
-                    <option value="oldest">古い曲順</option>
-                    <option value="updated">更新順</option>
-                    <option value="alphabetical">五十音順</option>
-                    <option value="artist">栗林みな実を優先</option>
-                    <option value="minami">Minamiを優先</option>
-                    <option value="wild3">ワイルド三人娘を優先</option>
-                  </select>
+                  <div className="tag-registration-page__control-group">
+                    <svg
+                      className="tag-registration-page__control-icon"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <polyline points="19 12 12 19 5 12" />
+                    </svg>
+                    <select
+                      className="tag-registration-page__sort-select"
+                      value={sortBy}
+                      onChange={handleSortChange}
+                      aria-label="並び替え"
+                    >
+                      <option value="newest">新曲順</option>
+                      <option value="oldest">古い曲順</option>
+                      <option value="updated">更新順</option>
+                      <option value="alphabetical">五十音順</option>
+                      <option value="artist">栗林みな実を優先</option>
+                      <option value="minami">Minamiを優先</option>
+                      <option value="wild3">ワイルド三人娘を優先</option>
+                    </select>
+                  </div>
                   <button
                     type="button"
                     className={`tag-registration-page__view-toggle ${isCompactView ? 'tag-registration-page__view-toggle--active' : ''}`}

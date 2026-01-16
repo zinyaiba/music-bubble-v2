@@ -12,6 +12,7 @@ import { useCallback, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { SongSortType } from '../utils/songSorting'
 import type { SongDisplayMode } from '../components/song/SongCard'
+import type { ContentFilterValue } from '../components/song/SongList'
 import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
 import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
@@ -34,6 +35,8 @@ export function SongListPage() {
   const initialTitleOnly = searchParams.get('titleOnly') === 'true'
   const initialSortBy = (searchParams.get('sort') as SongSortType) || 'newest'
   const initialDisplayMode = (searchParams.get('display') as SongDisplayMode) || 'all'
+  const initialContentFilter = (searchParams.get('content') as ContentFilterValue) || 'all'
+  const initialYearFilter = searchParams.get('year') || 'all'
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
@@ -60,12 +63,14 @@ export function SongListPage() {
 
   // 検索状態の変更をURLに反映
   const handleSearchStateChange = useCallback(
-    (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode) => {
+    (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode, contentFilter: ContentFilterValue, yearFilter: string) => {
       const params = new URLSearchParams()
       if (query) params.set('q', query)
       if (titleOnly) params.set('titleOnly', 'true')
       if (sortBy !== 'newest') params.set('sort', sortBy)
       if (displayMode !== 'all') params.set('display', displayMode)
+      if (contentFilter !== 'all') params.set('content', contentFilter)
+      if (yearFilter !== 'all') params.set('year', yearFilter)
       setSearchParams(params, { replace: true })
 
       // 検索実行時にトラッキング
@@ -144,6 +149,8 @@ export function SongListPage() {
             initialTitleOnly={initialTitleOnly}
             initialSortBy={initialSortBy}
             initialDisplayMode={initialDisplayMode}
+            initialContentFilter={initialContentFilter}
+            initialYearFilter={initialYearFilter}
             onSearchStateChange={handleSearchStateChange}
           />
         </div>

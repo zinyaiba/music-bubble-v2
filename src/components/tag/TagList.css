@@ -111,8 +111,21 @@
   gap: var(--spacing-sm);
 }
 
+.tag-list__control-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.tag-list__control-icon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
 .tag-list__sort-select {
   flex: 1;
+  min-width: 0;
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-family: var(--font-family);
@@ -245,6 +258,11 @@
 
   .tag-list__sort-select {
     font-size: var(--font-size-xs);
+  }
+
+  .tag-list__control-icon {
+    width: 12px;
+    height: 12px;
   }
 
   .tag-list__view-toggle {

@@ -179,8 +179,21 @@
   gap: var(--spacing-sm);
 }
 
+.tag-registration-page__control-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.tag-registration-page__control-icon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
 .tag-registration-page__sort-select {
   flex: 1;
+  min-width: 0;
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-family: var(--font-family);

@@ -27,6 +27,80 @@ const DISPLAY_MODES: { mode: SongDisplayMode; icon: string; label: string }[] = 
   { mode: 'all', icon: 'ALL', label: 'すべて表示' },
 ]
 
+/** コンテンツフィルタの型 */
+export type ContentFilterValue = 
+  | 'all' 
+  | 'with-content' 
+  | 'without-content'
+  | 'kuribayashi'
+  | 'minami'
+  | 'wild3'
+  | 'other-artist'
+
+/** コンテンツフィルタの定義 */
+const CONTENT_FILTERS: { value: ContentFilterValue; label: string }[] = [
+  { value: 'all', label: 'すべて' },
+  { value: 'with-content', label: 'コンテンツあり' },
+  { value: 'without-content', label: 'コンテンツなし' },
+  { value: 'kuribayashi', label: '栗林みな実' },
+  { value: 'minami', label: 'Minami' },
+  { value: 'wild3', label: 'ワイルド三人娘' },
+  { value: 'other-artist', label: 'その他アーティスト' },
+]
+
+/** 楽曲がコンテンツを持っているかチェック */
+function hasContent(song: Song): boolean {
+  // musicServiceEmbeds配列に有効な埋め込みがあるか
+  if (song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
+    return song.musicServiceEmbeds.some(embed => embed.embed && embed.embed.trim() !== '')
+  }
+  // 旧形式のmusicServiceEmbedがあるか
+  if (song.musicServiceEmbed && song.musicServiceEmbed.trim() !== '') {
+    return true
+  }
+  return false
+}
+
+/** アーティストが栗林みな実かチェック */
+function isKuribayashi(song: Song): boolean {
+  return song.artists?.some(artist => artist === '栗林みな実') ?? false
+}
+
+/** アーティストがMinamiかチェック */
+function isMinami(song: Song): boolean {
+  return song.artists?.some(artist => artist === 'Minami') ?? false
+}
+
+/** アーティストがワイルド三人娘を含むかチェック */
+function isWild3(song: Song): boolean {
+  return song.artists?.some(artist => artist.includes('ワイルド三人娘')) ?? false
+}
+
+/** アーティストがその他（栗林みな実、Minami、ワイルド三人娘以外）かチェック */
+function isOtherArtist(song: Song): boolean {
+  return !isKuribayashi(song) && !isMinami(song) && !isWild3(song)
+}
+
+/** フィルタを適用 */
+function applyFilter(songs: Song[], filter: ContentFilterValue): Song[] {
+  switch (filter) {
+    case 'with-content':
+      return songs.filter(hasContent)
+    case 'without-content':
+      return songs.filter(song => !hasContent(song))
+    case 'kuribayashi':
+      return songs.filter(isKuribayashi)
+    case 'minami':
+      return songs.filter(isMinami)
+    case 'wild3':
+      return songs.filter(isWild3)
+    case 'other-artist':
+      return songs.filter(isOtherArtist)
+    default:
+      return songs
+  }
+}
+
 export interface SongListProps {
   /** 楽曲データ配列 */
   songs: Song[]
@@ -42,8 +116,12 @@ export interface SongListProps {
   initialSortBy?: SongSortType
   /** 初期表示モード */
   initialDisplayMode?: SongDisplayMode
+  /** 初期コンテンツフィルタ */
+  initialContentFilter?: ContentFilterValue
+  /** 初期年代フィルタ */
+  initialYearFilter?: string
   /** 検索状態変更時のコールバック */
-  onSearchStateChange?: (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode) => void
+  onSearchStateChange?: (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode, contentFilter: ContentFilterValue, yearFilter: string) => void
 }
 
 /**
@@ -58,23 +136,65 @@ export function SongList({
   initialTitleOnly = false,
   initialSortBy = 'newest',
   initialDisplayMode = 'all',
+  initialContentFilter = 'all',
+  initialYearFilter = 'all',
   onSearchStateChange,
 }: SongListProps) {
   const [query, setQuery] = useState(initialQuery)
   const [titleOnly, setTitleOnly] = useState(initialTitleOnly)
   const [sortBy, setSortBy] = useState<SongSortType>(initialSortBy)
   const [displayMode, setDisplayMode] = useState<SongDisplayMode>(initialDisplayMode)
+  const [contentFilter, setContentFilter] = useState<ContentFilterValue>(initialContentFilter)
+  const [yearFilter, setYearFilter] = useState(initialYearFilter)
+
+  // 楽曲データから年のリストを生成（降順）
+  const availableYears = useMemo(() => {
+    const years = new Set<number>()
+    songs.forEach(song => {
+      if (song.releaseYear) {
+        years.add(song.releaseYear)
+      }
+    })
+    return Array.from(years).sort((a, b) => b - a)
+  }, [songs])
+
+  // 検索とコンテンツ/アーティストフィルタを適用した楽曲（年代フィルタ前）
+  const filteredSongsBeforeYear = useMemo(() => {
+    let filtered = searchSongs(songs, query, { titleOnly })
+    return applyFilter(filtered, contentFilter)
+  }, [songs, query, titleOnly, contentFilter])
+
+  // 年代ごとの曲数を計算
+  const yearCounts = useMemo(() => {
+    const counts = new Map<number, number>()
+    filteredSongsBeforeYear.forEach(song => {
+      if (song.releaseYear) {
+        counts.set(song.releaseYear, (counts.get(song.releaseYear) || 0) + 1)
+      }
+    })
+    return counts
+  }, [filteredSongsBeforeYear])
 
   // 検索状態が変更されたら親に通知
   useEffect(() => {
-    onSearchStateChange?.(query, titleOnly, sortBy, displayMode)
-  }, [query, titleOnly, sortBy, displayMode, onSearchStateChange])
+    onSearchStateChange?.(query, titleOnly, sortBy, displayMode, contentFilter, yearFilter)
+  }, [query, titleOnly, sortBy, displayMode, contentFilter, yearFilter, onSearchStateChange])
 
-  // 検索・並び替え結果をメモ化
+  // 検索・並び替え・フィルタ結果をメモ化
   const filteredAndSortedSongs = useMemo(() => {
-    const filtered = searchSongs(songs, query, { titleOnly })
+    let filtered = searchSongs(songs, query, { titleOnly })
+    
+    // コンテンツ/アーティストフィルタを適用
+    filtered = applyFilter(filtered, contentFilter)
+    
+    // 年代フィルタを適用
+    if (yearFilter !== 'all') {
+      const year = parseInt(yearFilter, 10)
+      filtered = filtered.filter(song => song.releaseYear === year)
+    }
+    
     return sortSongs(filtered, sortBy)
-  }, [songs, query, titleOnly, sortBy])
+  }, [songs, query, titleOnly, sortBy, contentFilter, yearFilter])
 
   // 検索クエリの変更ハンドラ
   const handleQueryChange = useCallback(
@@ -101,6 +221,22 @@ export function SongList({
   const handleSortChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setSortBy(e.target.value as SongSortType)
+    },
+    []
+  )
+
+  // コンテンツフィルタの変更
+  const handleContentFilterChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setContentFilter(e.target.value as ContentFilterValue)
+    },
+    []
+  )
+
+  // 年代フィルタの変更
+  const handleYearFilterChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setYearFilter(e.target.value)
     },
     []
   )
@@ -186,20 +322,97 @@ export function SongList({
 
         {/* 並び替えと表示切替 */}
         <div className="song-list__controls">
-          <select
-            className="song-list__sort-select"
-            value={sortBy}
-            onChange={handleSortChange}
-            aria-label="並び替え"
-          >
-            <option value="newest">新曲順</option>
-            <option value="oldest">古い曲順</option>
-            <option value="updated">更新順</option>
-            <option value="alphabetical">五十音順</option>
-            <option value="artist">栗林みな実を優先</option>
-            <option value="minami">Minamiを優先</option>
-            <option value="wild3">ワイルド三人娘を優先</option>
-          </select>
+          <div className="song-list__control-group">
+            <svg
+              className="song-list__control-icon"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <polyline points="19 12 12 19 5 12" />
+            </svg>
+            <select
+              className="song-list__sort-select"
+              value={sortBy}
+              onChange={handleSortChange}
+              aria-label="並び替え"
+            >
+              <option value="newest">新曲順</option>
+              <option value="oldest">古い曲順</option>
+              <option value="updated">更新順</option>
+              <option value="alphabetical">五十音順</option>
+              <option value="artist">栗林みな実を優先</option>
+              <option value="minami">Minamiを優先</option>
+              <option value="wild3">ワイルド三人娘を優先</option>
+            </select>
+          </div>
+          <div className="song-list__control-group">
+            <svg
+              className="song-list__control-icon"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <select
+              className="song-list__content-filter"
+              value={contentFilter}
+              onChange={handleContentFilterChange}
+              aria-label="コンテンツフィルタ"
+            >
+              {CONTENT_FILTERS.map(filter => (
+                <option key={filter.value} value={filter.value}>
+                  {filter.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="song-list__control-group">
+            <svg
+              className="song-list__control-icon"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            <select
+              className="song-list__year-filter"
+              value={yearFilter}
+              onChange={handleYearFilterChange}
+              aria-label="年代フィルタ"
+            >
+              <option value="all">全年代 ({filteredSongsBeforeYear.length})</option>
+              {availableYears.map(year => (
+                <option key={year} value={year.toString()}>
+                  {year}年 ({yearCounts.get(year) || 0})
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             type="button"
             className="song-list__view-toggle"

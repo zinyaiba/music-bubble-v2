@@ -167,16 +167,33 @@ export function TagList({
 
         {/* ソートと表示切替 */}
         <div className="tag-list__controls">
-          <select
-            className="tag-list__sort-select"
-            value={sortBy}
-            onChange={handleSortChange}
-            aria-label="並び替え"
-          >
-            <option value="alphabetical">五十音順</option>
-            <option value="songCount">楽曲数順</option>
-            <option value="recentlyUpdated">更新順</option>
-          </select>
+          <div className="tag-list__control-group">
+            <svg
+              className="tag-list__control-icon"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <polyline points="19 12 12 19 5 12" />
+            </svg>
+            <select
+              className="tag-list__sort-select"
+              value={sortBy}
+              onChange={handleSortChange}
+              aria-label="並び替え"
+            >
+              <option value="alphabetical">五十音順</option>
+              <option value="songCount">楽曲数順</option>
+              <option value="recentlyUpdated">更新順</option>
+            </select>
+          </div>
           <button
             type="button"
             className={`tag-list__view-toggle ${isCompactView ? 'tag-list__view-toggle--active' : ''}`}

@@ -18,6 +18,18 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-01-17-2',
+    title: '一覧にフィルタ機能を追加',
+    content: `以下の機能を追加しました。
+
+**主な改善点:**
+- 楽曲・タグ一覧・タグ登録にフィルタ機能を追加
+- 楽曲の発売年、コンテンツの有無、アーティスト名でフィルタが可能に
+- フィルタに応じて発売年毎の曲数を見ることも可能になりました！`,
+    date: '2026-01-17',
+    type: 'feature',
+  },
+  {
     id: 'ann-2026-01-17',
     title: '埋め込みコンテンツを複数登録可能に',
     content: `以下のアップデートを行いました。
