@@ -314,7 +314,8 @@
 /* レスポンシブ対応 */
 @media (max-width: 480px) {
   .song-list__search {
-    padding: 0 var(--spacing-sm);
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
   }
 
   .song-list__search-input {
@@ -342,26 +343,42 @@
     font-size: var(--font-size-xs);
   }
 
+  /* コントロールを2行に分割 */
+  .song-list__controls {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .song-list__control-group {
+    flex: 1 1 calc(50% - var(--spacing-xs));
+    min-width: calc(50% - var(--spacing-xs));
+  }
+
+  /* 表示切替ボタンは2行目の右端に */
+  .song-list__view-toggle {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-md);
+  }
+
   .song-list__sort-select {
     font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) 4px;
   }
 
   .song-list__content-filter {
     font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) 4px;
   }
 
   .song-list__year-filter {
     font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) 4px;
   }
 
   .song-list__control-icon {
     width: 12px;
     height: 12px;
-  }
-
-  .song-list__view-toggle {
-    width: 32px;
-    height: 32px;
-    font-size: var(--font-size-md);
   }
 }
