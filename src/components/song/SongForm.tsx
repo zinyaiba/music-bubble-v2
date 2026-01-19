@@ -172,10 +172,16 @@ function formatReleaseDate(month: string, day: string): string | undefined {
 function getInitialEmbeds(song?: Song): MusicServiceEmbed[] {
   // 新形式があればそれを使用
   if (song?.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
+    // embedが有効な値を持つもののみをフィルタリングし、undefinedを空文字に変換
     return song.musicServiceEmbeds
+      .filter(item => item.embed && item.embed.trim() !== '')
+      .map(item => ({
+        embed: item.embed || '',
+        label: item.label,
+      }))
   }
   // 旧形式からの変換
-  if (song?.musicServiceEmbed) {
+  if (song?.musicServiceEmbed && song.musicServiceEmbed.trim()) {
     return [{ embed: song.musicServiceEmbed }]
   }
   return []
@@ -385,37 +391,30 @@ export function SongForm({
     // Songオブジェクトに変換
     const songData: Partial<Song> = {
       title: formData.title.trim(),
+      artists: stringToArray(formData.artists), // 空配列も明示的に設定
       lyricists: stringToArray(formData.lyricists),
       composers: stringToArray(formData.composers),
       arrangers: stringToArray(formData.arrangers),
     }
 
-    // オプショナルフィールド
-    const artists = stringToArray(formData.artists)
-    if (artists.length > 0) songData.artists = artists
-
     if (formData.releaseYear) {
       songData.releaseYear = parseInt(formData.releaseYear, 10)
+    } else {
+      // 空の場合は明示的にnullを設定（Firestoreでフィールドを削除）
+      songData.releaseYear = undefined
     }
 
     // 発売月日をMMDD形式で保存
     const releaseDate = formatReleaseDate(formData.releaseMonth, formData.releaseDay)
-    if (releaseDate) {
-      songData.releaseDate = releaseDate
-    }
+    songData.releaseDate = releaseDate // undefinedの場合も明示的に設定
 
-    if (formData.singleName.trim()) {
-      songData.singleName = formData.singleName.trim()
-    }
-
-    if (formData.albumName.trim()) {
-      songData.albumName = formData.albumName.trim()
-    }
+    songData.singleName = formData.singleName.trim() || undefined
+    songData.albumName = formData.albumName.trim() || undefined
 
     // 有効な埋め込みコンテンツのみ（空の場合も明示的に空配列を設定）
-    const validEmbeds = formData.musicServiceEmbeds.filter((item) => item.embed.trim())
+    const validEmbeds = formData.musicServiceEmbeds.filter((item) => item.embed && item.embed.trim())
     songData.musicServiceEmbeds = validEmbeds.map((item) => {
-      const embed = item.embed.trim()
+      const embed = (item.embed || '').trim()
       const label = item.label?.trim()
       // ラベルが空の場合は埋め込み内容から自動判定
       const autoLabel = label || getServiceNameFromEmbed(embed)

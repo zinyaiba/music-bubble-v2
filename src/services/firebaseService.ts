@@ -11,6 +11,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   query,
   orderBy,
   onSnapshot,
@@ -261,13 +262,21 @@ export class FirebaseService {
       }
 
       const docRef = doc(db, this.COLLECTION_NAME, songId)
-      const updateData = {
-        ...songData,
+      
+      // undefinedのフィールドをdeleteField()に変換
+      const updateData: Record<string, unknown> = {
         updatedAt: serverTimestamp(),
       }
-
-      // idフィールドは除外
-      delete (updateData as { id?: string }).id
+      
+      for (const [key, value] of Object.entries(songData)) {
+        if (key === 'id') continue // idフィールドは除外
+        if (value === undefined) {
+          // undefinedの場合はフィールドを削除
+          updateData[key] = deleteField()
+        } else {
+          updateData[key] = value
+        }
+      }
 
       await updateDoc(docRef, updateData)
 

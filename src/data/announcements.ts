@@ -18,6 +18,16 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-01-19',
+    title: '一部楽曲の不具合解消',
+    content: `以下のアップデートを行いました。
+
+**主な改善点:**
+- 楽曲TRUSTの詳細ページが開けない問題を解消`,
+    date: '2026-01-19',
+    type: 'update',
+  },
+  {
     id: 'ann-2026-01-17-2',
     title: '一覧にフィルタ機能を追加',
     content: `以下の機能を追加しました。

@@ -37,8 +37,9 @@ function formatArray(arr: string[] | undefined, fallback = '-'): string {
 /**
  * 埋め込みコンテンツからサービス名を判定
  */
-function getEmbedServiceName(embedContent: string, label?: string): string {
+function getEmbedServiceName(embedContent: string | undefined, label?: string): string {
   if (label) return label
+  if (!embedContent) return '音楽サービス'
   if (embedContent.includes('spotify')) return 'Spotify'
   if (embedContent.includes('youtube') || embedContent.includes('youtu.be')) return 'YouTube'
   if (embedContent.includes('apple')) return 'Apple Music'
@@ -52,7 +53,8 @@ function getEmbedServiceName(embedContent: string, label?: string): string {
 function getEmbeds(song: Song): MusicServiceEmbed[] {
   // 新形式があればそれを使用
   if (song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
-    return song.musicServiceEmbeds
+    // embedが有効な値を持つもののみをフィルタリング
+    return song.musicServiceEmbeds.filter(item => item.embed && item.embed.trim() !== '')
   }
   // 旧形式からの変換
   if (song.musicServiceEmbed && song.musicServiceEmbed.trim()) {
