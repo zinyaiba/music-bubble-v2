@@ -19,17 +19,40 @@
 .song-list__search {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
   background: var(--color-background);
   border-bottom: var(--border-width-thin) solid var(--color-border);
   flex-shrink: 0;
+}
+
+/* 検索行（検索入力 + メタ情報） */
+.song-list__search-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .song-list__search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 1;
+}
+
+/* 検索メタ情報（統計 + 曲名のみトグル） */
+.song-list__search-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.song-list__search-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 .song-list__search-icon {
@@ -90,19 +113,6 @@
   box-shadow: 0 0 0 2px var(--color-primary-alpha);
 }
 
-/* 検索オプションと件数 */
-.song-list__search-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-}
-
-.song-list__search-count {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
 /* タイトルのみトグル */
 .song-list__title-only-toggle {
   display: flex;
@@ -110,6 +120,7 @@
   gap: var(--spacing-xs);
   cursor: pointer;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .song-list__title-only-toggle input {
@@ -229,6 +240,37 @@
   box-shadow: 0 0 0 2px var(--color-primary-alpha);
 }
 
+.song-list__month-filter,
+.song-list__day-filter,
+.song-list__weekday-filter {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-list__month-filter:focus,
+.song-list__day-filter:focus,
+.song-list__weekday-filter:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+/* 日付フィルタグループ */
+.song-list__date-filters {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
 .song-list__view-toggle {
   display: flex;
   align-items: center;
@@ -314,24 +356,57 @@
 /* レスポンシブ対応 */
 @media (max-width: 480px) {
   .song-list__search {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: 4px;
+  }
+
+  .song-list__search-row {
     gap: var(--spacing-xs);
   }
 
   .song-list__search-input {
     /* 16px以上でiOSの自動ズームを防止 */
     font-size: 16px;
-    padding: var(--spacing-sm);
-    padding-left: calc(var(--spacing-sm) + 28px);
-    padding-right: calc(var(--spacing-sm) + 28px);
+    padding: 6px 8px;
+    padding-left: 32px;
+    padding-right: 28px;
   }
 
   .song-list__search-input::placeholder {
     font-size: var(--font-size-xs);
   }
 
-  .song-list__search-options {
-    flex-wrap: wrap;
+  .song-list__search-icon {
+    left: 8px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .song-list__search-meta {
+    gap: 1px;
+  }
+
+  .song-list__search-count {
+    font-size: 10px;
+  }
+
+  .song-list__toggle-slider {
+    width: 28px;
+    height: 16px;
+  }
+
+  .song-list__toggle-slider::after {
+    width: 12px;
+    height: 12px;
+  }
+
+  .song-list__title-only-toggle input:checked + .song-list__toggle-slider::after {
+    transform: translateX(12px);
+  }
+
+  .song-list__toggle-label {
+    font-size: 9px;
+    white-space: nowrap;
   }
 
   .song-list__items {
@@ -339,46 +414,49 @@
     gap: var(--spacing-xs);
   }
 
-  .song-list__search-count {
-    font-size: var(--font-size-xs);
-  }
-
-  /* コントロールを2行に分割 */
+  /* コントロールを2行に収める */
   .song-list__controls {
     flex-wrap: wrap;
-    gap: var(--spacing-xs);
+    gap: 4px;
   }
 
   .song-list__control-group {
-    flex: 1 1 calc(50% - var(--spacing-xs));
-    min-width: calc(50% - var(--spacing-xs));
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
-  /* 表示切替ボタンは2行目の右端に */
+  /* 日付フィルタグループは100%幅で2行目に */
+  .song-list__date-filters {
+    flex: 1 1 100%;
+    order: 10;
+  }
+
+  /* 表示切替ボタン */
   .song-list__view-toggle {
     flex: 0 0 auto;
-    width: 32px;
-    height: 32px;
-    font-size: var(--font-size-md);
-  }
-
-  .song-list__sort-select {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) 4px;
-  }
-
-  .song-list__content-filter {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) 4px;
-  }
-
-  .song-list__year-filter {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) 4px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: var(--font-size-sm);
   }
 
   .song-list__control-icon {
     width: 12px;
     height: 12px;
+    flex-shrink: 0;
+  }
+
+  .song-list__sort-select,
+  .song-list__content-filter {
+    font-size: var(--font-size-xs);
+    padding: 4px 2px;
+  }
+
+  .song-list__year-filter,
+  .song-list__month-filter,
+  .song-list__day-filter,
+  .song-list__weekday-filter {
+    font-size: 10px;
+    padding: 4px 1px;
   }
 }

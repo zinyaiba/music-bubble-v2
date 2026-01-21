@@ -37,6 +37,9 @@ export function SongListPage() {
   const initialDisplayMode = (searchParams.get('display') as SongDisplayMode) || 'all'
   const initialContentFilter = (searchParams.get('content') as ContentFilterValue) || 'all'
   const initialYearFilter = searchParams.get('year') || 'all'
+  const initialMonthFilter = searchParams.get('month') || 'all'
+  const initialDayFilter = searchParams.get('day') || 'all'
+  const initialWeekdayFilter = searchParams.get('weekday') || 'all'
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
@@ -63,7 +66,7 @@ export function SongListPage() {
 
   // 検索状態の変更をURLに反映
   const handleSearchStateChange = useCallback(
-    (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode, contentFilter: ContentFilterValue, yearFilter: string) => {
+    (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode, contentFilter: ContentFilterValue, yearFilter: string, monthFilter: string, dayFilter: string, weekdayFilter: string) => {
       const params = new URLSearchParams()
       if (query) params.set('q', query)
       if (titleOnly) params.set('titleOnly', 'true')
@@ -71,6 +74,9 @@ export function SongListPage() {
       if (displayMode !== 'all') params.set('display', displayMode)
       if (contentFilter !== 'all') params.set('content', contentFilter)
       if (yearFilter !== 'all') params.set('year', yearFilter)
+      if (monthFilter !== 'all') params.set('month', monthFilter)
+      if (dayFilter !== 'all') params.set('day', dayFilter)
+      if (weekdayFilter !== 'all') params.set('weekday', weekdayFilter)
       setSearchParams(params, { replace: true })
 
       // 検索実行時にトラッキング
@@ -151,6 +157,9 @@ export function SongListPage() {
             initialDisplayMode={initialDisplayMode}
             initialContentFilter={initialContentFilter}
             initialYearFilter={initialYearFilter}
+            initialMonthFilter={initialMonthFilter}
+            initialDayFilter={initialDayFilter}
+            initialWeekdayFilter={initialWeekdayFilter}
             onSearchStateChange={handleSearchStateChange}
           />
         </div>

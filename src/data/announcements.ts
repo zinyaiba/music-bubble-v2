@@ -18,6 +18,18 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-01-22',
+    title: 'フィルタの追加',
+    content: `以下のアップデートを行いました。
+
+**主な改善点:**
+- 楽曲フィルタで月・日・曜日を追加しました
+
+何か規則性があるかも!?ぜひ探索してみましょう`,
+    date: '2026-01-22',
+    type: 'update',
+  },
+  {
     id: 'ann-2026-01-19',
     title: '一部楽曲の不具合解消',
     content: `以下のアップデートを行いました。

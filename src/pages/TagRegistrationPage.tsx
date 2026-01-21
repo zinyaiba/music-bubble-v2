@@ -313,67 +313,68 @@ export function TagRegistrationPage() {
             <>
               {/* 検索バー */}
               <div className="tag-registration-page__search">
-                <div className="tag-registration-page__search-input-wrapper">
-                  <svg
-                    className="tag-registration-page__search-icon"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                  </svg>
-                  <input
-                    type="text"
-                    className="tag-registration-page__search-input"
-                    placeholder={titleOnly ? '楽曲名で検索...' : '検索（タイトル、アーティスト、タグ等）...'}
-                    value={query}
-                    onChange={handleQueryChange}
-                    aria-label="楽曲を検索"
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      className="tag-registration-page__search-clear"
-                      onClick={handleClearQuery}
-                      aria-label="検索をクリア"
+                {/* 検索入力行（検索バー + 統計 + 曲名のみトグル） */}
+                <div className="tag-registration-page__search-row">
+                  <div className="tag-registration-page__search-input-wrapper">
+                    <svg
+                      className="tag-registration-page__search-icon"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-
-                {/* 検索オプションと件数 */}
-                <div className="tag-registration-page__search-options">
-                  <span className="tag-registration-page__search-count">
-                    {filteredSongs.length} / {songs.length} 曲
-                  </span>
-                  <label className="tag-registration-page__title-only-toggle">
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
                     <input
-                      type="checkbox"
-                      checked={titleOnly}
-                      onChange={handleTitleOnlyChange}
+                      type="text"
+                      className="tag-registration-page__search-input"
+                      placeholder={titleOnly ? '曲名で検索...' : '検索...'}
+                      value={query}
+                      onChange={handleQueryChange}
+                      aria-label="楽曲を検索"
                     />
-                    <span className="tag-registration-page__toggle-slider"></span>
-                    <span className="tag-registration-page__toggle-label">曲名のみ検索</span>
-                  </label>
+                    {query && (
+                      <button
+                        type="button"
+                        className="tag-registration-page__search-clear"
+                        onClick={handleClearQuery}
+                        aria-label="検索をクリア"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  <div className="tag-registration-page__search-meta">
+                    <span className="tag-registration-page__search-count">
+                      {filteredSongs.length}/{songs.length}曲
+                    </span>
+                    <label className="tag-registration-page__title-only-toggle">
+                      <input
+                        type="checkbox"
+                        checked={titleOnly}
+                        onChange={handleTitleOnlyChange}
+                      />
+                      <span className="tag-registration-page__toggle-slider"></span>
+                      <span className="tag-registration-page__toggle-label">曲名のみ</span>
+                    </label>
+                  </div>
                 </div>
 
                 {/* 並び替え */}

@@ -111,57 +111,56 @@ export function TagList({
     <div className="tag-list">
       {/* 検索バー */}
       <div className="tag-list__search">
-        <div className="tag-list__search-input-wrapper">
-          <svg
-            className="tag-list__search-icon"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            className="tag-list__search-input"
-            placeholder="タグ名で検索..."
-            value={query}
-            onChange={handleQueryChange}
-            aria-label="タグを検索"
-          />
-          {query && (
-            <button
-              type="button"
-              className="tag-list__search-clear"
-              onClick={handleClearQuery}
-              aria-label="検索をクリア"
+        {/* 検索入力行（検索バー + 統計） */}
+        <div className="tag-list__search-row">
+          <div className="tag-list__search-input-wrapper">
+            <svg
+              className="tag-list__search-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              className="tag-list__search-input"
+              placeholder="タグ名で検索..."
+              value={query}
+              onChange={handleQueryChange}
+              aria-label="タグを検索"
+            />
+            {query && (
+              <button
+                type="button"
+                className="tag-list__search-clear"
+                onClick={handleClearQuery}
+                aria-label="検索をクリア"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          )}
-        </div>
-
-        {/* 検索結果件数 */}
-        <div className="tag-list__search-options">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+          </div>
           <span className="tag-list__search-count">
-            {filteredAndSortedTags.length} / {tags.length} タグ
+            {filteredAndSortedTags.length}/{tags.length}件
           </span>
         </div>
 
