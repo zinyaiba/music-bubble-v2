@@ -215,22 +215,6 @@ export function SongList({
     return Array.from(days).sort((a, b) => a - b)
   }, [songs])
 
-  // 楽曲データから曜日のリストを生成
-  const availableWeekdays = useMemo(() => {
-    const weekdays = new Set<number>()
-    songs.forEach(song => {
-      if (song.releaseYear && song.releaseDate && song.releaseDate.length >= 4) {
-        const month = parseInt(song.releaseDate.substring(0, 2), 10)
-        const day = parseInt(song.releaseDate.substring(2, 4), 10)
-        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-          const weekday = getDayOfWeek(song.releaseYear, month, day)
-          weekdays.add(weekday)
-        }
-      }
-    })
-    return Array.from(weekdays).sort((a, b) => a - b)
-  }, [songs])
-
   // 検索とコンテンツ/アーティストフィルタを適用した楽曲（日付フィルタ前）
   const filteredSongsBeforeDate = useMemo(() => {
     let filtered = searchSongs(songs, query, { titleOnly })
@@ -649,7 +633,7 @@ export function SongList({
               aria-label="曜日フィルタ"
             >
               <option value="all">全曜日({filteredSongsAfterDay.length})</option>
-              {availableWeekdays.map(weekday => (
+              {[0, 1, 2, 3, 4, 5, 6].map(weekday => (
                 <option key={weekday} value={weekday.toString()}>
                   {WEEKDAYS[weekday]}曜({weekdayCounts.get(weekday) || 0})
                 </option>
