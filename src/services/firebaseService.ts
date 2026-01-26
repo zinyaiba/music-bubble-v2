@@ -229,15 +229,19 @@ export class FirebaseService {
         throw new Error('Firebase設定が無効です')
       }
 
-      const docData = {
-        ...songData,
+      // undefinedの値を除外してFirestoreに保存可能なデータを作成
+      const docData: Record<string, unknown> = {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         isPublic: true,
       }
 
-      // idフィールドは除外
-      delete (docData as { id?: string }).id
+      // songDataからundefinedでない値のみをコピー（idは除外）
+      for (const [key, value] of Object.entries(songData)) {
+        if (key !== 'id' && value !== undefined) {
+          docData[key] = value
+        }
+      }
 
       const docRef = await addDoc(collection(db, this.COLLECTION_NAME), docData)
 
