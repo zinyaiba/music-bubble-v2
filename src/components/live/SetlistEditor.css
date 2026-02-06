@@ -1,0 +1,545 @@
+/**
+ * SetlistEditor スタイル
+ * セトリ編集コンポーネント
+ *
+ * Requirements:
+ * - 6.4: 既存楽曲からの選択機能（オートコンプリート）
+ * - 6.5: フリー入力での楽曲追加
+ * - 6.6: 順序変更（上下ボタン）
+ * - 6.7: 日替わり曲フラグの設定
+ */
+
+.setlist-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+}
+
+/* 楽曲追加領域 */
+.setlist-editor__add-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.setlist-editor__add-label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* 入力欄と追加ボタンの横並び */
+.setlist-editor__add-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: stretch;
+}
+
+/* 入力コンテナ */
+.setlist-editor__input-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-height: 48px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  cursor: text;
+  transition: all var(--transition-fast);
+}
+
+.setlist-editor__input-container--focused {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.setlist-editor__input-container--disabled {
+  background: var(--color-surface-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 入力フィールド */
+.setlist-editor__input {
+  flex: 1;
+  min-width: 100px;
+  padding: var(--spacing-xs);
+  font-size: max(16px, var(--font-size-md));
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.setlist-editor__input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.setlist-editor__input:disabled {
+  cursor: not-allowed;
+}
+
+/* 追加ボタン */
+.setlist-editor__add-button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: white;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.setlist-editor__add-button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.setlist-editor__add-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.setlist-editor__add-button--disabled,
+.setlist-editor__add-button:disabled {
+  background: var(--color-text-disabled);
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* サジェストリスト */
+.setlist-editor__suggestions {
+  position: absolute;
+  top: calc(100% - var(--spacing-lg));
+  left: 0;
+  right: 0;
+  margin-top: var(--spacing-xs);
+  max-height: 280px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-index-dropdown);
+  animation: setlist-editor-suggestions-appear 0.15s ease-out;
+}
+
+@keyframes setlist-editor-suggestions-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.setlist-editor__suggestion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 48px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-family);
+  background: transparent;
+  border: none;
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.setlist-editor__suggestion:last-child {
+  border-bottom: none;
+}
+
+.setlist-editor__suggestion:hover,
+.setlist-editor__suggestion--highlighted {
+  background: var(--color-primary-alpha);
+}
+
+.setlist-editor__suggestion:active {
+  background: var(--color-primary-light);
+}
+
+.setlist-editor__suggestion:focus {
+  outline: none;
+  background: var(--color-primary-alpha);
+}
+
+.setlist-editor__suggestion-title {
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+}
+
+.setlist-editor__suggestion-artist {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ヒント */
+.setlist-editor__hint {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* セトリ一覧領域 */
+.setlist-editor__list-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.setlist-editor__list-label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* セトリリスト */
+.setlist-editor__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+/* セトリ項目 */
+.setlist-editor__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.setlist-editor__item:last-child {
+  border-bottom: none;
+}
+
+.setlist-editor__item:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* 順序番号 */
+.setlist-editor__order {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* 楽曲情報 */
+.setlist-editor__item-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.setlist-editor__item-title {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 日替わり曲バッジ */
+.setlist-editor__daily-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--border-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(255, 152, 0, 0.3);
+}
+
+/* アクションボタン群 */
+.setlist-editor__item-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  flex-shrink: 0;
+}
+
+/* アクションボタン */
+.setlist-editor__action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.setlist-editor__action-button:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.setlist-editor__action-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* 日替わり曲トグルチップ */
+.setlist-editor__daily-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  color: var(--color-text-muted);
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.setlist-editor__daily-chip:hover {
+  background: rgba(255, 152, 0, 0.1);
+  border-color: rgba(255, 152, 0, 0.3);
+  color: #ff9800;
+}
+
+.setlist-editor__daily-chip--active {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 1px 3px rgba(255, 152, 0, 0.3);
+}
+
+.setlist-editor__daily-chip--active:hover {
+  background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+  color: white;
+}
+
+.setlist-editor__action-button--delete:hover:not(:disabled) {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+/* 空の状態 */
+.setlist-editor__empty {
+  padding: var(--spacing-lg);
+  text-align: center;
+  background: var(--color-surface);
+  border: var(--border-width-thin) dashed var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.setlist-editor__empty-message {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .setlist-editor__input-container {
+    min-height: 44px;
+    padding: var(--spacing-2xs) var(--spacing-xs);
+  }
+
+  .setlist-editor__add-button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .setlist-editor__input {
+    min-width: 80px;
+    font-size: 16px;
+  }
+
+  .setlist-editor__suggestions {
+    max-height: 240px;
+  }
+
+  .setlist-editor__suggestion {
+    min-height: 52px;
+    padding: var(--spacing-sm);
+  }
+
+  .setlist-editor__item {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .setlist-editor__order {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .setlist-editor__item-title {
+    font-size: var(--font-size-xs);
+  }
+
+  .setlist-editor__daily-badge {
+    padding: 1px 6px;
+    font-size: 9px;
+  }
+
+  .setlist-editor__action-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .setlist-editor__action-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .setlist-editor__daily-chip {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  .setlist-editor__hint {
+    font-size: var(--font-size-2xs, 10px);
+  }
+}
+
+/* 楽曲名編集ボタン */
+.setlist-editor__item-title-button {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-2xs) var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.setlist-editor__item-title-button:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border);
+}
+
+.setlist-editor__item-title-button:disabled {
+  cursor: default;
+}
+
+/* 編集コンテナ */
+.setlist-editor__edit-container {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 編集入力フィールド */
+.setlist-editor__edit-input {
+  width: 100%;
+  padding: var(--spacing-2xs) var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--border-radius-sm);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.setlist-editor__edit-input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+/* 編集用サジェストリスト */
+.setlist-editor__edit-suggestions {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: var(--spacing-2xs);
+  max-height: 200px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-index-dropdown);
+  animation: setlist-editor-edit-suggestions-appear 0.15s ease-out;
+}
+
+@keyframes setlist-editor-edit-suggestions-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .setlist-editor__item-title-button {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-2xs);
+  }
+
+  .setlist-editor__edit-input {
+    font-size: 16px;
+    padding: var(--spacing-2xs);
+  }
+
+  .setlist-editor__edit-suggestions {
+    max-height: 150px;
+  }
+}

@@ -1,0 +1,212 @@
+/**
+ * PerformanceAccordion スタイル
+ * 公演情報のアコーディオン表示
+ *
+ * Requirements:
+ * - 3.2: 公演地別にアコーディオン形式で表示
+ * - 3.3: 公演地名、会場名、日時を表示
+ * - 3.4: 展開時にセトリを表示
+ * - 3.5: 折りたたみ時にセトリを非表示
+ * - 5.1: 展開時に編集ボタンを表示
+ */
+
+.performance-accordion {
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.performance-accordion--expanded {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ヘッダー */
+.performance-accordion__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-md);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--transition-fast);
+}
+
+.performance-accordion__header:hover {
+  background: var(--color-surface-hover);
+}
+
+.performance-accordion__header:focus {
+  outline: none;
+  background: var(--color-surface-hover);
+}
+
+.performance-accordion--expanded .performance-accordion__header {
+  background: var(--color-primary-alpha);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+/* ヘッダーコンテンツ */
+.performance-accordion__header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+/* 公演地 */
+.performance-accordion__location {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.performance-accordion__location::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: var(--border-radius-full);
+}
+
+/* 会場名 */
+.performance-accordion__venue {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 日時 */
+.performance-accordion__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 展開/折りたたみアイコン */
+.performance-accordion__toggle-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.performance-accordion__header:hover .performance-accordion__toggle-icon {
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+}
+
+.performance-accordion--expanded .performance-accordion__toggle-icon {
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+}
+
+/* コンテンツ */
+.performance-accordion__content {
+  padding: 0;
+  background: var(--color-background);
+}
+
+/* セトリ表示エリア */
+.performance-accordion__setlist {
+  padding: var(--spacing-sm) 0;
+}
+
+/* アクションボタンエリア */
+.performance-accordion__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+  background: var(--color-background-secondary);
+}
+
+/* 編集ボタン */
+.performance-accordion__edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.performance-accordion__edit-button:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.performance-accordion__edit-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.performance-accordion__edit-button svg {
+  flex-shrink: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .performance-accordion__header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .performance-accordion__location {
+    font-size: var(--font-size-sm);
+  }
+
+  .performance-accordion__venue {
+    font-size: var(--font-size-xs);
+  }
+
+  .performance-accordion__date {
+    font-size: 10px;
+  }
+
+  .performance-accordion__toggle-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .performance-accordion__toggle-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .performance-accordion__actions {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .performance-accordion__edit-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+
+  .performance-accordion__edit-button svg {
+    width: 14px;
+    height: 14px;
+  }
+}

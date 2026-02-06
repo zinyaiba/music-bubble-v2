@@ -13,14 +13,7 @@ import type { Song } from '../types'
 /**
  * 検索対象フィールドの型定義
  */
-export type SearchField =
-  | 'title'
-  | 'artist'
-  | 'lyricist'
-  | 'composer'
-  | 'arranger'
-  | 'tag'
-  | 'all'
+export type SearchField = 'title' | 'artist' | 'lyricist' | 'composer' | 'arranger' | 'tag' | 'all'
 
 /**
  * 検索オプション
@@ -37,11 +30,7 @@ export interface SearchOptions {
 /**
  * 文字列が検索クエリに一致するかチェック
  */
-function matchesQuery(
-  text: string,
-  query: string,
-  caseSensitive: boolean
-): boolean {
+function matchesQuery(text: string, query: string, caseSensitive: boolean): boolean {
   if (!text || !query) return false
   const normalizedText = caseSensitive ? text : text.toLowerCase()
   const normalizedQuery = caseSensitive ? query : query.toLowerCase()
@@ -63,66 +52,42 @@ function matchesQueryInArray(
 /**
  * 楽曲がタイトルで検索クエリに一致するかチェック
  */
-export function matchesTitleSearch(
-  song: Song,
-  query: string,
-  caseSensitive = false
-): boolean {
+export function matchesTitleSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQuery(song.title, query, caseSensitive)
 }
 
 /**
  * 楽曲がアーティストで検索クエリに一致するかチェック
  */
-export function matchesArtistSearch(
-  song: Song,
-  query: string,
-  caseSensitive = false
-): boolean {
+export function matchesArtistSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQueryInArray(song.artists, query, caseSensitive)
 }
 
 /**
  * 楽曲が作詞家で検索クエリに一致するかチェック
  */
-export function matchesLyricistSearch(
-  song: Song,
-  query: string,
-  caseSensitive = false
-): boolean {
+export function matchesLyricistSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQueryInArray(song.lyricists, query, caseSensitive)
 }
 
 /**
  * 楽曲が作曲家で検索クエリに一致するかチェック
  */
-export function matchesComposerSearch(
-  song: Song,
-  query: string,
-  caseSensitive = false
-): boolean {
+export function matchesComposerSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQueryInArray(song.composers, query, caseSensitive)
 }
 
 /**
  * 楽曲が編曲家で検索クエリに一致するかチェック
  */
-export function matchesArrangerSearch(
-  song: Song,
-  query: string,
-  caseSensitive = false
-): boolean {
+export function matchesArrangerSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQueryInArray(song.arrangers, query, caseSensitive)
 }
 
 /**
  * 楽曲がタグで検索クエリに一致するかチェック
  */
-export function matchesTagSearch(
-  song: Song,
-  query: string,
-  caseSensitive = false
-): boolean {
+export function matchesTagSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQueryInArray(song.tags, query, caseSensitive)
 }
 
@@ -178,11 +143,7 @@ export function matchesSearchQuery(
 /**
  * 楽曲リストを検索クエリでフィルタリング
  */
-export function searchSongs(
-  songs: Song[],
-  query: string,
-  options: SearchOptions = {}
-): Song[] {
+export function searchSongs(songs: Song[], query: string, options: SearchOptions = {}): Song[] {
   return songs.filter((song) => matchesSearchQuery(song, query, options))
 }
 
@@ -204,22 +165,14 @@ export class SongSearchService {
   /**
    * 楽曲を検索
    */
-  public search(
-    songs: Song[],
-    query: string,
-    options: SearchOptions = {}
-  ): Song[] {
+  public search(songs: Song[], query: string, options: SearchOptions = {}): Song[] {
     return searchSongs(songs, query, options)
   }
 
   /**
    * 楽曲が検索クエリに一致するかチェック
    */
-  public matches(
-    song: Song,
-    query: string,
-    options: SearchOptions = {}
-  ): boolean {
+  public matches(song: Song, query: string, options: SearchOptions = {}): boolean {
     return matchesSearchQuery(song, query, options)
   }
 

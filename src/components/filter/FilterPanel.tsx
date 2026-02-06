@@ -112,9 +112,7 @@ export function FilterPanel({
               {' / '}
               {totalCount} 曲
             </span>
-            {isFilterActive && (
-              <span>フィルタ適用中</span>
-            )}
+            {isFilterActive && <span>フィルタ適用中</span>}
           </div>
         </>
       )}

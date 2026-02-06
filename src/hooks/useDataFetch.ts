@@ -1,7 +1,7 @@
 /**
  * useDataFetch フック
  * データ取得とエラーハンドリングを統合
- * 
+ *
  * Requirements: 15.1, 15.2, 15.4
  */
 
@@ -36,14 +36,14 @@ export function useDataFetch(options: UseDataFetchOptions = {}): UseDataFetchRes
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isOffline, setIsOffline] = useState(!errorService.getOnlineStatus())
-  
+
   const isMounted = useRef(true)
 
   // オンライン状態の監視
   useEffect(() => {
     const unsubscribe = errorService.addOnlineListener((online) => {
       setIsOffline(!online)
-      
+
       // オンラインに復帰したら自動的にデータを再取得
       if (online && error) {
         loadSongs()
@@ -53,7 +53,7 @@ export function useDataFetch(options: UseDataFetchOptions = {}): UseDataFetchRes
     return () => {
       unsubscribe()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
   // データ取得関数
@@ -84,17 +84,14 @@ export function useDataFetch(options: UseDataFetchOptions = {}): UseDataFetchRes
       }
 
       // Firebaseから最新データを取得（リトライ付き）
-      const fetchedSongs = await errorService.withRetry(
-        () => firebaseService.getAllSongs(),
-        {
-          maxRetries: 2,
-          onRetry: (attempt) => {
-            if (import.meta.env.DEV) {
-              console.log(`🔄 useDataFetch: リトライ中 (${attempt}/2)`)
-            }
-          },
-        }
-      )
+      const fetchedSongs = await errorService.withRetry(() => firebaseService.getAllSongs(), {
+        maxRetries: 2,
+        onRetry: (attempt) => {
+          if (import.meta.env.DEV) {
+            console.log(`🔄 useDataFetch: リトライ中 (${attempt}/2)`)
+          }
+        },
+      })
 
       if (isMounted.current) {
         setSongs(fetchedSongs)

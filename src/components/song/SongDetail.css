@@ -93,14 +93,14 @@
 }
 
 /* Spotify埋め込み用の高さ調整 */
-.song-detail__embed-container iframe[src*="spotify"] {
+.song-detail__embed-container iframe[src*='spotify'] {
   min-height: 152px;
   height: 152px;
 }
 
 /* YouTube埋め込み用のアスペクト比 */
-.song-detail__embed-container iframe[src*="youtube"],
-.song-detail__embed-container iframe[src*="youtu.be"] {
+.song-detail__embed-container iframe[src*='youtube'],
+.song-detail__embed-container iframe[src*='youtu.be'] {
   aspect-ratio: 16 / 9;
   min-height: auto;
   height: auto;
@@ -114,14 +114,14 @@
 }
 
 /* Spotify埋め込み用の高さ調整 */
-.song-detail__embed[src*="spotify"] {
+.song-detail__embed[src*='spotify'] {
   min-height: 152px;
   height: 152px;
 }
 
 /* YouTube埋め込み用のアスペクト比 */
-.song-detail__embed[src*="youtube"],
-.song-detail__embed[src*="youtu.be"] {
+.song-detail__embed[src*='youtube'],
+.song-detail__embed[src*='youtu.be'] {
   aspect-ratio: 16 / 9;
   min-height: auto;
   height: auto;
@@ -382,7 +382,9 @@
 
 .song-detail__edit-button:focus {
   outline: none;
-  box-shadow: var(--shadow-md), 0 0 0 3px var(--color-primary-alpha);
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px var(--color-primary-alpha);
 }
 
 .song-detail__edit-button:active {

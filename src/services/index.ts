@@ -55,3 +55,5 @@ export {
   trackConnectivityChange,
   type AnalyticsEventName,
 } from './analyticsService'
+export { LiveService, liveService } from './liveService'
+export { TourGroupingService, tourGroupingService } from './tourGroupingService'

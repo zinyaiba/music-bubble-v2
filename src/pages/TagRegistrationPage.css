@@ -173,7 +173,9 @@
   background: var(--color-primary);
 }
 
-.tag-registration-page__title-only-toggle input:checked + .tag-registration-page__toggle-slider::before {
+.tag-registration-page__title-only-toggle
+  input:checked
+  + .tag-registration-page__toggle-slider::before {
   transform: translateX(16px);
 }
 
@@ -558,7 +560,9 @@
     height: 12px;
   }
 
-  .tag-registration-page__title-only-toggle input:checked + .tag-registration-page__toggle-slider::before {
+  .tag-registration-page__title-only-toggle
+    input:checked
+    + .tag-registration-page__toggle-slider::before {
     transform: translateX(12px);
   }
 

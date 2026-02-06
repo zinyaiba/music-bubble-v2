@@ -1,0 +1,455 @@
+/**
+ * LiveDetailPage スタイル
+ * ライブ詳細ページ
+ *
+ * Requirements:
+ * - 5.1: セトリを含むすべてのライブ情報を表示
+ * - 5.4: ツアーの場合は公演地を表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.live-detail-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.live-detail-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  overflow-y: auto;
+}
+
+/* 警告メッセージ */
+.live-detail-page__warning {
+  padding: var(--spacing-md);
+  padding-bottom: 0;
+}
+
+/* コンテンツエリア */
+.live-detail-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+}
+
+/* ライブ情報カード */
+.live-detail-page__card {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ライブヘッダー */
+.live-detail-page__header {
+  padding: var(--spacing-lg);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.live-detail-page__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.live-detail-page__type-badge--tour {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.live-detail-page__type-badge--solo {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+}
+
+.live-detail-page__type-badge--festival {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.live-detail-page__title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+}
+
+.live-detail-page__venue {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+/* ライブ情報セクション */
+.live-detail-page__info {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.live-detail-page__info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+.live-detail-page__info-row:first-child {
+  padding-top: 0;
+}
+
+.live-detail-page__info-row:last-child {
+  padding-bottom: 0;
+}
+
+.live-detail-page__info-label {
+  flex-shrink: 0;
+  width: 80px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.live-detail-page__info-value {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+/* セトリセクション */
+.live-detail-page__setlist {
+  padding: var(--spacing-lg);
+}
+
+.live-detail-page__setlist-title {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.live-detail-page__setlist-icon {
+  color: var(--color-primary);
+}
+
+/* アクションボタン */
+.live-detail-page__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+  background: var(--color-background-secondary);
+}
+
+.live-detail-page__action-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-detail-page__action-button--edit {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.live-detail-page__action-button--edit:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.live-detail-page__action-button--delete {
+  background: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.live-detail-page__action-button--delete:hover {
+  background: var(--color-error);
+  color: white;
+}
+
+.live-detail-page__action-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-detail-page__action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* エラーコンテナ */
+.live-detail-page__error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  flex: 1;
+}
+
+/* 一覧に戻るボタン */
+.live-detail-page__back-to-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-detail-page__back-to-list:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.live-detail-page__back-to-list:focus {
+  outline: none;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px var(--color-primary-alpha);
+}
+
+/* 削除確認ダイアログ */
+.live-detail-page__delete-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-index-modal);
+  padding: var(--spacing-md);
+}
+
+.live-detail-page__delete-dialog {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+}
+
+.live-detail-page__delete-title {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-error);
+}
+
+.live-detail-page__delete-message {
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  line-height: var(--line-height-relaxed);
+}
+
+.live-detail-page__delete-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.live-detail-page__delete-cancel,
+.live-detail-page__delete-confirm {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-detail-page__delete-cancel {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.live-detail-page__delete-cancel:hover {
+  background: var(--color-surface-hover);
+}
+
+.live-detail-page__delete-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.live-detail-page__delete-confirm {
+  background: var(--color-error);
+  color: white;
+  border: none;
+}
+
+.live-detail-page__delete-confirm:hover {
+  background: #dc2626;
+}
+
+.live-detail-page__delete-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-detail-page__content {
+    padding: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+  }
+
+  .live-detail-page__header {
+    padding: var(--spacing-md);
+  }
+
+  .live-detail-page__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .live-detail-page__info {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .live-detail-page__info-label {
+    width: 60px;
+    font-size: var(--font-size-xs);
+  }
+
+  .live-detail-page__info-value {
+    font-size: var(--font-size-xs);
+  }
+
+  .live-detail-page__setlist {
+    padding: var(--spacing-md);
+  }
+
+  .live-detail-page__actions {
+    padding: var(--spacing-md);
+    flex-direction: column;
+  }
+
+  .live-detail-page__error-container {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .live-detail-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+  }
+
+  .live-detail-page__actions {
+    justify-content: flex-end;
+  }
+
+  .live-detail-page__action-button {
+    flex: 0 0 auto;
+    min-width: 120px;
+  }
+}
+
+/* 埋め込みコンテンツセクション */
+.live-detail-page__embeds {
+  padding: var(--spacing-lg);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.live-detail-page__embeds-title {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.live-detail-page__embeds-icon {
+  color: var(--color-primary);
+}
+
+.live-detail-page__embeds-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.live-detail-page__embed-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.live-detail-page__embed-label {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.live-detail-page__embed-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.live-detail-page__embed-container iframe {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  border: none;
+  border-radius: var(--border-radius-md);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-detail-page__embeds {
+    padding: var(--spacing-md);
+  }
+
+  .live-detail-page__embed-container iframe {
+    min-height: 180px;
+  }
+}

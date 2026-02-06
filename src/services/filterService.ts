@@ -15,15 +15,18 @@
  * - 4.5: アーティストフィルタ変更時はジャンルオプションを動的に更新
  */
 
-import type { Song, ArtistFilterValue, CategoryFilterValue, FilterState, BubbleType } from '../types'
+import type {
+  Song,
+  ArtistFilterValue,
+  CategoryFilterValue,
+  FilterState,
+  BubbleType,
+} from '../types'
 
 /**
  * 楽曲がアーティストフィルタに一致するかチェック
  */
-export function matchesArtistFilter(
-  song: Song,
-  artistFilter: ArtistFilterValue
-): boolean {
+export function matchesArtistFilter(song: Song, artistFilter: ArtistFilterValue): boolean {
   // フィルタ未選択時は全て表示
   if (artistFilter === null) {
     return true
@@ -47,9 +50,11 @@ export function matchesArtistFilter(
 
     case 'other':
       // 「栗林みな実」「Minami」「ワイルド三人娘」を含まない楽曲
-      return !artistString.includes('栗林みな実') && 
-             !artistString.includes('Minami') && 
-             !artistString.includes('ワイルド三人娘')
+      return (
+        !artistString.includes('栗林みな実') &&
+        !artistString.includes('Minami') &&
+        !artistString.includes('ワイルド三人娘')
+      )
 
     default:
       return true
@@ -75,8 +80,7 @@ export function matchesGenreFilter(song: Song, genres: string[]): boolean {
  */
 export function matchesFilter(song: Song, filterState: FilterState): boolean {
   return (
-    matchesArtistFilter(song, filterState.artist) &&
-    matchesGenreFilter(song, filterState.genres)
+    matchesArtistFilter(song, filterState.artist) && matchesGenreFilter(song, filterState.genres)
   )
 }
 
@@ -90,10 +94,7 @@ export function filterSongs(songs: Song[], filterState: FilterState): Song[] {
 /**
  * アーティストフィルタに基づいて楽曲をフィルタリング
  */
-export function filterSongsByArtist(
-  songs: Song[],
-  artistFilter: ArtistFilterValue
-): Song[] {
+export function filterSongsByArtist(songs: Song[], artistFilter: ArtistFilterValue): Song[] {
   return songs.filter((song) => matchesArtistFilter(song, artistFilter))
 }
 
@@ -177,30 +178,21 @@ export class FilterService {
   /**
    * アーティストフィルタのみ適用
    */
-  public filterByArtist(
-    songs: Song[],
-    artistFilter: ArtistFilterValue
-  ): Song[] {
+  public filterByArtist(songs: Song[], artistFilter: ArtistFilterValue): Song[] {
     return filterSongsByArtist(songs, artistFilter)
   }
 
   /**
    * 利用可能なジャンルを取得
    */
-  public getAvailableGenres(
-    songs: Song[],
-    artistFilter: ArtistFilterValue
-  ): string[] {
+  public getAvailableGenres(songs: Song[], artistFilter: ArtistFilterValue): string[] {
     return getAvailableGenresForArtist(songs, artistFilter)
   }
 
   /**
    * カテゴリフィルタをチェック
    */
-  public matchesCategory(
-    bubbleType: BubbleType,
-    categories: CategoryFilterValue[]
-  ): boolean {
+  public matchesCategory(bubbleType: BubbleType, categories: CategoryFilterValue[]): boolean {
     return matchesCategoryFilter(bubbleType, categories)
   }
 }

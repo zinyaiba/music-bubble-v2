@@ -1,7 +1,7 @@
 /**
  * エラーハンドリングサービス
  * Music Bubble Explorer V2
- * 
+ *
  * ネットワークエラー表示、リトライ機能、オフラインモードを管理
  * Requirements: 15.1, 15.2, 15.3, 15.4
  */
@@ -121,14 +121,13 @@ export class ErrorService {
     }
   }
 
-
   /**
    * エラーをログに記録（機密情報を除外）
    * Requirements: 15.3
    */
   public logError(error: unknown, context?: string): void {
     const sanitizedError = this.sanitizeError(error)
-    
+
     const errorLog: ErrorLog = {
       timestamp: new Date().toISOString(),
       type: this.getErrorType(error),
@@ -169,11 +168,11 @@ export class ErrorService {
       message = message.replace(/auth[=:]\s*["']?[^"'\s]+["']?/gi, 'auth=[REDACTED]')
       return message
     }
-    
+
     if (typeof error === 'string') {
       return error
     }
-    
+
     return 'Unknown error occurred'
   }
 
@@ -237,15 +236,15 @@ export class ErrorService {
 
     if (error instanceof Error) {
       const message = error.message.toLowerCase()
-      
+
       if (message.includes('firebase') || message.includes('firestore')) {
         return 'データベースへの接続に失敗しました。しばらく待ってから再試行してください。'
       }
-      
+
       if (message.includes('permission') || message.includes('unauthorized')) {
         return 'アクセス権限がありません。'
       }
-      
+
       if (message.includes('not found')) {
         return 'データが見つかりませんでした。'
       }
@@ -253,7 +252,6 @@ export class ErrorService {
 
     return 'エラーが発生しました。再試行してください。'
   }
-
 
   /**
    * リトライ付きで非同期関数を実行
@@ -287,13 +285,15 @@ export class ErrorService {
         if (attempt < maxRetries) {
           // 指数バックオフでリトライ間隔を計算
           const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay)
-          
+
           if (onRetry) {
             onRetry(attempt + 1, error)
           }
 
           if (import.meta.env.DEV) {
-            console.log(`🔄 ErrorService: ${delay}ms後にリトライします (${attempt + 1}/${maxRetries})`)
+            console.log(
+              `🔄 ErrorService: ${delay}ms後にリトライします (${attempt + 1}/${maxRetries})`
+            )
           }
 
           await this.sleep(delay)

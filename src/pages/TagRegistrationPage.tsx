@@ -185,9 +185,7 @@ export function TagRegistrationPage() {
 
         // ローカルの楽曲データを更新
         setLocalSongs((prevSongs) =>
-          prevSongs.map((song) =>
-            song.id === selectedSong.id ? { ...song, tags: newTags } : song
-          )
+          prevSongs.map((song) => (song.id === selectedSong.id ? { ...song, tags: newTags } : song))
         )
 
         // キャッシュも更新
@@ -227,11 +225,7 @@ export function TagRegistrationPage() {
       <div className="tag-registration-page">
         <Header title="タグ登録" showBackButton onBack={() => navigate('/')} />
         <main className="tag-registration-page__main">
-          <LoadingSpinner
-            size="large"
-            message="データを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="データを読み込んでいます..." fullScreen />
         </main>
         <Navigation currentPath="/tag-registration" onNavigate={handleNavigate} />
       </div>
@@ -282,9 +276,7 @@ export function TagRegistrationPage() {
               </div>
 
               <div className="tag-registration-page__song-info">
-                <h2 className="tag-registration-page__song-title">
-                  {selectedSong.title}
-                </h2>
+                <h2 className="tag-registration-page__song-title">{selectedSong.title}</h2>
                 {selectedSong.artists && selectedSong.artists.length > 0 && (
                   <p className="tag-registration-page__song-artist">
                     {selectedSong.artists.join(', ')}
@@ -366,11 +358,7 @@ export function TagRegistrationPage() {
                       {filteredSongs.length}/{songs.length}曲
                     </span>
                     <label className="tag-registration-page__title-only-toggle">
-                      <input
-                        type="checkbox"
-                        checked={titleOnly}
-                        onChange={handleTitleOnlyChange}
-                      />
+                      <input type="checkbox" checked={titleOnly} onChange={handleTitleOnlyChange} />
                       <span className="tag-registration-page__toggle-slider"></span>
                       <span className="tag-registration-page__toggle-label">曲名のみ</span>
                     </label>
@@ -433,11 +421,9 @@ export function TagRegistrationPage() {
                       onClick={() => handleSongSelect(song.id)}
                     >
                       <div className="tag-registration-page__song-item-info">
-                        <span className="tag-registration-page__song-item-title">
-                          {song.title}
-                        </span>
-                        {!isCompactView && (
-                          song.tags && song.tags.length > 0 ? (
+                        <span className="tag-registration-page__song-item-title">{song.title}</span>
+                        {!isCompactView &&
+                          (song.tags && song.tags.length > 0 ? (
                             <div className="tag-registration-page__song-item-chips">
                               {song.tags.map((tag) => (
                                 <span key={tag} className="tag-registration-page__song-item-chip">
@@ -449,8 +435,7 @@ export function TagRegistrationPage() {
                             <span className="tag-registration-page__song-item-no-tags">
                               タグなし
                             </span>
-                          )
-                        )}
+                          ))}
                       </div>
                       <div className="tag-registration-page__song-item-meta">
                         {song.tags && song.tags.length > 0 ? (
@@ -475,9 +460,7 @@ export function TagRegistrationPage() {
                   ))
                 ) : (
                   <div className="tag-registration-page__empty">
-                    <p className="tag-registration-page__empty-message">
-                      楽曲が見つかりません
-                    </p>
+                    <p className="tag-registration-page__empty-message">楽曲が見つかりません</p>
                     {query && (
                       <button
                         type="button"

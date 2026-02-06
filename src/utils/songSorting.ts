@@ -8,7 +8,14 @@ import type { Song } from '../types'
 /**
  * 楽曲の並び替えタイプ
  */
-export type SongSortType = 'newest' | 'oldest' | 'updated' | 'alphabetical' | 'artist' | 'minami' | 'wild3'
+export type SongSortType =
+  | 'newest'
+  | 'oldest'
+  | 'updated'
+  | 'alphabetical'
+  | 'artist'
+  | 'minami'
+  | 'wild3'
 
 /**
  * アーティスト名の優先順位を取得（栗林みな実優先）
@@ -16,7 +23,7 @@ export type SongSortType = 'newest' | 'oldest' | 'updated' | 'alphabetical' | 'a
  */
 function getArtistPriorityKuribayashi(artists: string[] | undefined): number {
   if (!artists || artists.length === 0) return 4
-  
+
   // 単一アーティストで完全一致のみ優先
   if (artists.length === 1) {
     const artist = artists[0]
@@ -33,7 +40,7 @@ function getArtistPriorityKuribayashi(artists: string[] | undefined): number {
  */
 function getArtistPriorityMinami(artists: string[] | undefined): number {
   if (!artists || artists.length === 0) return 4
-  
+
   // 単一アーティストで完全一致のみ優先
   if (artists.length === 1) {
     const artist = artists[0]
@@ -50,7 +57,7 @@ function getArtistPriorityMinami(artists: string[] | undefined): number {
  */
 function getArtistPriorityWild3(artists: string[] | undefined): number {
   if (!artists || artists.length === 0) return 4
-  
+
   // 単一アーティストで完全一致のみ優先
   if (artists.length === 1) {
     const artist = artists[0]

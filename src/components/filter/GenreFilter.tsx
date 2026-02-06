@@ -21,11 +21,7 @@ interface GenreFilterProps {
   onChange: (genres: string[]) => void
 }
 
-export function GenreFilter({
-  genres,
-  selectedGenres,
-  onChange,
-}: GenreFilterProps) {
+export function GenreFilter({ genres, selectedGenres, onChange }: GenreFilterProps) {
   const handleGenreClick = (genre: string) => {
     if (selectedGenres.includes(genre)) {
       // 選択解除
@@ -59,9 +55,7 @@ export function GenreFilter({
       <span className="genre-filter__label">
         ジャンル / タグ
         {selectedGenres.length > 0 && (
-          <span className="genre-filter__count">
-            ({selectedGenres.length}件選択中)
-          </span>
+          <span className="genre-filter__count">({selectedGenres.length}件選択中)</span>
         )}
       </span>
 

@@ -69,7 +69,9 @@
 
 .song-list-page__add-button:focus {
   outline: none;
-  box-shadow: var(--shadow-xl), 0 0 0 4px var(--color-primary-alpha);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 0 4px var(--color-primary-alpha);
 }
 
 .song-list-page__add-button:active {

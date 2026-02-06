@@ -149,7 +149,9 @@
   width: 24px;
   height: 24px;
   color: var(--color-text-muted);
-  transition: color var(--transition-fast), transform var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .tag-card:hover .tag-card__arrow {

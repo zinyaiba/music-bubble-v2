@@ -1,7 +1,7 @@
 /**
  * OfflineIndicator コンポーネント
  * オフライン状態を表示するインジケーター
- * 
+ *
  * Requirements: 15.4
  */
 
@@ -15,10 +15,7 @@ export interface OfflineIndicatorProps {
   alwaysShow?: boolean
 }
 
-export function OfflineIndicator({
-  position = 'top',
-  alwaysShow = false,
-}: OfflineIndicatorProps) {
+export function OfflineIndicator({ position = 'top', alwaysShow = false }: OfflineIndicatorProps) {
   const isOnline = useOnlineStatus()
 
   // オンラインで常時表示でない場合は何も表示しない

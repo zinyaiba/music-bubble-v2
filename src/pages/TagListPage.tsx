@@ -17,7 +17,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { TagSortOrder } from '../services/tagService'
 import { cacheService } from '../services/cacheService'
 import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
-import { generateTagsFromSongs, getSongsByTagId, getTagNameFromId, tagService } from '../services/tagService'
+import {
+  generateTagsFromSongs,
+  getSongsByTagId,
+  getTagNameFromId,
+  tagService,
+} from '../services/tagService'
 import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -45,10 +50,10 @@ export function TagListPage() {
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
   const [showEditDialog, setShowEditDialog] = useState(false)
-  
+
   // localSongsの更新用state（タグ編集時のローカル更新用）
   const [localSongsOverride, setLocalSongsOverride] = useState<typeof songs | null>(null)
-  
+
   // 実際に使用するsongs（オーバーライドがあればそちらを使用、なければfetchしたsongs）
   const effectiveSongs = localSongsOverride ?? songs
 
@@ -128,19 +133,19 @@ export function TagListPage() {
     async (oldName: string, newName: string) => {
       await tagService.renameTag(oldName, newName, effectiveSongs)
       trackEvent(AnalyticsEvents.タグ_編集完了, { old_name: oldName, new_name: newName })
-      
+
       // ローカルの楽曲データを更新
       const updatedSongs = effectiveSongs.map((song) => {
         const currentTags = song.tags || []
         if (!currentTags.includes(oldName)) return song
-        
+
         // 古いタグを削除し、新しいタグを追加（重複を避ける）
         const newTags = currentTags
           .filter((tag) => tag !== oldName)
           .concat(currentTags.includes(newName) ? [] : [newName])
         return { ...song, tags: newTags }
       })
-      
+
       setLocalSongsOverride(updatedSongs)
 
       // キャッシュも更新
@@ -157,16 +162,16 @@ export function TagListPage() {
     async (tagName: string) => {
       await tagService.deleteTag(tagName, effectiveSongs)
       trackEvent(AnalyticsEvents.タグ_削除, { tag_name: tagName })
-      
+
       // ローカルの楽曲データを更新
       const updatedSongs = effectiveSongs.map((song) => {
         const currentTags = song.tags || []
         if (!currentTags.includes(tagName)) return song
-        
+
         const newTags = currentTags.filter((tag) => tag !== tagName)
         return { ...song, tags: newTags }
       })
-      
+
       setLocalSongsOverride(updatedSongs)
 
       // キャッシュも更新
@@ -212,11 +217,7 @@ export function TagListPage() {
       <div className="tag-list-page">
         <Header title="タグ一覧" showBackButton onBack={() => navigate('/')} />
         <main className="tag-list-page__main">
-          <LoadingSpinner
-            size="large"
-            message="データを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="データを読み込んでいます..." fullScreen />
         </main>
         <Navigation currentPath="/tags" onNavigate={handleNavigate} />
       </div>
@@ -228,11 +229,7 @@ export function TagListPage() {
     const tagName = getTagNameFromId(selectedTagId!)
     return (
       <div className="tag-list-page">
-        <Header
-          title={tagName}
-          showBackButton
-          onBack={handleBackFromDetail}
-        />
+        <Header title={tagName} showBackButton onBack={handleBackFromDetail} />
         <main className="tag-list-page__main tag-list-page__main--detail">
           <TagDetail
             tag={selectedTag}

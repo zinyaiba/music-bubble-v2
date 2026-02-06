@@ -1,0 +1,599 @@
+/**
+ * TagPage スタイル
+ * タグ一覧とタグ登録を統合したページ
+ *
+ * Requirements:
+ * - 2.1: タブインターフェースを表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.tag-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--color-background);
+  overflow: hidden;
+}
+
+.tag-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 詳細表示時のメイン */
+.tag-page__main--detail {
+  padding-top: var(--header-height);
+}
+
+/* エラーメッセージ */
+.tag-page__error {
+  padding: var(--spacing-md);
+}
+
+/* コンテンツエリア */
+.tag-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-md);
+  overflow: hidden;
+}
+
+/* タグ登録タブのコンテンツ */
+.tag-page__registration {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 検索バー */
+.tag-page__search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+  flex-shrink: 0;
+}
+
+/* 検索行 */
+.tag-page__search-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tag-page__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.tag-page__search-icon {
+  position: absolute;
+  left: var(--spacing-md);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.tag-page__search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-left: calc(var(--spacing-md) + 28px);
+  padding-right: calc(var(--spacing-md) + 28px);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  color: #1a1a2e;
+  background: #fff5f8;
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__search-input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.tag-page__search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.tag-page__search-clear {
+  position: absolute;
+  right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-full);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__search-clear:hover {
+  background: var(--color-primary-alpha);
+  color: var(--color-primary);
+}
+
+/* 検索メタ情報 */
+.tag-page__search-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.tag-page__search-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.tag-page__title-only-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tag-page__title-only-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tag-page__toggle-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: var(--border-radius-full);
+  transition: background var(--transition-fast);
+}
+
+.tag-page__toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: var(--border-radius-full);
+  transition: transform var(--transition-fast);
+}
+
+.tag-page__title-only-toggle input:checked + .tag-page__toggle-slider {
+  background: var(--color-primary);
+}
+
+.tag-page__title-only-toggle input:checked + .tag-page__toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.tag-page__toggle-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* 並び替えコントロール */
+.tag-page__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tag-page__control-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.tag-page__control-icon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.tag-page__sort-select {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__sort-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.tag-page__view-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__view-toggle:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+
+.tag-page__view-toggle--active {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-alpha);
+}
+
+/* 楽曲リスト */
+.tag-page__song-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+  padding-bottom: var(--spacing-lg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+}
+
+.tag-page__song-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__song-item:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.tag-page__song-item:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.tag-page__song-item--compact {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.tag-page__song-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  min-width: 0;
+  flex: 1;
+}
+
+.tag-page__song-item-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-page__song-item-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.tag-page__song-item-chip {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: #4a7c59;
+  background: #e8f5e9;
+  border-radius: var(--border-radius-full);
+  white-space: nowrap;
+}
+
+.tag-page__song-item-no-tags {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.tag-page__song-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.tag-page__tag-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  padding: var(--spacing-2xs) var(--spacing-xs);
+  border-radius: var(--border-radius-full);
+}
+
+/* 空の状態 */
+.tag-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.tag-page__empty-message {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.tag-page__empty-clear {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__empty-clear:hover {
+  background: var(--color-primary-light);
+  color: white;
+}
+
+/* タグ編集エリア */
+.tag-page__editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--spacing-md);
+}
+
+.tag-page__editor-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.tag-page__back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-page__back-button:hover {
+  background: var(--color-primary-alpha);
+}
+
+.tag-page__song-info {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+}
+
+.tag-page__song-title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.tag-page__song-artist {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.tag-page__tag-editor {
+  margin-bottom: var(--spacing-md);
+}
+
+.tag-page__save-message {
+  margin: var(--spacing-sm) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-success);
+  animation: tag-page-fade-in 0.2s ease-out;
+}
+
+.tag-page__save-message--error {
+  color: var(--color-error);
+}
+
+@keyframes tag-page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tag-page__error {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-page__content {
+    padding-top: var(--spacing-sm);
+  }
+
+  .tag-page__search {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: 4px;
+  }
+
+  .tag-page__search-row {
+    gap: var(--spacing-xs);
+  }
+
+  .tag-page__search-input {
+    font-size: 16px;
+    padding: 6px 8px;
+    padding-left: 32px;
+    padding-right: 28px;
+  }
+
+  .tag-page__search-input::placeholder {
+    font-size: var(--font-size-xs);
+  }
+
+  .tag-page__search-icon {
+    left: 8px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .tag-page__search-meta {
+    gap: 1px;
+  }
+
+  .tag-page__search-count {
+    font-size: 10px;
+  }
+
+  .tag-page__toggle-slider {
+    width: 28px;
+    height: 16px;
+  }
+
+  .tag-page__toggle-slider::before {
+    width: 12px;
+    height: 12px;
+  }
+
+  .tag-page__title-only-toggle input:checked + .tag-page__toggle-slider::before {
+    transform: translateX(12px);
+  }
+
+  .tag-page__toggle-label {
+    font-size: 9px;
+  }
+
+  .tag-page__sort-select {
+    font-size: var(--font-size-xs);
+    padding: 4px 2px;
+  }
+
+  .tag-page__control-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .tag-page__view-toggle {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: var(--font-size-sm);
+  }
+
+  .tag-page__song-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .tag-page__song-item-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .tag-page__editor {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-page__song-info {
+    padding: var(--spacing-sm);
+  }
+
+  .tag-page__song-title {
+    font-size: var(--font-size-md);
+  }
+
+  .tag-page__song-artist {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .tag-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .tag-page__song-list {
+    padding: 0 var(--spacing-md);
+  }
+
+  .tag-page__song-item {
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-xs);
+    border: var(--border-width-thin) solid var(--color-border);
+  }
+}

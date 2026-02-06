@@ -49,12 +49,7 @@ export function TopPage() {
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
 
   // フィルタフック
-  const {
-    filterState,
-    filteredSongs,
-    setArtistFilter,
-    toggleCategory,
-  } = useFilter(songs)
+  const { filterState, filteredSongs, setArtistFilter, toggleCategory } = useFilter(songs)
 
   // キャンバスサイズを計算
   useEffect(() => {
@@ -66,7 +61,8 @@ export function TopPage() {
       const padding = 16
 
       const width = window.innerWidth
-      const height = window.innerHeight - headerHeight - filterBarHeight - navigationHeight - padding
+      const height =
+        window.innerHeight - headerHeight - filterBarHeight - navigationHeight - padding
 
       setCanvasSize({ width, height: Math.max(height, 300) })
     }
@@ -132,86 +128,96 @@ export function TopPage() {
   )
 
   // タグクリック時に新しいBubbleを表示
-  const handleTagClick = useCallback((tagName: string) => {
-    // タグに関連する楽曲数を計算
-    const relatedCount = songs.filter(s => s.tags?.includes(tagName)).length
-    
-    const newBubble: BubbleType = {
-      id: `tag-${tagName}-${Date.now()}`,
-      type: 'tag',
-      name: tagName,
-      x: 0,
-      y: 0,
-      vx: 0,
-      vy: 0,
-      size: 80,
-      color: '#98FB98',
-      opacity: 1,
-      relatedCount,
-    }
-    setSelectedBubble(newBubble)
-  }, [songs])
+  const handleTagClick = useCallback(
+    (tagName: string) => {
+      // タグに関連する楽曲数を計算
+      const relatedCount = songs.filter((s) => s.tags?.includes(tagName)).length
+
+      const newBubble: BubbleType = {
+        id: `tag-${tagName}-${Date.now()}`,
+        type: 'tag',
+        name: tagName,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        size: 80,
+        color: '#98FB98',
+        opacity: 1,
+        relatedCount,
+      }
+      setSelectedBubble(newBubble)
+    },
+    [songs]
+  )
 
   // 人物クリック時に新しいBubbleを表示
-  const handlePersonClick = useCallback((personName: string, type: 'lyricist' | 'composer' | 'arranger') => {
-    // 人物に関連する楽曲数を計算
-    const relatedCount = songs.filter(s => {
-      if (type === 'lyricist') return s.lyricists?.includes(personName)
-      if (type === 'composer') return s.composers?.includes(personName)
-      if (type === 'arranger') return s.arrangers?.includes(personName)
-      return false
-    }).length
+  const handlePersonClick = useCallback(
+    (personName: string, type: 'lyricist' | 'composer' | 'arranger') => {
+      // 人物に関連する楽曲数を計算
+      const relatedCount = songs.filter((s) => {
+        if (type === 'lyricist') return s.lyricists?.includes(personName)
+        if (type === 'composer') return s.composers?.includes(personName)
+        if (type === 'arranger') return s.arrangers?.includes(personName)
+        return false
+      }).length
 
-    const colorMap = {
-      lyricist: '#87CEEB',
-      composer: '#DDA0DD',
-      arranger: '#FFFACD',
-    }
-    
-    // 栗林みな実の場合は大きめのサイズ
-    const bubbleSize = personName === '栗林みな実' ? 110 : 80
-    
-    const newBubble: BubbleType = {
-      id: `${type}-${personName}-${Date.now()}`,
-      type,
-      name: personName,
-      x: 0,
-      y: 0,
-      vx: 0,
-      vy: 0,
-      size: bubbleSize,
-      color: colorMap[type],
-      opacity: 1,
-      relatedCount,
-    }
-    setSelectedBubble(newBubble)
-  }, [songs])
+      const colorMap = {
+        lyricist: '#87CEEB',
+        composer: '#DDA0DD',
+        arranger: '#FFFACD',
+      }
+
+      // 栗林みな実の場合は大きめのサイズ
+      const bubbleSize = personName === '栗林みな実' ? 110 : 80
+
+      const newBubble: BubbleType = {
+        id: `${type}-${personName}-${Date.now()}`,
+        type,
+        name: personName,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        size: bubbleSize,
+        color: colorMap[type],
+        opacity: 1,
+        relatedCount,
+      }
+      setSelectedBubble(newBubble)
+    },
+    [songs]
+  )
 
   // 楽曲バブルクリック時に新しいBubbleを表示（関連情報を辿る用）
-  const handleSongBubbleClick = useCallback((songTitle: string) => {
-    const song = songs.find(s => s.title === songTitle)
-    if (!song) return
+  const handleSongBubbleClick = useCallback(
+    (songTitle: string) => {
+      const song = songs.find((s) => s.title === songTitle)
+      if (!song) return
 
-    const relatedCount = (song.lyricists?.length || 0) + 
-      (song.composers?.length || 0) + 
-      (song.arrangers?.length || 0) +
-      (song.tags?.length || 0)
-    
-    const newBubble: BubbleType = {
-      id: `song-${song.id}-${Date.now()}`,
-      type: 'song',
-      name: songTitle,
-      x: 0,
-      y: 0,
-      vx: 0,
-      vy: 0,
-      size: 80,
-      color: '#FFB6C1',
-      opacity: 1,
-      relatedCount,
-    }
-    setSelectedBubble(newBubble)
-  }, [songs])
+      const relatedCount =
+        (song.lyricists?.length || 0) +
+        (song.composers?.length || 0) +
+        (song.arrangers?.length || 0) +
+        (song.tags?.length || 0)
+
+      const newBubble: BubbleType = {
+        id: `song-${song.id}-${Date.now()}`,
+        type: 'song',
+        name: songTitle,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        size: 80,
+        color: '#FFB6C1',
+        opacity: 1,
+        relatedCount,
+      }
+      setSelectedBubble(newBubble)
+    },
+    [songs]
+  )
 
   // ナビゲーション
   const handleNavigate = useCallback(
@@ -225,18 +231,14 @@ export function TopPage() {
   if (isLoading && songs.length === 0) {
     return (
       <div className="top-page">
-        <Header 
+        <Header
           title="栗林みな実 Marron Bubbles ~Next Season~"
           subtitle="栗家族みんなでつくる楽曲情報サイト"
           subtitle2="楽曲の新たな魅力を発見・登録してみましょう"
           isTopPage
         />
         <main className="top-page-main">
-          <LoadingSpinner
-            size="large"
-            message="楽曲データを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="楽曲データを読み込んでいます..." fullScreen />
         </main>
         <Navigation currentPath="/" onNavigate={handleNavigate} />
       </div>
@@ -245,7 +247,7 @@ export function TopPage() {
 
   return (
     <div className="top-page">
-      <Header 
+      <Header
         title="栗林みな実 Marron Bubbles ~Next Season~"
         subtitle="栗家族みんなでつくる楽曲情報サイト"
         subtitle2="楽曲の新たな魅力を発見・登録してみましょう"

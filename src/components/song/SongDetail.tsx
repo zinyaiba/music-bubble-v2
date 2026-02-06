@@ -54,7 +54,7 @@ function getEmbeds(song: Song): MusicServiceEmbed[] {
   // 新形式があればそれを使用
   if (song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
     // embedが有効な値を持つもののみをフィルタリング
-    return song.musicServiceEmbeds.filter(item => item.embed && item.embed.trim() !== '')
+    return song.musicServiceEmbeds.filter((item) => item.embed && item.embed.trim() !== '')
   }
   // 旧形式からの変換
   if (song.musicServiceEmbed && song.musicServiceEmbed.trim()) {
@@ -181,21 +181,15 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
         <dl className="song-detail__credits">
           <div className="song-detail__credit-item">
             <dt className="song-detail__credit-label">作詞</dt>
-            <dd className="song-detail__credit-value">
-              {formatArray(song.lyricists)}
-            </dd>
+            <dd className="song-detail__credit-value">{formatArray(song.lyricists)}</dd>
           </div>
           <div className="song-detail__credit-item">
             <dt className="song-detail__credit-label">作曲</dt>
-            <dd className="song-detail__credit-value">
-              {formatArray(song.composers)}
-            </dd>
+            <dd className="song-detail__credit-value">{formatArray(song.composers)}</dd>
           </div>
           <div className="song-detail__credit-item">
             <dt className="song-detail__credit-label">編曲</dt>
-            <dd className="song-detail__credit-value">
-              {formatArray(song.arrangers)}
-            </dd>
+            <dd className="song-detail__credit-value">{formatArray(song.arrangers)}</dd>
           </div>
         </dl>
       </section>
@@ -208,9 +202,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
             {releaseDisplayDate && (
               <div className="song-detail__release-item">
                 <dt className="song-detail__release-label">発売日</dt>
-                <dd className="song-detail__release-value">
-                  {releaseDisplayDate}
-                </dd>
+                <dd className="song-detail__release-value">{releaseDisplayDate}</dd>
               </div>
             )}
             {song.singleName && (
@@ -292,11 +284,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
 
       {/* アクションボタン */}
       <div className="song-detail__actions">
-        <button
-          type="button"
-          className="song-detail__back-button"
-          onClick={onBack}
-        >
+        <button type="button" className="song-detail__back-button" onClick={onBack}>
           <svg
             width="20"
             height="20"
@@ -313,11 +301,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
           楽曲一覧へ戻る
         </button>
         {onGoBack && (
-          <button
-            type="button"
-            className="song-detail__goback-button"
-            onClick={onGoBack}
-          >
+          <button type="button" className="song-detail__goback-button" onClick={onGoBack}>
             <svg
               width="20"
               height="20"
@@ -335,11 +319,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
           </button>
         )}
         {onEdit && (
-          <button
-            type="button"
-            className="song-detail__edit-button"
-            onClick={onEdit}
-          >
+          <button type="button" className="song-detail__edit-button" onClick={onEdit}>
             <svg
               width="20"
               height="20"
@@ -361,11 +341,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
       {/* 削除ボタン */}
       {onDelete && (
         <div className="song-detail__danger-zone">
-          <button
-            type="button"
-            className="song-detail__delete-button"
-            onClick={onDelete}
-          >
+          <button type="button" className="song-detail__delete-button" onClick={onDelete}>
             <svg
               width="20"
               height="20"

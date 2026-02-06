@@ -26,12 +26,12 @@ function generatePostContent(tagName: string, _songs: Song[], tagId: string): st
   const origin = window.location.origin
   const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
   const tagUrl = `${origin}${basePath}/tags?tag=${encodeURIComponent(tagId)}`
-  
+
   // ポスト内容を組み立て
   const line1 = '私のおすすめタグの楽曲はこちら！↓'
   const line2 = `🏷️${tagName}🫧`
   const line3 = '#マロバブ #栗林みな実'
-  
+
   return `${line1}\n\n${line2}\n\n${tagUrl}\n\n${line3}`
 }
 
@@ -54,14 +54,7 @@ export interface TagDetailProps {
  * TagDetail コンポーネント
  * タグの詳細情報と関連楽曲を表示
  */
-export function TagDetail({
-  tag,
-  songs,
-  onSongClick,
-  onShare,
-  onBack,
-  onEdit,
-}: TagDetailProps) {
+export function TagDetail({ tag, songs, onSongClick, onShare, onBack, onEdit }: TagDetailProps) {
   const [copySuccess, setCopySuccess] = useState(false)
 
   // ポスト内容を生成
@@ -220,12 +213,7 @@ export function TagDetail({
           onClick={handleShareToX}
           aria-label="Xで共有"
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
           Xで共有
@@ -246,9 +234,7 @@ export function TagDetail({
               />
             ))
           ) : (
-            <p className="tag-detail__songs-empty">
-              このタグに関連する楽曲はありません
-            </p>
+            <p className="tag-detail__songs-empty">このタグに関連する楽曲はありません</p>
           )}
         </div>
       </div>

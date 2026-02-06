@@ -88,7 +88,9 @@
 
 /* アニメーション終了後にオンライン表示を自動的に非表示にする */
 .offline-indicator--online {
-  animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-out 2s forwards;
+  animation:
+    slideIn 0.3s ease-out,
+    fadeOut 0.3s ease-out 2s forwards;
 }
 
 @keyframes fadeOut {

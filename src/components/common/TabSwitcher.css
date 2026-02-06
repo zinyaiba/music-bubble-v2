@@ -1,0 +1,73 @@
+/**
+ * TabSwitcher スタイル
+ * タブ切り替えUI
+ *
+ * Requirements:
+ * - 2.1: タブインターフェースを表示すること
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.tab-switcher {
+  display: flex;
+  position: relative;
+  background: var(--color-surface);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+  padding: 0 var(--spacing-md);
+}
+
+.tab-switcher__tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-sm);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  position: relative;
+  z-index: 1;
+}
+
+.tab-switcher__tab:hover {
+  color: var(--color-text);
+}
+
+.tab-switcher__tab--active {
+  color: var(--color-primary);
+}
+
+.tab-switcher__indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--color-primary);
+  border-radius: var(--border-radius-full) var(--border-radius-full) 0 0;
+  transition: transform var(--transition-normal);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tab-switcher {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .tab-switcher__tab {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .tab-switcher {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}

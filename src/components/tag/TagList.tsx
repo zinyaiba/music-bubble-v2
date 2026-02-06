@@ -82,12 +82,9 @@ export function TagList({
   )
 
   // 検索クエリの変更ハンドラ
-  const handleQueryChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(e.target.value)
-    },
-    []
-  )
+  const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value)
+  }, [])
 
   // 検索クリアハンドラ
   const handleClearQuery = useCallback(() => {
@@ -95,12 +92,9 @@ export function TagList({
   }, [])
 
   // ソートの変更
-  const handleSortChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSortBy(e.target.value as TagSortOrder)
-    },
-    []
-  )
+  const handleSortChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value as TagSortOrder)
+  }, [])
 
   // 表示モードの切り替え
   const handleToggleCompactView = useCallback(() => {
@@ -221,11 +215,7 @@ export function TagList({
           <div className="tag-list__empty">
             <p className="tag-list__empty-message">{emptyMessage}</p>
             {query && (
-              <button
-                type="button"
-                className="tag-list__empty-clear"
-                onClick={handleClearQuery}
-              >
+              <button type="button" className="tag-list__empty-clear" onClick={handleClearQuery}>
                 検索をクリア
               </button>
             )}

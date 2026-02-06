@@ -66,7 +66,17 @@ export function SongListPage() {
 
   // 検索状態の変更をURLに反映
   const handleSearchStateChange = useCallback(
-    (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode, contentFilter: ContentFilterValue, yearFilter: string, monthFilter: string, dayFilter: string, weekdayFilter: string) => {
+    (
+      query: string,
+      titleOnly: boolean,
+      sortBy: SongSortType,
+      displayMode: SongDisplayMode,
+      contentFilter: ContentFilterValue,
+      yearFilter: string,
+      monthFilter: string,
+      dayFilter: string,
+      weekdayFilter: string
+    ) => {
       const params = new URLSearchParams()
       if (query) params.set('q', query)
       if (titleOnly) params.set('titleOnly', 'true')
@@ -118,11 +128,7 @@ export function SongListPage() {
       <div className="song-list-page">
         <Header title="楽曲一覧" showBackButton onBack={() => navigate('/')} />
         <main className="song-list-page__main">
-          <LoadingSpinner
-            size="large"
-            message="楽曲データを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="楽曲データを読み込んでいます..." fullScreen />
         </main>
         <Navigation currentPath="/songs" onNavigate={handleNavigate} />
       </div>

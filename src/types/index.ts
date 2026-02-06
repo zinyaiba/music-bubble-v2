@@ -72,8 +72,8 @@ export type CategoryFilterValue = 'song' | 'lyricist' | 'composer' | 'arranger' 
 
 export interface FilterState {
   artist: ArtistFilterValue
-  categories: CategoryFilterValue[]  // 複数選択可能に変更
-  genres: string[]  // タグ選択時のみ使用
+  categories: CategoryFilterValue[] // 複数選択可能に変更
+  genres: string[] // タグ選択時のみ使用
 }
 
 // エラー種別
@@ -96,3 +96,118 @@ export interface ValidationError {
 }
 
 export type AppError = NetworkError | DataError | ValidationError
+
+// ============================================
+// Live Management Types
+// ============================================
+
+/**
+ * ライブ種別
+ * - tour: ツアー
+ * - solo: 単独公演
+ * - festival: フェス
+ * - event: イベント
+ */
+export type LiveType = 'tour' | 'solo' | 'festival' | 'event'
+
+/**
+ * ライブ種別の表示名マッピング
+ */
+export const LIVE_TYPE_LABELS: Record<LiveType, string> = {
+  tour: 'ツアー',
+  solo: '単独公演',
+  festival: 'フェス',
+  event: 'イベント',
+}
+
+/**
+ * セトリ項目
+ * セトリ内の1曲を表すエンティティ
+ */
+export interface SetlistItem {
+  /** 楽曲ID（既存楽曲の場合） */
+  songId?: string
+  /** 楽曲名（フリー入力または既存楽曲から取得） */
+  songTitle: string
+  /** 演奏順序（1から開始） */
+  order: number
+  /** 日替わり曲フラグ */
+  isDailySong: boolean
+}
+
+/**
+ * ライブデータ
+ * 音楽公演イベントを表すデータエンティティ
+ */
+export interface Live {
+  /** ライブID */
+  id: string
+  /** ライブ種別 */
+  liveType: LiveType
+  /** 公演名 */
+  title: string
+  /** 会場名 */
+  venueName: string
+  /** 日時（ISO 8601形式） */
+  dateTime: string
+  /** 公演地（ツアーの場合のみ） */
+  tourLocation?: string
+  /** セトリ */
+  setlist: SetlistItem[]
+  /** 埋め込みコンテンツ */
+  embeds?: MusicServiceEmbed[]
+  /** 作成日時 */
+  createdAt?: string
+  /** 更新日時 */
+  updatedAt?: string
+}
+
+/**
+ * ライブ作成用データ（idなし）
+ */
+export interface CreateLiveData {
+  liveType: LiveType
+  title: string
+  venueName: string
+  dateTime: string
+  tourLocation?: string
+  setlist: SetlistItem[]
+  embeds?: MusicServiceEmbed[]
+}
+
+/**
+ * ライブ更新用データ（部分更新）
+ */
+export type UpdateLiveData = Partial<CreateLiveData>
+
+// ============================================
+// Tour Grouping Types
+// ============================================
+
+/**
+ * ツアーグループ
+ * 同じツアー名を持つ複数の公演をグループ化したデータ構造
+ * クライアント側で生成される仮想的なデータ構造（Firestoreには保存しない）
+ */
+export interface TourGroup {
+  /** グループID（最初の公演IDを使用） */
+  id: string
+  /** ツアー名 */
+  tourName: string
+  /** グループ内の公演リスト（日時昇順） */
+  performances: Live[]
+  /** 公演数 */
+  performanceCount: number
+  /** 最初の公演日時（代表日時） */
+  firstDate: string
+  /** 最後の公演日時 */
+  lastDate: string
+}
+
+/**
+ * グループ化されたライブ一覧の項目
+ * ツアーグループまたは単独ライブのいずれか
+ */
+export type GroupedLiveItem =
+  | { type: 'tour'; data: TourGroup }
+  | { type: 'live'; data: Live }

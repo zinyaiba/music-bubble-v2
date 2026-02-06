@@ -61,9 +61,7 @@ export class FirebaseService {
       } else if (timestamp && typeof timestamp === 'string') {
         return timestamp
       } else if (timestamp && (timestamp as { seconds: number }).seconds) {
-        return new Date(
-          (timestamp as { seconds: number }).seconds * 1000
-        ).toISOString()
+        return new Date((timestamp as { seconds: number }).seconds * 1000).toISOString()
       } else {
         return new Date().toISOString()
       }
@@ -76,9 +74,7 @@ export class FirebaseService {
   /**
    * FirebaseSongをSongに変換
    */
-  private convertFirebaseSongToSong(
-    doc: { id: string; data: () => FirebaseSong }
-  ): Song {
+  private convertFirebaseSongToSong(doc: { id: string; data: () => FirebaseSong }): Song {
     const data = doc.data()
     const song: Song = {
       id: doc.id,
@@ -89,9 +85,7 @@ export class FirebaseService {
       tags: data.tags || [],
       notes: data.notes || '',
       createdAt: this.convertTimestampToString(data.createdAt),
-      updatedAt: data.updatedAt
-        ? this.convertTimestampToString(data.updatedAt)
-        : undefined,
+      updatedAt: data.updatedAt ? this.convertTimestampToString(data.updatedAt) : undefined,
     }
 
     // 拡張フィールド - 値が存在する場合のみ追加
@@ -117,10 +111,7 @@ export class FirebaseService {
         return []
       }
 
-      const q = query(
-        collection(db, this.COLLECTION_NAME),
-        orderBy('createdAt', 'desc')
-      )
+      const q = query(collection(db, this.COLLECTION_NAME), orderBy('createdAt', 'desc'))
 
       const querySnapshot = await getDocs(q)
       const songs: Song[] = []
@@ -159,10 +150,7 @@ export class FirebaseService {
       return () => {}
     }
 
-    const q = query(
-      collection(db, this.COLLECTION_NAME),
-      orderBy('createdAt', 'desc')
-    )
+    const q = query(collection(db, this.COLLECTION_NAME), orderBy('createdAt', 'desc'))
 
     const unsubscribe = onSnapshot(
       q,
@@ -266,12 +254,12 @@ export class FirebaseService {
       }
 
       const docRef = doc(db, this.COLLECTION_NAME, songId)
-      
+
       // undefinedのフィールドをdeleteField()に変換
       const updateData: Record<string, unknown> = {
         updatedAt: serverTimestamp(),
       }
-      
+
       for (const [key, value] of Object.entries(songData)) {
         if (key === 'id') continue // idフィールドは除外
         if (value === undefined) {

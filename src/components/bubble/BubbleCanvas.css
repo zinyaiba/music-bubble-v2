@@ -9,26 +9,21 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--border-radius-lg);
-  background: linear-gradient(
-    135deg,
-    #fff5f8 0%,
-    #fce7f3 50%,
-    #fdf2f8 100%
-  );
-  
+  background: linear-gradient(135deg, #fff5f8 0%, #fce7f3 50%, #fdf2f8 100%);
+
   /* ガラスモーフィズム効果 */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(244, 114, 182, 0.2);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(236, 72, 153, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  
+
   /* GPU加速 */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   will-change: contents;
-  
+
   /* タッチ操作の最適化 */
   touch-action: manipulation;
   -webkit-touch-callout: none;
@@ -40,22 +35,10 @@
 .bubble-canvas-background {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(
-      ellipse at 20% 30%,
-      rgba(244, 114, 182, 0.15) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      ellipse at 80% 70%,
-      rgba(167, 139, 250, 0.12) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      ellipse at 50% 50%,
-      rgba(251, 207, 232, 0.2) 0%,
-      transparent 70%
-    );
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(244, 114, 182, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(167, 139, 250, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(251, 207, 232, 0.2) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -79,7 +62,7 @@
   justify-content: center;
   transition: all var(--transition-fast);
   z-index: 100;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(236, 72, 153, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
@@ -204,7 +187,7 @@
   .bubble-canvas-paused-overlay {
     animation: none;
   }
-  
+
   .bubble-canvas-pause-button {
     transition: none;
   }
@@ -213,26 +196,13 @@
 /* ダークモード対応（既にダークテーマがデフォルト） */
 @media (prefers-color-scheme: light) {
   .bubble-canvas {
-    background: linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #e2e8f0 50%,
-      #f8fafc 100%
-    );
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%);
   }
 
   .bubble-canvas-background {
-    background: 
-      radial-gradient(
-        ellipse at 20% 30%,
-        rgba(99, 102, 241, 0.1) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        ellipse at 80% 70%,
-        rgba(236, 72, 153, 0.08) 0%,
-        transparent 50%
-      );
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
   }
 
   .bubble-canvas-pause-button {

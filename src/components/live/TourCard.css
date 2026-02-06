@@ -1,0 +1,176 @@
+/**
+ * TourCard スタイル
+ * ツアーグループのカード表示
+ *
+ * Requirements:
+ * - 2.1: ツアーをグループ化して1つのカードとして表示
+ * - 2.2: ツアー名、公演数、開催期間を表示
+ * - 2.3: 公演地のリスト（最大3件）をプレビュー表示
+ */
+
+.tour-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e5f5 100%);
+  border: var(--border-width-thin) solid #ce93d8;
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.tour-card:hover {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-color: #ab47bc;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.tour-card:focus {
+  outline: none;
+  border-color: #7b1fa2;
+  box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.2);
+}
+
+.tour-card:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* コンテンツ */
+.tour-card__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* ヘッダー（種別バッジ + 公演数） */
+.tour-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* ツアー種別バッジ */
+.tour-card__type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: #7b1fa2;
+  color: white;
+  border: none;
+}
+
+/* 公演数 */
+.tour-card__count {
+  font-size: var(--font-size-xs);
+  color: #7b1fa2;
+  font-weight: var(--font-weight-semibold);
+  background: white;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #ce93d8;
+}
+
+/* ツアー名 */
+.tour-card__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 開催期間 */
+.tour-card__date-range {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* 公演地プレビュー */
+.tour-card__locations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+}
+
+.tour-card__location-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: var(--font-size-xs);
+  color: #6a1b9a;
+  background: rgba(123, 31, 162, 0.1);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid rgba(123, 31, 162, 0.2);
+}
+
+.tour-card__location-more {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+/* 矢印アイコン */
+.tour-card__arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #7b1fa2;
+  background: rgba(123, 31, 162, 0.1);
+  border-radius: var(--border-radius-sm);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tour-card:hover .tour-card__arrow {
+  background: #7b1fa2;
+  color: white;
+  transform: translateX(2px);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tour-card {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .tour-card__title {
+    font-size: var(--font-size-sm);
+  }
+
+  .tour-card__date-range {
+    font-size: var(--font-size-xs);
+  }
+
+  .tour-card__type,
+  .tour-card__count {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+
+  .tour-card__location-tag,
+  .tour-card__location-more {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}

@@ -1,0 +1,166 @@
+/**
+ * LiveListPage スタイル
+ * ライブ一覧ページ
+ *
+ * Requirements:
+ * - 4.1: 登録されたすべてのライブをリスト形式で表示
+ * - 4.5: ライブが登録されていない場合、空の状態メッセージを表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.live-list-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--color-background);
+  overflow: hidden;
+}
+
+.live-list-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  position: relative;
+  overflow: hidden;
+}
+
+/* エラーメッセージ */
+.live-list-page__error {
+  padding: var(--spacing-md);
+}
+
+/* コンテンツエリア */
+.live-list-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ライブリスト */
+.live-list-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* 空の状態 */
+.live-list-page__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+}
+
+.live-list-page__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin-bottom: var(--spacing-lg);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-full);
+  color: var(--color-text-muted);
+}
+
+.live-list-page__empty-message {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.live-list-page__empty-hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* 新規追加ボタン（FAB） */
+.live-list-page__add-button {
+  position: fixed;
+  right: var(--spacing-lg);
+  bottom: calc(var(--navigation-height) + var(--spacing-lg) + var(--safe-area-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: none;
+  border-radius: var(--border-radius-full);
+  color: white;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-fast);
+  z-index: var(--z-index-sticky);
+}
+
+.live-list-page__add-button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.live-list-page__add-button:focus {
+  outline: none;
+  box-shadow:
+    var(--shadow-xl),
+    0 0 0 4px var(--color-primary-alpha);
+}
+
+.live-list-page__add-button:active {
+  transform: scale(0.95);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-list-page__content {
+    padding: var(--spacing-sm);
+  }
+
+  .live-list-page__add-button {
+    right: var(--spacing-md);
+    bottom: calc(var(--navigation-height) + var(--spacing-md) + var(--safe-area-bottom));
+    width: 48px;
+    height: 48px;
+  }
+
+  .live-list-page__add-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .live-list-page__empty-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .live-list-page__empty-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .live-list-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .live-list-page__add-button {
+    right: var(--spacing-xl);
+    bottom: calc(var(--navigation-height) + var(--spacing-xl));
+  }
+}

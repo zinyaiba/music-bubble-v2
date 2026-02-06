@@ -1,0 +1,134 @@
+/**
+ * LiveEditPage スタイル
+ * ライブ登録・編集ページ
+ *
+ * Requirements:
+ * - 6.8: 有効なフォームを送信した場合、ライブを保存
+ * - 7.1: 既存のライブデータでフォームを事前入力
+ * - 7.7: 保存が成功した場合、確認メッセージを表示
+ */
+
+.live-edit-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.live-edit-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* エラーメッセージ */
+.live-edit-page__error {
+  padding: var(--spacing-md);
+  padding-bottom: 0;
+}
+
+/* コンテンツエリア */
+.live-edit-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* エラーコンテナ */
+.live-edit-page__error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  flex: 1;
+}
+
+/* ライブ一覧に戻るボタン */
+.live-edit-page__back-to-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-edit-page__back-to-list:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.live-edit-page__back-to-list:focus {
+  outline: none;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-edit-page__back-to-list:active {
+  transform: translateY(0);
+}
+
+/* 成功メッセージ */
+.live-edit-page__success {
+  padding: var(--spacing-md);
+  padding-bottom: 0;
+}
+
+.live-edit-page__success-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--border-radius-md);
+  color: var(--color-success);
+  font-size: var(--font-size-sm);
+}
+
+.live-edit-page__success-icon {
+  flex-shrink: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-edit-page__content {
+    padding: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+    overflow-x: hidden;
+  }
+
+  .live-edit-page__error-container {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .live-edit-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+  }
+}

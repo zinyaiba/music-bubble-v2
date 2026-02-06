@@ -10,7 +10,14 @@ import type { Song } from '../../types'
 import './SongCard.css'
 
 /** 表示モードの種類 */
-export type SongDisplayMode = 'compact' | 'artist' | 'lyricist' | 'composer' | 'arranger' | 'release' | 'all'
+export type SongDisplayMode =
+  | 'compact'
+  | 'artist'
+  | 'lyricist'
+  | 'composer'
+  | 'arranger'
+  | 'release'
+  | 'all'
 
 export interface SongCardProps {
   /** 楽曲データ */
@@ -58,7 +65,7 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
   const releaseDisplay = formatReleaseDate(song.releaseYear, song.releaseDate)
   const isCompact = displayMode === 'compact'
   // 旧形式と新形式の両方をチェック
-  const hasEmbed = 
+  const hasEmbed =
     (!!song.musicServiceEmbed && song.musicServiceEmbed.trim().length > 0) ||
     (!!song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0)
 
@@ -78,35 +85,50 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
     >
       <div className="song-card__content">
         <h3 className="song-card__title">{song.title}</h3>
-        
+
         {!isCompact && (
           <>
             {/* アーティスト名 */}
             {(displayMode === 'artist' || displayMode === 'all') && (
               <p className="song-card__artist">{artists}</p>
             )}
-            
+
             {/* クレジット情報 */}
-            {(displayMode === 'lyricist' || displayMode === 'composer' || displayMode === 'arranger' || displayMode === 'all') && (
+            {(displayMode === 'lyricist' ||
+              displayMode === 'composer' ||
+              displayMode === 'arranger' ||
+              displayMode === 'all') && (
               <div className="song-card__credits">
-                {(displayMode === 'lyricist' || displayMode === 'all') && song.lyricists && song.lyricists.length > 0 && (
-                  <span className="song-card__credit">
-                    <span className="song-card__credit-label song-card__credit-label--lyricist">作詞</span>
-                    {formatArray(song.lyricists)}
-                  </span>
-                )}
-                {(displayMode === 'composer' || displayMode === 'all') && song.composers && song.composers.length > 0 && (
-                  <span className="song-card__credit">
-                    <span className="song-card__credit-label song-card__credit-label--composer">作曲</span>
-                    {formatArray(song.composers)}
-                  </span>
-                )}
-                {(displayMode === 'arranger' || displayMode === 'all') && song.arrangers && song.arrangers.length > 0 && (
-                  <span className="song-card__credit">
-                    <span className="song-card__credit-label song-card__credit-label--arranger">編曲</span>
-                    {formatArray(song.arrangers)}
-                  </span>
-                )}
+                {(displayMode === 'lyricist' || displayMode === 'all') &&
+                  song.lyricists &&
+                  song.lyricists.length > 0 && (
+                    <span className="song-card__credit">
+                      <span className="song-card__credit-label song-card__credit-label--lyricist">
+                        作詞
+                      </span>
+                      {formatArray(song.lyricists)}
+                    </span>
+                  )}
+                {(displayMode === 'composer' || displayMode === 'all') &&
+                  song.composers &&
+                  song.composers.length > 0 && (
+                    <span className="song-card__credit">
+                      <span className="song-card__credit-label song-card__credit-label--composer">
+                        作曲
+                      </span>
+                      {formatArray(song.composers)}
+                    </span>
+                  )}
+                {(displayMode === 'arranger' || displayMode === 'all') &&
+                  song.arrangers &&
+                  song.arrangers.length > 0 && (
+                    <span className="song-card__credit">
+                      <span className="song-card__credit-label song-card__credit-label--arranger">
+                        編曲
+                      </span>
+                      {formatArray(song.arrangers)}
+                    </span>
+                  )}
               </div>
             )}
 

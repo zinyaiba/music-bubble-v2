@@ -28,9 +28,9 @@ const DISPLAY_MODES: { mode: SongDisplayMode; icon: string; label: string }[] = 
 ]
 
 /** コンテンツフィルタの型 */
-export type ContentFilterValue = 
-  | 'all' 
-  | 'with-content' 
+export type ContentFilterValue =
+  | 'all'
+  | 'with-content'
   | 'without-content'
   | 'kuribayashi'
   | 'minami'
@@ -52,7 +52,7 @@ const CONTENT_FILTERS: { value: ContentFilterValue; label: string }[] = [
 function hasContent(song: Song): boolean {
   // musicServiceEmbeds配列に有効な埋め込みがあるか
   if (song.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
-    return song.musicServiceEmbeds.some(embed => embed.embed && embed.embed.trim() !== '')
+    return song.musicServiceEmbeds.some((embed) => embed.embed && embed.embed.trim() !== '')
   }
   // 旧形式のmusicServiceEmbedがあるか
   if (song.musicServiceEmbed && song.musicServiceEmbed.trim() !== '') {
@@ -63,17 +63,17 @@ function hasContent(song: Song): boolean {
 
 /** アーティストが栗林みな実かチェック */
 function isKuribayashi(song: Song): boolean {
-  return song.artists?.some(artist => artist === '栗林みな実') ?? false
+  return song.artists?.some((artist) => artist === '栗林みな実') ?? false
 }
 
 /** アーティストがMinamiかチェック */
 function isMinami(song: Song): boolean {
-  return song.artists?.some(artist => artist === 'Minami') ?? false
+  return song.artists?.some((artist) => artist === 'Minami') ?? false
 }
 
 /** アーティストがワイルド三人娘を含むかチェック */
 function isWild3(song: Song): boolean {
-  return song.artists?.some(artist => artist.includes('ワイルド三人娘')) ?? false
+  return song.artists?.some((artist) => artist.includes('ワイルド三人娘')) ?? false
 }
 
 /** アーティストがその他（栗林みな実、Minami、ワイルド三人娘以外）かチェック */
@@ -87,7 +87,7 @@ function applyFilter(songs: Song[], filter: ContentFilterValue): Song[] {
     case 'with-content':
       return songs.filter(hasContent)
     case 'without-content':
-      return songs.filter(song => !hasContent(song))
+      return songs.filter((song) => !hasContent(song))
     case 'kuribayashi':
       return songs.filter(isKuribayashi)
     case 'minami':
@@ -144,7 +144,17 @@ export interface SongListProps {
   /** 初期曜日フィルタ */
   initialWeekdayFilter?: string
   /** 検索状態変更時のコールバック */
-  onSearchStateChange?: (query: string, titleOnly: boolean, sortBy: SongSortType, displayMode: SongDisplayMode, contentFilter: ContentFilterValue, yearFilter: string, monthFilter: string, dayFilter: string, weekdayFilter: string) => void
+  onSearchStateChange?: (
+    query: string,
+    titleOnly: boolean,
+    sortBy: SongSortType,
+    displayMode: SongDisplayMode,
+    contentFilter: ContentFilterValue,
+    yearFilter: string,
+    monthFilter: string,
+    dayFilter: string,
+    weekdayFilter: string
+  ) => void
 }
 
 /**
@@ -179,7 +189,7 @@ export function SongList({
   // 楽曲データから年のリストを生成（降順）
   const availableYears = useMemo(() => {
     const years = new Set<number>()
-    songs.forEach(song => {
+    songs.forEach((song) => {
       if (song.releaseYear) {
         years.add(song.releaseYear)
       }
@@ -190,7 +200,7 @@ export function SongList({
   // 楽曲データから月のリストを生成
   const availableMonths = useMemo(() => {
     const months = new Set<number>()
-    songs.forEach(song => {
+    songs.forEach((song) => {
       if (song.releaseDate && song.releaseDate.length >= 2) {
         const month = parseInt(song.releaseDate.substring(0, 2), 10)
         if (month >= 1 && month <= 12) {
@@ -204,7 +214,7 @@ export function SongList({
   // 楽曲データから日のリストを生成
   const availableDays = useMemo(() => {
     const days = new Set<number>()
-    songs.forEach(song => {
+    songs.forEach((song) => {
       if (song.releaseDate && song.releaseDate.length >= 4) {
         const day = parseInt(song.releaseDate.substring(2, 4), 10)
         if (day >= 1 && day <= 31) {
@@ -217,7 +227,7 @@ export function SongList({
 
   // 検索とコンテンツ/アーティストフィルタを適用した楽曲（日付フィルタ前）
   const filteredSongsBeforeDate = useMemo(() => {
-    let filtered = searchSongs(songs, query, { titleOnly })
+    const filtered = searchSongs(songs, query, { titleOnly })
     return applyFilter(filtered, contentFilter)
   }, [songs, query, titleOnly, contentFilter])
 
@@ -225,14 +235,14 @@ export function SongList({
   const filteredSongsAfterYear = useMemo(() => {
     if (yearFilter === 'all') return filteredSongsBeforeDate
     const year = parseInt(yearFilter, 10)
-    return filteredSongsBeforeDate.filter(song => song.releaseYear === year)
+    return filteredSongsBeforeDate.filter((song) => song.releaseYear === year)
   }, [filteredSongsBeforeDate, yearFilter])
 
   // 年+月フィルタ適用後の楽曲（日・曜日フィルタ用）
   const filteredSongsAfterMonth = useMemo(() => {
     if (monthFilter === 'all') return filteredSongsAfterYear
     const month = parseInt(monthFilter, 10)
-    return filteredSongsAfterYear.filter(song => {
+    return filteredSongsAfterYear.filter((song) => {
       if (!song.releaseDate || song.releaseDate.length < 2) return false
       const songMonth = parseInt(song.releaseDate.substring(0, 2), 10)
       return songMonth === month
@@ -243,7 +253,7 @@ export function SongList({
   const filteredSongsAfterDay = useMemo(() => {
     if (dayFilter === 'all') return filteredSongsAfterMonth
     const day = parseInt(dayFilter, 10)
-    return filteredSongsAfterMonth.filter(song => {
+    return filteredSongsAfterMonth.filter((song) => {
       if (!song.releaseDate || song.releaseDate.length < 4) return false
       const songDay = parseInt(song.releaseDate.substring(2, 4), 10)
       return songDay === day
@@ -253,7 +263,7 @@ export function SongList({
   // 年代ごとの曲数を計算（検索+コンテンツフィルタ後）
   const yearCounts = useMemo(() => {
     const counts = new Map<number, number>()
-    filteredSongsBeforeDate.forEach(song => {
+    filteredSongsBeforeDate.forEach((song) => {
       if (song.releaseYear) {
         counts.set(song.releaseYear, (counts.get(song.releaseYear) || 0) + 1)
       }
@@ -264,7 +274,7 @@ export function SongList({
   // 月ごとの曲数を計算（年フィルタ適用後）
   const monthCounts = useMemo(() => {
     const counts = new Map<number, number>()
-    filteredSongsAfterYear.forEach(song => {
+    filteredSongsAfterYear.forEach((song) => {
       if (song.releaseDate && song.releaseDate.length >= 2) {
         const month = parseInt(song.releaseDate.substring(0, 2), 10)
         if (month >= 1 && month <= 12) {
@@ -278,7 +288,7 @@ export function SongList({
   // 日ごとの曲数を計算（年+月フィルタ適用後）
   const dayCounts = useMemo(() => {
     const counts = new Map<number, number>()
-    filteredSongsAfterMonth.forEach(song => {
+    filteredSongsAfterMonth.forEach((song) => {
       if (song.releaseDate && song.releaseDate.length >= 4) {
         const day = parseInt(song.releaseDate.substring(2, 4), 10)
         if (day >= 1 && day <= 31) {
@@ -292,7 +302,7 @@ export function SongList({
   // 曜日ごとの曲数を計算（年+月+日フィルタ適用後）
   const weekdayCounts = useMemo(() => {
     const counts = new Map<number, number>()
-    filteredSongsAfterDay.forEach(song => {
+    filteredSongsAfterDay.forEach((song) => {
       if (song.releaseYear && song.releaseDate && song.releaseDate.length >= 4) {
         const month = parseInt(song.releaseDate.substring(0, 2), 10)
         const day = parseInt(song.releaseDate.substring(2, 4), 10)
@@ -307,46 +317,67 @@ export function SongList({
 
   // 検索状態が変更されたら親に通知
   useEffect(() => {
-    onSearchStateChange?.(query, titleOnly, sortBy, displayMode, contentFilter, yearFilter, monthFilter, dayFilter, weekdayFilter)
-  }, [query, titleOnly, sortBy, displayMode, contentFilter, yearFilter, monthFilter, dayFilter, weekdayFilter, onSearchStateChange])
+    onSearchStateChange?.(
+      query,
+      titleOnly,
+      sortBy,
+      displayMode,
+      contentFilter,
+      yearFilter,
+      monthFilter,
+      dayFilter,
+      weekdayFilter
+    )
+  }, [
+    query,
+    titleOnly,
+    sortBy,
+    displayMode,
+    contentFilter,
+    yearFilter,
+    monthFilter,
+    dayFilter,
+    weekdayFilter,
+    onSearchStateChange,
+  ])
 
   // 検索・並び替え・フィルタ結果をメモ化
   const filteredAndSortedSongs = useMemo(() => {
     let filtered = searchSongs(songs, query, { titleOnly })
-    
+
     // コンテンツ/アーティストフィルタを適用
     filtered = applyFilter(filtered, contentFilter)
-    
+
     // 年代フィルタを適用
     if (yearFilter !== 'all') {
       const year = parseInt(yearFilter, 10)
-      filtered = filtered.filter(song => song.releaseYear === year)
+      filtered = filtered.filter((song) => song.releaseYear === year)
     }
-    
+
     // 月フィルタを適用
     if (monthFilter !== 'all') {
       const month = parseInt(monthFilter, 10)
-      filtered = filtered.filter(song => {
+      filtered = filtered.filter((song) => {
         if (!song.releaseDate || song.releaseDate.length < 2) return false
         const songMonth = parseInt(song.releaseDate.substring(0, 2), 10)
         return songMonth === month
       })
     }
-    
+
     // 日フィルタを適用
     if (dayFilter !== 'all') {
       const day = parseInt(dayFilter, 10)
-      filtered = filtered.filter(song => {
+      filtered = filtered.filter((song) => {
         if (!song.releaseDate || song.releaseDate.length < 4) return false
         const songDay = parseInt(song.releaseDate.substring(2, 4), 10)
         return songDay === day
       })
     }
-    
+
     // 曜日フィルタを適用
     if (weekdayFilter !== 'all') {
       const weekday = parseInt(weekdayFilter, 10)
-      filtered = filtered.filter(song => {
+      filtered = filtered.filter((song) => {
         if (!song.releaseYear || !song.releaseDate || song.releaseDate.length < 4) return false
         const month = parseInt(song.releaseDate.substring(0, 2), 10)
         const day = parseInt(song.releaseDate.substring(2, 4), 10)
@@ -355,17 +386,24 @@ export function SongList({
         return songWeekday === weekday
       })
     }
-    
+
     return sortSongs(filtered, sortBy)
-  }, [songs, query, titleOnly, sortBy, contentFilter, yearFilter, monthFilter, dayFilter, weekdayFilter])
+  }, [
+    songs,
+    query,
+    titleOnly,
+    sortBy,
+    contentFilter,
+    yearFilter,
+    monthFilter,
+    dayFilter,
+    weekdayFilter,
+  ])
 
   // 検索クエリの変更ハンドラ
-  const handleQueryChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(e.target.value)
-    },
-    []
-  )
+  const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value)
+  }, [])
 
   // 検索クリアハンドラ
   const handleClearQuery = useCallback(() => {
@@ -373,60 +411,39 @@ export function SongList({
   }, [])
 
   // タイトルのみ検索の切り替え
-  const handleTitleOnlyChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTitleOnly(e.target.checked)
-    },
-    []
-  )
+  const handleTitleOnlyChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitleOnly(e.target.checked)
+  }, [])
 
   // 並び替えの変更
-  const handleSortChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSortBy(e.target.value as SongSortType)
-    },
-    []
-  )
+  const handleSortChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value as SongSortType)
+  }, [])
 
   // コンテンツフィルタの変更
-  const handleContentFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setContentFilter(e.target.value as ContentFilterValue)
-    },
-    []
-  )
+  const handleContentFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setContentFilter(e.target.value as ContentFilterValue)
+  }, [])
 
   // 年代フィルタの変更
-  const handleYearFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setYearFilter(e.target.value)
-    },
-    []
-  )
+  const handleYearFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setYearFilter(e.target.value)
+  }, [])
 
   // 月フィルタの変更
-  const handleMonthFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setMonthFilter(e.target.value)
-    },
-    []
-  )
+  const handleMonthFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMonthFilter(e.target.value)
+  }, [])
 
   // 日フィルタの変更
-  const handleDayFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setDayFilter(e.target.value)
-    },
-    []
-  )
+  const handleDayFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDayFilter(e.target.value)
+  }, [])
 
   // 曜日フィルタの変更
-  const handleWeekdayFilterChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setWeekdayFilter(e.target.value)
-    },
-    []
-  )
+  const handleWeekdayFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setWeekdayFilter(e.target.value)
+  }, [])
 
   // 表示モードの切り替え（次のモードへ）
   const handleCycleDisplayMode = useCallback(() => {
@@ -497,11 +514,7 @@ export function SongList({
               {filteredAndSortedSongs.length}/{songs.length}曲
             </span>
             <label className="song-list__title-only-toggle">
-              <input
-                type="checkbox"
-                checked={titleOnly}
-                onChange={handleTitleOnlyChange}
-              />
+              <input type="checkbox" checked={titleOnly} onChange={handleTitleOnlyChange} />
               <span className="song-list__toggle-slider"></span>
               <span className="song-list__toggle-label">曲名のみ</span>
             </label>
@@ -562,7 +575,7 @@ export function SongList({
               onChange={handleContentFilterChange}
               aria-label="コンテンツフィルタ"
             >
-              {CONTENT_FILTERS.map(filter => (
+              {CONTENT_FILTERS.map((filter) => (
                 <option key={filter.value} value={filter.value}>
                   {filter.label}
                 </option>
@@ -594,7 +607,7 @@ export function SongList({
               aria-label="年代フィルタ"
             >
               <option value="all">全年({filteredSongsBeforeDate.length})</option>
-              {availableYears.map(year => (
+              {availableYears.map((year) => (
                 <option key={year} value={year.toString()}>
                   {year}({yearCounts.get(year) || 0})
                 </option>
@@ -607,7 +620,7 @@ export function SongList({
               aria-label="月フィルタ"
             >
               <option value="all">全月({filteredSongsAfterYear.length})</option>
-              {availableMonths.map(month => (
+              {availableMonths.map((month) => (
                 <option key={month} value={month.toString()}>
                   {month}月({monthCounts.get(month) || 0})
                 </option>
@@ -620,7 +633,7 @@ export function SongList({
               aria-label="日フィルタ"
             >
               <option value="all">全日({filteredSongsAfterMonth.length})</option>
-              {availableDays.map(day => (
+              {availableDays.map((day) => (
                 <option key={day} value={day.toString()}>
                   {day}日({dayCounts.get(day) || 0})
                 </option>
@@ -633,7 +646,7 @@ export function SongList({
               aria-label="曜日フィルタ"
             >
               <option value="all">全曜日({filteredSongsAfterDay.length})</option>
-              {[0, 1, 2, 3, 4, 5, 6].map(weekday => (
+              {[0, 1, 2, 3, 4, 5, 6].map((weekday) => (
                 <option key={weekday} value={weekday.toString()}>
                   {WEEKDAYS[weekday]}曜({weekdayCounts.get(weekday) || 0})
                 </option>
@@ -667,11 +680,7 @@ export function SongList({
           <div className="song-list__empty">
             <p className="song-list__empty-message">{emptyMessage}</p>
             {query && (
-              <button
-                type="button"
-                className="song-list__empty-clear"
-                onClick={handleClearQuery}
-              >
+              <button type="button" className="song-list__empty-clear" onClick={handleClearQuery}>
                 検索をクリア
               </button>
             )}

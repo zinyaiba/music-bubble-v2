@@ -54,8 +54,7 @@ export const AnalyticsEvents = {
   オンライン復帰: 'オンライン復帰',
 } as const
 
-export type AnalyticsEventName =
-  (typeof AnalyticsEvents)[keyof typeof AnalyticsEvents]
+export type AnalyticsEventName = (typeof AnalyticsEvents)[keyof typeof AnalyticsEvents]
 
 /**
  * カスタムイベントをログに記録
@@ -102,28 +101,16 @@ export function trackPageView(
 /**
  * 検索アクションをトラッキング
  */
-export function trackSearch(
-  searchType: '曲' | 'タグ',
-  searchTerm: string
-): void {
-  trackEvent(
-    searchType === '曲'
-      ? AnalyticsEvents.曲_検索実行
-      : AnalyticsEvents.タグ_検索実行,
-    {
-      search_term: searchTerm,
-    }
-  )
+export function trackSearch(searchType: '曲' | 'タグ', searchTerm: string): void {
+  trackEvent(searchType === '曲' ? AnalyticsEvents.曲_検索実行 : AnalyticsEvents.タグ_検索実行, {
+    search_term: searchTerm,
+  })
 }
 
 /**
  * エラーをトラッキング
  */
-export function trackError(
-  errorType: string,
-  errorMessage: string,
-  context?: string
-): void {
+export function trackError(errorType: string, errorMessage: string, context?: string): void {
   trackEvent(AnalyticsEvents.エラー発生, {
     error_type: errorType,
     error_message: errorMessage.slice(0, 100), // 長すぎるメッセージは切り詰め
@@ -135,7 +122,5 @@ export function trackError(
  * オフライン/オンライン状態をトラッキング
  */
 export function trackConnectivityChange(isOnline: boolean): void {
-  trackEvent(
-    isOnline ? AnalyticsEvents.オンライン復帰 : AnalyticsEvents.オフライン検出
-  )
+  trackEvent(isOnline ? AnalyticsEvents.オンライン復帰 : AnalyticsEvents.オフライン検出)
 }

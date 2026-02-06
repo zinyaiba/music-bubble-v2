@@ -1,0 +1,189 @@
+/**
+ * LiveCard スタイル
+ * ライブ情報のコンパクト表示
+ *
+ * Requirements:
+ * - 4.2: ライブ一覧の各項目は、ライブ種別、公演名、会場名、日時を表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.live-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.live-card:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.live-card:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-card:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* コンテンツ */
+.live-card__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* ヘッダー（種別バッジ + 公演地） */
+.live-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* ライブ種別バッジ */
+.live-card__type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid;
+}
+
+/* ツアー - パープル系 */
+.live-card__type--tour {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border-color: #ce93d8;
+}
+
+/* 単独公演 - ブルー系 */
+.live-card__type--solo {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+/* フェス - オレンジ系 */
+.live-card__type--festival {
+  background: #fff3e0;
+  color: #e65100;
+  border-color: #ffcc80;
+}
+
+/* イベント - グリーン系 */
+.live-card__type--event {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+/* 公演地（ツアーの場合） */
+.live-card__location {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  padding: 2px 6px;
+  border-radius: var(--border-radius-sm);
+}
+
+/* 公演名 */
+.live-card__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 会場名 */
+.live-card__venue {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 日時 */
+.live-card__datetime {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 矢印アイコン */
+.live-card__arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-muted);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.live-card:hover .live-card__arrow {
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+/* セトリありの場合 */
+.live-card__arrow--has-setlist {
+  width: 28px;
+  height: 28px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: var(--border-radius-sm);
+}
+
+.live-card:hover .live-card__arrow--has-setlist {
+  background: #4caf50;
+  color: white;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-card {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .live-card__title {
+    font-size: var(--font-size-sm);
+  }
+
+  .live-card__venue {
+    font-size: var(--font-size-xs);
+  }
+
+  .live-card__datetime {
+    font-size: 10px;
+  }
+
+  .live-card__type {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+}

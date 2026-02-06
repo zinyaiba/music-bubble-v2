@@ -15,7 +15,11 @@ import { useNavigate } from 'react-router-dom'
 import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
-import { announcements, getReadAnnouncementIds, READ_ANNOUNCEMENTS_KEY } from '../data/announcements'
+import {
+  announcements,
+  getReadAnnouncementIds,
+  READ_ANNOUNCEMENTS_KEY,
+} from '../data/announcements'
 import type { Announcement } from '../data/announcements'
 import './InfoPage.css'
 
@@ -90,15 +94,20 @@ function saveReadAnnouncementIds(ids: string[]): void {
  * Requirements: 9.4 - マークダウン形式をサポート
  */
 function parseMarkdown(text: string): string {
-  return text
-    // 太字 **text**
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // 斜体 *text*
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // リンク [text](url)
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-    // 改行
-    .replace(/\n/g, '<br />')
+  return (
+    text
+      // 太字 **text**
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // 斜体 *text*
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // リンク [text](url)
+      .replace(
+        /\[(.+?)\]\((.+?)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+      )
+      // 改行
+      .replace(/\n/g, '<br />')
+  )
 }
 
 /**
@@ -135,7 +144,7 @@ function getAnnouncementTypeLabel(type: Announcement['type']): string {
 export function InfoPage() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'howto' | 'announcements'>('howto')
-  
+
   // 既読状態を初期化時に取得
   const [readIds, setReadIds] = useState<string[]>(() => getReadAnnouncementIds())
 
@@ -201,9 +210,7 @@ export function InfoPage() {
             onClick={() => setActiveTab('announcements')}
           >
             お知らせ
-            {unreadCount > 0 && (
-              <span className="info-page__badge">{unreadCount}</span>
-            )}
+            {unreadCount > 0 && <span className="info-page__badge">{unreadCount}</span>}
           </button>
         </div>
 
@@ -235,11 +242,7 @@ export function InfoPage() {
             {/* 全て既読ボタン */}
             {unreadCount > 0 && (
               <div className="info-page__actions">
-                <button
-                  type="button"
-                  className="info-page__mark-all-read"
-                  onClick={markAllAsRead}
-                >
+                <button type="button" className="info-page__mark-all-read" onClick={markAllAsRead}>
                   すべて既読にする
                 </button>
               </div>
@@ -265,13 +268,9 @@ export function InfoPage() {
                       <time className="info-page__announcement-date">
                         {formatDate(announcement.date)}
                       </time>
-                      {!isRead && (
-                        <span className="info-page__unread-dot" aria-label="未読" />
-                      )}
+                      {!isRead && <span className="info-page__unread-dot" aria-label="未読" />}
                     </div>
-                    <h2 className="info-page__announcement-title">
-                      {announcement.title}
-                    </h2>
+                    <h2 className="info-page__announcement-title">{announcement.title}</h2>
                     <div
                       className="info-page__announcement-content"
                       dangerouslySetInnerHTML={{

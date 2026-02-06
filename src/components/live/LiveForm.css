@@ -1,0 +1,505 @@
+/**
+ * LiveForm スタイル
+ * ライブ登録・編集フォーム
+ *
+ * Requirements:
+ * - 6.1: 必要なすべてのフィールドを含むフォームを表示
+ * - 6.2: ライブ種別セレクター、公演名入力、会場名入力、日時ピッカー、セトリエディター
+ * - 6.3: ツアー選択時の公演地入力フィールド
+ * - 6.9: バリデーションエラーメッセージを表示
+ */
+
+.live-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--color-background);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ヘッダー */
+.live-form__header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-surface);
+}
+
+.live-form__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+}
+
+/* ツアー名表示（公演地追加モード） */
+.live-form__tour-name {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  text-align: center;
+}
+
+/* コンテンツ */
+.live-form__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* セクション */
+.live-form__section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.live-form__section-title {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* フィールド */
+.live-form__field {
+  margin-bottom: var(--spacing-md);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.live-form__field:last-child {
+  margin-bottom: 0;
+}
+
+/* 日付行（年と月日を横並び） */
+.live-form__date-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.live-form__field--year {
+  flex: 0 0 90px;
+  margin-bottom: 0;
+}
+
+.live-form__field--month {
+  flex: 0 0 95px;
+  margin-bottom: 0;
+}
+
+.live-form__field--day {
+  flex: 0 0 95px;
+  margin-bottom: 0;
+}
+
+.live-form__field:last-child {
+  margin-bottom: 0;
+}
+
+.live-form__field--error .live-form__input,
+.live-form__field--error .live-form__select {
+  border-color: var(--color-error);
+  background: rgba(248, 113, 113, 0.05);
+}
+
+.live-form__field--error .live-form__input:focus,
+.live-form__field--error .live-form__select:focus {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+}
+
+/* ラベル */
+.live-form__label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.live-form__required {
+  color: var(--color-error);
+  margin-left: 2px;
+}
+
+/* 入力フィールド */
+.live-form__input,
+.live-form__select {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: max(16px, var(--font-size-md));
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.live-form__input:focus,
+.live-form__select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-form__input:disabled,
+.live-form__select:disabled {
+  background: var(--color-background-light);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.live-form__input::placeholder {
+  color: var(--color-text-disabled);
+}
+
+/* セレクトボックス */
+.live-form__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-md) center;
+  padding-right: calc(var(--spacing-md) * 2 + 12px);
+  cursor: pointer;
+}
+
+.live-form__select:disabled {
+  cursor: not-allowed;
+}
+
+/* 日時入力 */
+.live-form__input[type='datetime-local'] {
+  cursor: pointer;
+}
+
+.live-form__input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.live-form__input[type='datetime-local']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* ヒントテキスト */
+.live-form__hint {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* エラーメッセージ */
+.live-form__error {
+  margin: var(--spacing-xs) 0 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.live-form__error::before {
+  content: '⚠';
+}
+
+/* アクションボタン */
+.live-form__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-surface);
+}
+
+.live-form__cancel-button,
+.live-form__submit-button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-form__cancel-button {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.live-form__cancel-button:hover {
+  background: var(--color-surface-hover);
+}
+
+.live-form__cancel-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-form__cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.live-form__submit-button {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  border: none;
+}
+
+.live-form__submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.live-form__submit-button:focus {
+  outline: none;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-form__submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.live-form__submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* スピナー */
+.live-form__spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: live-form-spin 0.8s linear infinite;
+}
+
+@keyframes live-form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-form__header {
+    padding: var(--spacing-sm);
+  }
+
+  .live-form__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .live-form__content {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+
+  .live-form__section {
+    padding: var(--spacing-sm);
+  }
+
+  .live-form__actions {
+    flex-direction: column;
+    padding: var(--spacing-sm);
+  }
+
+  .live-form__cancel-button,
+  .live-form__submit-button {
+    width: 100%;
+  }
+
+  .live-form__date-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .live-form__field--year {
+    flex: 1 1 80px;
+  }
+
+  .live-form__field--month {
+    flex: 1 1 85px;
+  }
+
+  .live-form__field--day {
+    flex: 1 1 85px;
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .live-form__content {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-xl);
+  }
+
+  .live-form__section {
+    padding: var(--spacing-lg);
+  }
+
+  .live-form__actions {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* 埋め込みコンテンツセクション */
+.live-form__embeds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.live-form__embed-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-light);
+}
+
+.live-form__embed-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.live-form__embed-fields .live-form__field {
+  margin-bottom: 0;
+}
+
+.live-form__input--embed-label {
+  font-size: var(--font-size-sm);
+}
+
+.live-form__textarea--embed {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: max(16px, var(--font-size-sm));
+  font-family: var(--font-family-mono, monospace);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  resize: vertical;
+  min-height: 80px;
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.live-form__textarea--embed:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-form__textarea--embed:disabled {
+  background: var(--color-background-light);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.live-form__textarea--embed::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.live-form__embed-remove {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: var(--spacing-xs);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-form__embed-remove:hover {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--color-error);
+}
+
+.live-form__embed-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.live-form__embed-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-form__embed-add:hover {
+  background: var(--color-primary-alpha);
+}
+
+.live-form__embed-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* セトリコピー機能 */
+.live-form__setlist-copy {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+  border: 1px dashed var(--color-border);
+}
+
+.live-form__setlist-copy-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.live-form__setlist-copy-row .live-form__select {
+  flex: 1;
+}

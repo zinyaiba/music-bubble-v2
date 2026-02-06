@@ -47,7 +47,9 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
   text-decoration: none;
 }
 
@@ -98,7 +100,8 @@
 }
 
 @keyframes badge-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

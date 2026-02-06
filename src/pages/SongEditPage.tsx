@@ -75,10 +75,9 @@ export function SongEditPage() {
         }
 
         // Firebaseから取得（リトライ付き）
-        const allSongs = await errorService.withRetry(
-          () => firebaseService.getAllSongs(),
-          { maxRetries: 2 }
-        )
+        const allSongs = await errorService.withRetry(() => firebaseService.getAllSongs(), {
+          maxRetries: 2,
+        })
         cacheService.cacheSongs(allSongs)
 
         const foundSong = allSongs.find((s) => s.id === songId)
@@ -128,10 +127,9 @@ export function SongEditPage() {
       try {
         if (isEditMode && songId) {
           // 更新（リトライ付き）
-          await errorService.withRetry(
-            () => firebaseService.updateSong(songId, songData),
-            { maxRetries: 2 }
-          )
+          await errorService.withRetry(() => firebaseService.updateSong(songId, songData), {
+            maxRetries: 2,
+          })
           trackEvent(AnalyticsEvents.曲_保存完了, { mode: '編集', song_id: songId })
           // キャッシュを更新
           const cachedSongs = cacheService.getCachedSongs()
@@ -150,10 +148,9 @@ export function SongEditPage() {
           }
         } else {
           // 新規登録（リトライ付き）
-          const newSongId = await errorService.withRetry(
-            () => firebaseService.addSong(songData),
-            { maxRetries: 2 }
-          )
+          const newSongId = await errorService.withRetry(() => firebaseService.addSong(songData), {
+            maxRetries: 2,
+          })
           trackEvent(AnalyticsEvents.曲_保存完了, { mode: '新規', song_id: newSongId })
           // キャッシュを更新
           const cachedSongs = cacheService.getCachedSongs() || []
@@ -197,11 +194,7 @@ export function SongEditPage() {
           onBack={handleBack}
         />
         <main className="song-edit-page__main">
-          <LoadingSpinner
-            size="large"
-            message="楽曲データを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="楽曲データを読み込んでいます..." fullScreen />
         </main>
         <Navigation currentPath="/songs" onNavigate={handleNavigate} />
       </div>

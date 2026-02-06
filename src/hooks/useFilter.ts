@@ -103,9 +103,7 @@ export function useFilter(songs: Song[]): UseFilterResult {
   const addGenre = useCallback((genre: string) => {
     setFilterState((prev) => ({
       ...prev,
-      genres: prev.genres.includes(genre)
-        ? prev.genres
-        : [...prev.genres, genre],
+      genres: prev.genres.includes(genre) ? prev.genres : [...prev.genres, genre],
     }))
   }, [])
 
@@ -149,7 +147,11 @@ export function useFilter(songs: Song[]): UseFilterResult {
 
   // フィルタがアクティブかどうか
   const isFilterActive = useMemo(() => {
-    return filterState.artist !== null || filterState.categories.length > 0 || filterState.genres.length > 0
+    return (
+      filterState.artist !== null ||
+      filterState.categories.length > 0 ||
+      filterState.genres.length > 0
+    )
   }, [filterState])
 
   return {

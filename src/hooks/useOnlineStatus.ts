@@ -1,7 +1,7 @@
 /**
  * useOnlineStatus フック
  * オンライン/オフライン状態を監視
- * 
+ *
  * Requirements: 15.4
  */
 
@@ -20,7 +20,7 @@ export function useOnlineStatus(): boolean {
     // errorServiceのリスナーを登録
     const unsubscribe = errorService.addOnlineListener((online) => {
       setIsOnline(online)
-      
+
       // 初回レンダリング時はトラッキングしない（ページ読み込み時の状態）
       if (!isFirstRender.current) {
         trackConnectivityChange(online)

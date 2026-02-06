@@ -63,7 +63,7 @@ export function SongDetailPage() {
           if (cachedSong) {
             setSong(cachedSong)
             setIsLoading(false)
-            
+
             // オフラインの場合はキャッシュのみ使用
             if (!errorService.getOnlineStatus()) {
               setError('オフラインモード: キャッシュデータを表示しています')
@@ -80,10 +80,9 @@ export function SongDetailPage() {
         }
 
         // Firebaseから取得（リトライ付き）
-        const allSongs = await errorService.withRetry(
-          () => firebaseService.getAllSongs(),
-          { maxRetries: 2 }
-        )
+        const allSongs = await errorService.withRetry(() => firebaseService.getAllSongs(), {
+          maxRetries: 2,
+        })
         cacheService.cacheSongs(allSongs)
 
         const foundSong = allSongs.find((s) => s.id === songId)
@@ -160,11 +159,8 @@ export function SongDetailPage() {
 
     setIsDeleting(true)
     try {
-      await errorService.withRetry(
-        () => firebaseService.deleteSong(songId),
-        { maxRetries: 2 }
-      )
-      
+      await errorService.withRetry(() => firebaseService.deleteSong(songId), { maxRetries: 2 })
+
       // キャッシュから削除
       const cachedSongs = cacheService.getCachedSongs()
       if (cachedSongs) {
@@ -201,11 +197,7 @@ export function SongDetailPage() {
       <div className="song-detail-page">
         <Header title="楽曲詳細" showBackButton onBack={handleBack} />
         <main className="song-detail-page__main">
-          <LoadingSpinner
-            size="large"
-            message="楽曲データを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="楽曲データを読み込んでいます..." fullScreen />
         </main>
         <Navigation currentPath="/songs" onNavigate={handleNavigate} />
       </div>
@@ -240,11 +232,7 @@ export function SongDetailPage() {
 
   return (
     <div className="song-detail-page">
-      <Header
-        title={song?.title || '楽曲詳細'}
-        showBackButton
-        onBack={handleBack}
-      />
+      <Header title={song?.title || '楽曲詳細'} showBackButton onBack={handleBack} />
 
       <main className="song-detail-page__main">
         {/* オフラインモード警告 */}
@@ -273,7 +261,8 @@ export function SongDetailPage() {
             <div className="song-detail-page__delete-dialog">
               <h3 className="song-detail-page__delete-title">楽曲を削除</h3>
               <p className="song-detail-page__delete-message">
-                「{song?.title}」を削除しますか？<br />
+                「{song?.title}」を削除しますか？
+                <br />
                 この操作は取り消せません。
               </p>
               <div className="song-detail-page__delete-actions">

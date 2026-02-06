@@ -44,7 +44,7 @@ export function generateTagsFromSongs(songs: Song[]): Tag[] {
       }
       const tagData = tagMap.get(tagName)!
       tagData.songIds.push(song.id)
-      
+
       // 最終更新日時を更新（より新しい日時を保持）
       if (song.updatedAt) {
         if (!tagData.lastUpdatedAt || song.updatedAt > tagData.lastUpdatedAt) {
@@ -152,18 +152,13 @@ export function searchTags(tags: Tag[], query: string): Tag[] {
   }
 
   const normalizedQuery = query.toLowerCase().trim()
-  return tags.filter((tag) =>
-    tag.name.toLowerCase().includes(normalizedQuery)
-  )
+  return tags.filter((tag) => tag.name.toLowerCase().includes(normalizedQuery))
 }
 
 /**
  * タグを検索してソート
  */
-export function filterAndSortTags(
-  tags: Tag[],
-  options: TagSearchOptions = {}
-): Tag[] {
+export function filterAndSortTags(tags: Tag[], options: TagSearchOptions = {}): Tag[] {
   const { query = '', sortOrder = 'recentlyUpdated' } = options
 
   let result = tags
@@ -262,7 +257,11 @@ export class TagService {
    * 楽曲からタグを削除
    * Requirements: 5.5 - タグを削除した時、システムは即座にデータベースを更新すること
    */
-  public async removeTagFromSong(songId: string, tagName: string, currentTags: string[]): Promise<void> {
+  public async removeTagFromSong(
+    songId: string,
+    tagName: string,
+    currentTags: string[]
+  ): Promise<void> {
     const newTags = currentTags.filter((tag) => tag !== tagName)
     await firebaseService.updateSong(songId, { tags: newTags })
 
@@ -301,7 +300,7 @@ export class TagService {
    */
   public async deleteTag(tagName: string, songs: Song[]): Promise<void> {
     const relatedSongs = getSongsByTag(songs, tagName)
-    
+
     // 関連する全ての楽曲からタグを削除
     const updatePromises = relatedSongs.map((song) => {
       const newTags = (song.tags || []).filter((tag) => tag !== tagName)
@@ -325,7 +324,7 @@ export class TagService {
     }
 
     const relatedSongs = getSongsByTag(songs, oldTagName)
-    
+
     // 関連する全ての楽曲のタグを更新
     const updatePromises = relatedSongs.map((song) => {
       const currentTags = song.tags || []
@@ -339,7 +338,9 @@ export class TagService {
     await Promise.all(updatePromises)
 
     if (import.meta.env.DEV) {
-      console.log(`🏷️ TagService: タグ「${oldTagName}」を「${newTagName}」に変更しました（${relatedSongs.length}曲）`)
+      console.log(
+        `🏷️ TagService: タグ「${oldTagName}」を「${newTagName}」に変更しました（${relatedSongs.length}曲）`
+      )
     }
   }
 

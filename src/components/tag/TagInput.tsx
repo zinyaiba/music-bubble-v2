@@ -53,18 +53,12 @@ export function TagInput({
   const suggestions = useMemo(() => {
     if (!inputValue.trim()) {
       // 入力がない場合は未選択のタグを表示
-      return existingTags
-        .filter((tag) => !selectedTags.includes(tag))
-        .slice(0, 10)
+      return existingTags.filter((tag) => !selectedTags.includes(tag)).slice(0, 10)
     }
 
     const normalizedInput = inputValue.toLowerCase().trim()
     return existingTags
-      .filter(
-        (tag) =>
-          tag.toLowerCase().includes(normalizedInput) &&
-          !selectedTags.includes(tag)
-      )
+      .filter((tag) => tag.toLowerCase().includes(normalizedInput) && !selectedTags.includes(tag))
       .slice(0, 10)
   }, [existingTags, selectedTags, inputValue])
 
@@ -88,12 +82,9 @@ export function TagInput({
   )
 
   // タグ削除の確認ダイアログを表示
-  const handleRequestRemoveTag = useCallback(
-    (tagToRemove: string) => {
-      setConfirmDialog({ type: 'remove', tagName: tagToRemove })
-    },
-    []
-  )
+  const handleRequestRemoveTag = useCallback((tagToRemove: string) => {
+    setConfirmDialog({ type: 'remove', tagName: tagToRemove })
+  }, [])
 
   // 確認ダイアログでOKを押した時
   const handleConfirm = useCallback(() => {
@@ -117,12 +108,9 @@ export function TagInput({
   }, [])
 
   // 入力変更ハンドラ
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(e.target.value)
-    },
-    []
-  )
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+  }, [])
 
   // 追加ボタンクリックハンドラ
   const handleAddButtonClick = useCallback(() => {
@@ -147,9 +135,7 @@ export function TagInput({
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setHighlightedIndex((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        )
+        setHighlightedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev))
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : -1))
@@ -176,22 +162,16 @@ export function TagInput({
   }, [])
 
   // サジェストクリックハンドラ - 入力欄に入力するだけ
-  const handleSuggestionClick = useCallback(
-    (tag: string) => {
-      setInputValue(tag)
-      setIsFocused(false)
-      setHighlightedIndex(-1)
-    },
-    []
-  )
+  const handleSuggestionClick = useCallback((tag: string) => {
+    setInputValue(tag)
+    setIsFocused(false)
+    setHighlightedIndex(-1)
+  }, [])
 
   // サジェストのmousedown/touchstartでフォーカスが外れるのを防ぐ
-  const handleSuggestionPointerDown = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
-      e.preventDefault()
-    },
-    []
-  )
+  const handleSuggestionPointerDown = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault()
+  }, [])
 
   // コンテナクリックでインプットにフォーカス
   const handleContainerClick = useCallback(() => {
@@ -235,11 +215,7 @@ export function TagInput({
 
         {/* サジェストリスト */}
         {showSuggestions && (
-          <div
-            ref={suggestionsRef}
-            className="tag-input__suggestions"
-            role="listbox"
-          >
+          <div ref={suggestionsRef} className="tag-input__suggestions" role="listbox">
             {suggestions.map((tag, index) => (
               <button
                 key={tag}
@@ -318,11 +294,7 @@ export function TagInput({
                 : `「${confirmDialog.tagName}」を削除しますか？`}
             </p>
             <div className="tag-input__confirm-buttons">
-              <button
-                type="button"
-                className="tag-input__confirm-cancel"
-                onClick={handleCancel}
-              >
+              <button type="button" className="tag-input__confirm-cancel" onClick={handleCancel}>
                 キャンセル
               </button>
               <button

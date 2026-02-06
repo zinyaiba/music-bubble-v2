@@ -174,8 +174,8 @@ function getInitialEmbeds(song?: Song): MusicServiceEmbed[] {
   if (song?.musicServiceEmbeds && song.musicServiceEmbeds.length > 0) {
     // embedが有効な値を持つもののみをフィルタリングし、undefinedを空文字に変換
     return song.musicServiceEmbeds
-      .filter(item => item.embed && item.embed.trim() !== '')
-      .map(item => ({
+      .filter((item) => item.embed && item.embed.trim() !== '')
+      .map((item) => ({
         embed: item.embed || '',
         label: item.label,
       }))
@@ -191,12 +191,7 @@ function getInitialEmbeds(song?: Song): MusicServiceEmbed[] {
  * SongForm コンポーネント
  * 楽曲の登録・編集フォーム
  */
-export function SongForm({
-  song,
-  onSubmit,
-  onCancel,
-  isSubmitting = false,
-}: SongFormProps) {
+export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: SongFormProps) {
   const isEditMode = !!song
 
   // フォームデータの初期化
@@ -226,25 +221,27 @@ export function SongForm({
    * フィールド変更ハンドラ
    */
   const handleChange = useCallback(
-    (field: keyof FormData) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const value = e.target.value
-        setFormData((prev) => ({ ...prev, [field]: value }))
+    (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = e.target.value
+      setFormData((prev) => ({ ...prev, [field]: value }))
 
-        // エラーをクリア
-        if (errors[field as keyof FormErrors]) {
-          setErrors((prev) => ({ ...prev, [field]: undefined }))
-        }
-      },
+      // エラーをクリア
+      if (errors[field as keyof FormErrors]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }))
+      }
+    },
     [errors]
   )
 
   /**
    * フィールドのblurハンドラ
    */
-  const handleBlur = useCallback((field: string) => () => {
-    setTouched((prev) => ({ ...prev, [field]: true }))
-  }, [])
+  const handleBlur = useCallback(
+    (field: string) => () => {
+      setTouched((prev) => ({ ...prev, [field]: true }))
+    },
+    []
+  )
 
   /**
    * 埋め込みコンテンツの追加
@@ -412,7 +409,9 @@ export function SongForm({
     songData.albumName = formData.albumName.trim() || undefined
 
     // 有効な埋め込みコンテンツのみ（空の場合も明示的に空配列を設定）
-    const validEmbeds = formData.musicServiceEmbeds.filter((item) => item.embed && item.embed.trim())
+    const validEmbeds = formData.musicServiceEmbeds.filter(
+      (item) => item.embed && item.embed.trim()
+    )
     songData.musicServiceEmbeds = validEmbeds.map((item) => {
       const embed = (item.embed || '').trim()
       const label = item.label?.trim()
@@ -458,9 +457,7 @@ export function SongForm({
   return (
     <form className="song-form" onSubmit={handleSubmit} noValidate>
       <div className="song-form__header">
-        <h2 className="song-form__title">
-          {isEditMode ? '楽曲を編集' : '新規楽曲を登録'}
-        </h2>
+        <h2 className="song-form__title">{isEditMode ? '楽曲を編集' : '新規楽曲を登録'}</h2>
       </div>
 
       <div className="song-form__content">
@@ -486,9 +483,7 @@ export function SongForm({
               disabled={isSubmitting}
               autoComplete="off"
             />
-            {shouldShowError('title') && (
-              <p className="song-form__error">{errors.title}</p>
-            )}
+            {shouldShowError('title') && <p className="song-form__error">{errors.title}</p>}
           </div>
 
           {/* アーティスト */}
@@ -698,9 +693,7 @@ export function SongForm({
                       type="text"
                       className="song-form__input song-form__input--embed-label"
                       value={item.label || ''}
-                      onChange={(e) =>
-                        handleEmbedChange(index, 'label', e.target.value)
-                      }
+                      onChange={(e) => handleEmbedChange(index, 'label', e.target.value)}
                       placeholder="ラベル（例: Spotify, YouTube）"
                       disabled={isSubmitting}
                       autoComplete="off"
@@ -710,9 +703,7 @@ export function SongForm({
                     <textarea
                       className="song-form__textarea song-form__textarea--embed"
                       value={item.embed}
-                      onChange={(e) =>
-                        handleEmbedChange(index, 'embed', e.target.value)
-                      }
+                      onChange={(e) => handleEmbedChange(index, 'embed', e.target.value)}
                       placeholder="iframeタグを貼り付け"
                       disabled={isSubmitting}
                       rows={3}
@@ -785,17 +776,13 @@ export function SongForm({
                       type="url"
                       className="song-form__input"
                       value={link.url}
-                      onChange={(e) =>
-                        handleUrlChange(index, 'url', e.target.value)
-                      }
+                      onChange={(e) => handleUrlChange(index, 'url', e.target.value)}
                       placeholder="URL"
                       disabled={isSubmitting}
                       autoComplete="off"
                     />
                     {errors.detailPageUrls?.[index] && (
-                      <p className="song-form__error">
-                        {errors.detailPageUrls[index]}
-                      </p>
+                      <p className="song-form__error">{errors.detailPageUrls[index]}</p>
                     )}
                   </div>
                   <div className="song-form__field">
@@ -803,9 +790,7 @@ export function SongForm({
                       type="text"
                       className="song-form__input song-form__input--label"
                       value={link.label || ''}
-                      onChange={(e) =>
-                        handleUrlChange(index, 'label', e.target.value)
-                      }
+                      onChange={(e) => handleUrlChange(index, 'label', e.target.value)}
                       placeholder="ラベル（任意）"
                       disabled={isSubmitting}
                       autoComplete="off"
@@ -871,11 +856,7 @@ export function SongForm({
         >
           キャンセル
         </button>
-        <button
-          type="submit"
-          className="song-form__submit-button"
-          disabled={isSubmitting}
-        >
+        <button type="submit" className="song-form__submit-button" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
               <span className="song-form__spinner" />

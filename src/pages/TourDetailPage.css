@@ -1,0 +1,503 @@
+/**
+ * TourDetailPage スタイル
+ * ツアー詳細ページ
+ *
+ * Requirements:
+ * - 3.1: ツアー名と全公演数を表示
+ * - 3.2: 公演地別にアコーディオン形式で表示
+ * - 11.1, 11.2: 統一されたデザインシステム
+ */
+
+.tour-detail-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-background);
+}
+
+.tour-detail-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--header-height);
+  padding-bottom: var(--navigation-height);
+  overflow-y: auto;
+}
+
+/* 警告メッセージ */
+.tour-detail-page__warning {
+  padding: var(--spacing-md);
+  padding-bottom: 0;
+}
+
+/* コンテンツエリア */
+.tour-detail-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+  gap: var(--spacing-lg);
+}
+
+/* ツアーヘッダー */
+.tour-detail-page__header {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.tour-detail-page__type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.tour-detail-page__title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+}
+
+.tour-detail-page__count {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+/* 公演セクション */
+.tour-detail-page__performances {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.tour-detail-page__section-title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.tour-detail-page__section-icon {
+  color: var(--color-primary);
+}
+
+.tour-detail-page__swipe-hint {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-tertiary);
+  margin-left: auto;
+}
+
+/* ページインジケーター */
+.tour-detail-page__indicators {
+  display: flex;
+  gap: var(--spacing-xs);
+  overflow-x: auto;
+  padding: var(--spacing-xs) 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tour-detail-page__indicators::-webkit-scrollbar {
+  display: none;
+}
+
+.tour-detail-page__indicator {
+  flex-shrink: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tour-detail-page__indicator:hover {
+  background: var(--color-surface-hover);
+}
+
+.tour-detail-page__indicator--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.tour-detail-page__indicator-label {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* カルーセル */
+.tour-detail-page__carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  margin: 0 calc(-1 * var(--spacing-md));
+  padding: 0 var(--spacing-md);
+}
+
+.tour-detail-page__carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* スライド */
+.tour-detail-page__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  box-sizing: border-box;
+}
+
+.tour-detail-page__slide:last-child {
+  padding-right: 0;
+}
+
+/* 公演ヘッダー */
+.tour-detail-page__performance-header {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  box-shadow: var(--shadow-sm);
+}
+
+.tour-detail-page__location {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.tour-detail-page__venue {
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+}
+
+.tour-detail-page__date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* セトリ */
+.tour-detail-page__setlist {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* アクション */
+.tour-detail-page__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.tour-detail-page__edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tour-detail-page__edit-button:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.tour-detail-page__edit-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+/* 公演地追加ボタン */
+.tour-detail-page__add-performance-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tour-detail-page__add-performance-button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.tour-detail-page__add-performance-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.tour-detail-page__add-performance-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.tour-detail-page__add-performance-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 削除ボタン */
+.tour-detail-page__delete-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-error);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  color: var(--color-error);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tour-detail-page__delete-button:hover:not(:disabled) {
+  background: var(--color-error);
+  color: white;
+}
+
+.tour-detail-page__delete-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.tour-detail-page__delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* エラーコンテナ */
+.tour-detail-page__error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  flex: 1;
+}
+
+/* 一覧に戻るボタン */
+.tour-detail-page__back-to-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tour-detail-page__back-to-list:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.tour-detail-page__back-to-list:focus {
+  outline: none;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px var(--color-primary-alpha);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tour-detail-page__content {
+    padding: var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+    gap: var(--spacing-md);
+  }
+
+  .tour-detail-page__header {
+    padding: var(--spacing-md);
+  }
+
+  .tour-detail-page__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .tour-detail-page__count {
+    font-size: var(--font-size-sm);
+  }
+
+  .tour-detail-page__section-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .tour-detail-page__error-container {
+    padding: var(--spacing-lg);
+  }
+
+  .tour-detail-page__carousel {
+    margin: 0 calc(-1 * var(--spacing-sm));
+    padding: 0 var(--spacing-sm);
+  }
+
+  .tour-detail-page__slide {
+    padding-right: var(--spacing-sm);
+  }
+
+  .tour-detail-page__swipe-hint {
+    display: none;
+  }
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .tour-detail-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--spacing-lg);
+  }
+
+  .tour-detail-page__carousel {
+    margin: 0 calc(-1 * var(--spacing-lg));
+    padding: 0 var(--spacing-lg);
+  }
+
+  .tour-detail-page__slide {
+    padding-right: var(--spacing-lg);
+  }
+}
+
+/* 埋め込みコンテンツセクション */
+.tour-detail-page__embeds {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.tour-detail-page__embeds-title {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.tour-detail-page__embeds-icon {
+  color: var(--color-primary);
+}
+
+.tour-detail-page__embeds-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.tour-detail-page__embed-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.tour-detail-page__embed-label {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.tour-detail-page__embed-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.tour-detail-page__embed-container iframe {
+  display: block;
+  width: 100%;
+  min-height: 180px;
+  border: none;
+  border-radius: var(--border-radius-md);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tour-detail-page__embeds {
+    padding: var(--spacing-sm);
+  }
+
+  .tour-detail-page__embed-container iframe {
+    min-height: 150px;
+  }
+}
+
+/* 埋め込みコンテンツプレースホルダー（遅延読み込み用） */
+.tour-detail-page__embed-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+}

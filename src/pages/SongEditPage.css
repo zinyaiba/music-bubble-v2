@@ -75,7 +75,9 @@
 
 .song-edit-page__back-to-list:focus {
   outline: none;
-  box-shadow: var(--shadow-md), 0 0 0 3px var(--color-primary-alpha);
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 3px var(--color-primary-alpha);
 }
 
 .song-edit-page__back-to-list:active {

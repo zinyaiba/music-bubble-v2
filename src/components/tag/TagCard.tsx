@@ -64,10 +64,14 @@ export function TagCard({ tag, onClick, compact = false, songNames = [] }: TagCa
           {!compact && displaySongNames.length > 0 && (
             <div className="tag-card__song-chips">
               {displaySongNames.map((name, index) => (
-                <span key={index} className="tag-card__song-chip">{name}</span>
+                <span key={index} className="tag-card__song-chip">
+                  {name}
+                </span>
               ))}
               {remainingCount > 0 && (
-                <span className="tag-card__song-chip tag-card__song-chip--more">+{remainingCount}</span>
+                <span className="tag-card__song-chip tag-card__song-chip--more">
+                  +{remainingCount}
+                </span>
               )}
             </div>
           )}
@@ -75,9 +79,7 @@ export function TagCard({ tag, onClick, compact = false, songNames = [] }: TagCa
       </div>
 
       <div className="tag-card__meta">
-        {compact && (
-          <span className="tag-card__count-badge">{tag.songCount}</span>
-        )}
+        {compact && <span className="tag-card__count-badge">{tag.songCount}</span>}
         <div className="tag-card__arrow">
           <svg
             width="20"

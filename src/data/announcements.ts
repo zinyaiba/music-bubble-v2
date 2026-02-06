@@ -1,6 +1,6 @@
 /**
  * お知らせデータ
- * 
+ *
  * InfoPageとNavigationで共通で使用するお知らせデータ
  */
 
@@ -17,6 +17,31 @@ export interface Announcement {
  * 実際の運用ではFirebaseから取得することも可能
  */
 export const announcements: Announcement[] = [
+  {
+    id: 'ann-2026-02-07',
+    title: '待望の「ライブ」ページが登場！',
+    content: `ライブ情報を登録できるようになりました！
+
+栗林みな実さんが出演したライブ・イベント・セトリの情報を登録できるようになりました。
+ぜひたくさん登録してこれまでの歴史を巡ってみましょう！
+
+**主な機能:**
+- 「単独公演・ツアー・フェス・イベント」の種別でライブ情報の登録・閲覧
+- ツアーは公演地毎の追加が可能で、グルーピングされて参照が可能
+- セトリは登録済の楽曲から選択・フリー入力で登録
+- セトリ順の変更・日替わり曲の登録も可
+- 各公演毎にコンテンツ登録・閲覧も可
+- ツアー公演地を追加する際、別の公演のセトリをコピーも可能
+
+ライブページの検索・並び替え・フィルタリングについては、
+後日実装予定となりますので、実装までお待ちください！
+
+ライブページの追加に伴い、タグ一覧・タグ登録はページを統合しました。
+タグ画面上部のタブにて切り替えて参照ください。
+`,
+    date: '2026-02-07',
+    type: 'feature',
+  },
   {
     id: 'ann-2026-01-22',
     title: 'フィルタの追加',
@@ -152,7 +177,7 @@ export const announcements: Announcement[] = [
  * お知らせIDリストを取得
  */
 export function getAnnouncementIds(): string[] {
-  return announcements.map(ann => ann.id)
+  return announcements.map((ann) => ann.id)
 }
 
 /**
@@ -180,5 +205,5 @@ export function getReadAnnouncementIds(): string[] {
  */
 export function getUnreadAnnouncementCount(): number {
   const readIds = getReadAnnouncementIds()
-  return announcements.filter(ann => !readIds.includes(ann.id)).length
+  return announcements.filter((ann) => !readIds.includes(ann.id)).length
 }

@@ -1,0 +1,184 @@
+/**
+ * SetlistDisplay スタイル
+ * セトリ表示コンポーネント
+ *
+ * Requirements:
+ * - 5.2: セトリ表示は演奏順に楽曲名を表示
+ * - 5.3: 日替わり曲インジケーター（バッジ）を表示
+ * - 5.5: 楽曲IDがある場合はクリック可能に
+ */
+
+.setlist-display {
+  width: 100%;
+}
+
+/* 空の状態 */
+.setlist-display--empty {
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.setlist-display__empty-message {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* セトリリスト */
+.setlist-display__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: setlist-counter;
+}
+
+/* セトリ項目 */
+.setlist-display__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.setlist-display__item:last-child {
+  border-bottom: none;
+}
+
+.setlist-display__item:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* 演奏順番号 */
+.setlist-display__order {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* 楽曲名 */
+.setlist-display__song-title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* クリック可能な楽曲ボタン */
+.setlist-display__song-button {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: calc(-1 * var(--spacing-xs)) 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.setlist-display__song-button:hover {
+  background: var(--color-primary-alpha);
+}
+
+.setlist-display__song-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.setlist-display__song-button .setlist-display__song-title {
+  color: var(--color-primary);
+}
+
+.setlist-display__song-button:hover .setlist-display__song-title {
+  text-decoration: underline;
+}
+
+/* リンクアイコン */
+.setlist-display__link-icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  opacity: 0.6;
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.setlist-display__song-button:hover .setlist-display__link-icon {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* 日替わり曲バッジ */
+.setlist-display__daily-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--border-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(255, 152, 0, 0.3);
+}
+
+/* フッター */
+.setlist-display__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+  background: var(--color-background-secondary);
+}
+
+.setlist-display__count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .setlist-display__item {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .setlist-display__order {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .setlist-display__song-title {
+    font-size: var(--font-size-xs);
+  }
+
+  .setlist-display__daily-badge {
+    padding: 1px 6px;
+    font-size: 9px;
+  }
+
+  .setlist-display__song-button {
+    padding: var(--spacing-xs);
+  }
+}

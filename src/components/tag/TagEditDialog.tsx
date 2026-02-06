@@ -54,7 +54,7 @@ export function TagEditDialog({
   // 名称変更の確認
   const handleRenameConfirm = useCallback(() => {
     const trimmedName = newTagName.trim()
-    
+
     if (!trimmedName) {
       setError('タグ名を入力してください')
       return
@@ -90,20 +90,23 @@ export function TagEditDialog({
   }, [newTagName, tag.name, existingTagNames, onClose, onRename])
 
   // 名称変更の実行（統合時用）
-  const handleRename = useCallback(async (newName: string) => {
-    setIsProcessing(true)
-    setError(null)
+  const handleRename = useCallback(
+    async (newName: string) => {
+      setIsProcessing(true)
+      setError(null)
 
-    try {
-      await onRename(tag.name, newName)
-      onClose()
-    } catch (err) {
-      console.error('タグの名称変更に失敗しました:', err)
-      setError('タグの名称変更に失敗しました')
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [tag.name, onRename, onClose])
+      try {
+        await onRename(tag.name, newName)
+        onClose()
+      } catch (err) {
+        console.error('タグの名称変更に失敗しました:', err)
+        setError('タグの名称変更に失敗しました')
+      } finally {
+        setIsProcessing(false)
+      }
+    },
+    [tag.name, onRename, onClose]
+  )
 
   // 削除の実行
   const handleDelete = useCallback(async () => {
@@ -122,11 +125,14 @@ export function TagEditDialog({
   }, [tag.name, onDelete, onClose])
 
   // 背景クリックで閉じる
-  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget && !isProcessing) {
-      onClose()
-    }
-  }, [onClose, isProcessing])
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget && !isProcessing) {
+        onClose()
+      }
+    },
+    [onClose, isProcessing]
+  )
 
   return (
     <div className="tag-edit-dialog__backdrop" onClick={handleBackdropClick}>
@@ -145,7 +151,14 @@ export function TagEditDialog({
                 className="tag-edit-dialog__action-button"
                 onClick={() => setMode('rename')}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
@@ -156,7 +169,14 @@ export function TagEditDialog({
                 className="tag-edit-dialog__action-button tag-edit-dialog__action-button--danger"
                 onClick={() => setMode('delete')}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <polyline points="3 6 5 6 21 6" />
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                 </svg>
@@ -164,11 +184,7 @@ export function TagEditDialog({
               </button>
             </div>
             <div className="tag-edit-dialog__footer">
-              <button
-                type="button"
-                className="tag-edit-dialog__cancel-button"
-                onClick={onClose}
-              >
+              <button type="button" className="tag-edit-dialog__cancel-button" onClick={onClose}>
                 キャンセル
               </button>
             </div>
@@ -232,19 +248,27 @@ export function TagEditDialog({
             </div>
             <div className="tag-edit-dialog__content">
               <div className="tag-edit-dialog__warning">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" />
                   <line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
                 <p>
                   「<strong>{mergeTargetTag}</strong>」は既に存在します。
-                  <br />
-                  「<strong>{tag.name}</strong>」を「<strong>{mergeTargetTag}</strong>」に統合しますか？
+                  <br />「<strong>{tag.name}</strong>」を「<strong>{mergeTargetTag}</strong>
+                  」に統合しますか？
                 </p>
               </div>
               <p className="tag-edit-dialog__merge-info">
-                統合すると、「{tag.name}」が付いている{tag.songCount}曲に「{mergeTargetTag}」が追加されます。
+                統合すると、「{tag.name}」が付いている{tag.songCount}曲に「{mergeTargetTag}
+                」が追加されます。
               </p>
               {error && <p className="tag-edit-dialog__error">{error}</p>}
             </div>
@@ -281,7 +305,14 @@ export function TagEditDialog({
             </div>
             <div className="tag-edit-dialog__content">
               <div className="tag-edit-dialog__warning tag-edit-dialog__warning--danger">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" />
                   <line x1="12" y1="17" x2="12.01" y2="17" />

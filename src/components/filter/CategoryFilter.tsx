@@ -18,7 +18,7 @@ export function CategoryFilter({ selectedCategories, onChange }: CategoryFilterP
   const handleOptionClick = (optionValue: CategoryFilterValue) => {
     // トグル動作
     if (selectedCategories.includes(optionValue)) {
-      onChange(selectedCategories.filter(c => c !== optionValue))
+      onChange(selectedCategories.filter((c) => c !== optionValue))
     } else {
       onChange([...selectedCategories, optionValue])
     }

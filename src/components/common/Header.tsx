@@ -1,28 +1,28 @@
 /**
  * Header コンポーネント
- * 
+ *
  * 全ページで一貫したヘッダーを提供
  * Requirements: 11.1, 11.4
  */
 
-import { useCallback } from 'react';
-import './Header.css';
+import { useCallback } from 'react'
+import './Header.css'
 
 export interface HeaderProps {
   /** ページタイトル */
-  title: string;
+  title: string
   /** サブタイトル（説明文1行目） */
-  subtitle?: string;
+  subtitle?: string
   /** サブタイトル2（説明文2行目） */
-  subtitle2?: string;
+  subtitle2?: string
   /** 戻るボタンを表示するか */
-  showBackButton?: boolean;
+  showBackButton?: boolean
   /** 戻るボタンクリック時のコールバック */
-  onBack?: () => void;
+  onBack?: () => void
   /** 右側に表示するアクション要素 */
-  rightAction?: React.ReactNode;
+  rightAction?: React.ReactNode
   /** TOPページ用のリッチタイトル表示 */
-  isTopPage?: boolean;
+  isTopPage?: boolean
 }
 
 export function Header({
@@ -36,11 +36,11 @@ export function Header({
 }: HeaderProps) {
   const handleBack = useCallback(() => {
     if (onBack) {
-      onBack();
+      onBack()
     } else {
-      window.history.back();
+      window.history.back()
     }
-  }, [onBack]);
+  }, [onBack])
 
   return (
     <header className={`header ${isTopPage ? 'header-top-page' : ''}`}>
@@ -89,12 +89,10 @@ export function Header({
           <h1 className="header-title">{title}</h1>
         )}
 
-        <div className="header-right">
-          {rightAction}
-        </div>
+        <div className="header-right">{rightAction}</div>
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

@@ -6,6 +6,8 @@
  * - 14.1: 全てのページからアクセス可能なメインメニュー
  * - 14.3: ブラウザの戻る/進むナビゲーションをサポート
  * - 14.4: 全てのページでURLルーティングを使用
+ * - 9.5: タブパラメータ付きの統合タグページのルートとして「/tags」を使用
+ * - 9.1, 9.3: ライブ関連ページのルーティング
  */
 
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
@@ -13,8 +15,11 @@ import { TopPage } from './pages/TopPage'
 import { SongListPage } from './pages/SongListPage'
 import { SongDetailPage } from './pages/SongDetailPage'
 import { SongEditPage } from './pages/SongEditPage'
-import { TagListPage } from './pages/TagListPage'
-import { TagRegistrationPage } from './pages/TagRegistrationPage'
+import { LiveListPage } from './pages/LiveListPage'
+import { LiveDetailPage } from './pages/LiveDetailPage'
+import { LiveEditPage } from './pages/LiveEditPage'
+import { TourDetailPage } from './pages/TourDetailPage'
+import { TagPage } from './pages/TagPage'
 import { InfoPage } from './pages/InfoPage'
 
 /**
@@ -34,9 +39,7 @@ function PlaceholderPage({ title }: { title: string }) {
       }}
     >
       <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h1>
-      <p style={{ color: 'var(--color-text-secondary)' }}>
-        このページは後のフェーズで実装されます
-      </p>
+      <p style={{ color: 'var(--color-text-secondary)' }}>このページは後のフェーズで実装されます</p>
       <a
         href="/"
         style={{
@@ -81,12 +84,28 @@ const router = createBrowserRouter(
           element: <SongEditPage />,
         },
         {
-          path: 'tags',
-          element: <TagListPage />,
+          path: 'lives',
+          element: <LiveListPage />,
         },
         {
-          path: 'tag-registration',
-          element: <TagRegistrationPage />,
+          path: 'lives/new',
+          element: <LiveEditPage />,
+        },
+        {
+          path: 'lives/:liveId',
+          element: <LiveDetailPage />,
+        },
+        {
+          path: 'lives/:liveId/edit',
+          element: <LiveEditPage />,
+        },
+        {
+          path: 'tours/:tourName',
+          element: <TourDetailPage />,
+        },
+        {
+          path: 'tags',
+          element: <TagPage />,
         },
         {
           path: 'info',
