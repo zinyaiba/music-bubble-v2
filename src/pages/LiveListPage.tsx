@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Live, TourGroup, GroupedLiveItem } from '../types'
 import { liveService } from '../services/liveService'
 import { tourGroupingService } from '../services/tourGroupingService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
@@ -41,6 +42,9 @@ export function LiveListPage() {
 
   // ライブデータの取得
   useEffect(() => {
+    // ページ閲覧をトラッキング
+    trackEvent(AnalyticsEvents.ページ閲覧_ライブ一覧)
+
     const fetchLives = async () => {
       try {
         setIsLoading(true)

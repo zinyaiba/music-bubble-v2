@@ -15,6 +15,7 @@ import { liveService } from '../services/liveService'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { errorService } from '../services/errorService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -104,6 +105,9 @@ export function LiveDetailPage() {
         setIsLoading(false)
         return
       }
+
+      // ページ閲覧をトラッキング
+      trackEvent(AnalyticsEvents.ページ閲覧_ライブ詳細, { live_id: liveId })
 
       setIsLoading(true)
       setError(null)

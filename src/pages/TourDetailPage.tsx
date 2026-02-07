@@ -25,6 +25,7 @@ import { tourGroupingService } from '../services/tourGroupingService'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { errorService } from '../services/errorService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -129,6 +130,9 @@ export function TourDetailPage() {
         setIsLoading(false)
         return
       }
+
+      // ページ閲覧をトラッキング
+      trackEvent(AnalyticsEvents.ページ閲覧_ツアー詳細, { tour_name: tourName })
 
       setIsLoading(true)
       setError(null)

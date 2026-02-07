@@ -20,6 +20,7 @@ import { liveService } from '../services/liveService'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { errorService } from '../services/errorService'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -54,6 +55,12 @@ export function LiveEditPage() {
 
   // データの読み込み
   useEffect(() => {
+    // ページ閲覧をトラッキング
+    trackEvent(AnalyticsEvents.ページ閲覧_ライブ編集, {
+      mode: isEditMode ? 'edit' : isTourAddMode ? 'tour_add' : 'new',
+      ...(liveId && { live_id: liveId }),
+    })
+
     const loadData = async () => {
       setIsLoading(true)
       setError(null)
