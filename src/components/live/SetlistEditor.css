@@ -132,6 +132,7 @@
   z-index: var(--z-index-dropdown);
   animation: setlist-editor-suggestions-appear 0.15s ease-out;
   overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 @keyframes setlist-editor-suggestions-appear {
@@ -516,6 +517,7 @@
   z-index: var(--z-index-dropdown);
   animation: setlist-editor-edit-suggestions-appear 0.15s ease-out;
   overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 @keyframes setlist-editor-edit-suggestions-appear {

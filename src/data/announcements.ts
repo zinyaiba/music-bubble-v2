@@ -23,6 +23,7 @@ export const announcements: Announcement[] = [
     content: `以下のアップデートを行いました。
 
 **主な改善点:**
+
 - ライブカテゴリに「リリイベ」を追加
 - ライブ登録情報に「関連リンク」を追加
 - セトリ入力の改善
