@@ -99,6 +99,7 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
       onChange([...items, newItem])
       setInputValue('')
       setHighlightedIndex(-1)
+      setIsFocused(true)
       inputRef.current?.focus()
     },
     [items, onChange]
