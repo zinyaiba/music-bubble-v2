@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import type { Live, LiveType, Song, MusicServiceEmbed } from '../../types'
+import type { Live, LiveType, Song, MusicServiceEmbed, DetailPageUrl } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
 import { SetlistEditor, type SetlistItemFormData } from './SetlistEditor'
 import './LiveForm.css'
