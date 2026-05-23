@@ -37,12 +37,10 @@ function formatDateTime(dateTime: string): string {
     const year = date.getFullYear()
     const month = date.getMonth() + 1
     const day = date.getDate()
-    const hours = date.getHours().toString().padStart(2, '0')
-    const minutes = date.getMinutes().toString().padStart(2, '0')
     const weekdays = ['日', '月', '火', '水', '木', '金', '土']
     const weekday = weekdays[date.getDay()]
 
-    return `${year}年${month}月${day}日(${weekday}) ${hours}:${minutes}`
+    return `${year}年${month}月${day}日(${weekday})`
   } catch {
     return dateTime
   }
@@ -349,6 +347,61 @@ export function LiveDetailPage() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* 関連リンクセクション */}
+              {live.detailPageUrls && live.detailPageUrls.length > 0 && (
+                <div className="live-detail-page__links-section">
+                  <h2 className="live-detail-page__links-title">
+                    <svg
+                      className="live-detail-page__links-icon"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                    関連リンク
+                  </h2>
+                  <ul className="live-detail-page__links">
+                    {live.detailPageUrls.map((link, index) => (
+                      <li key={index} className="live-detail-page__link-item">
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="live-detail-page__link"
+                        >
+                          <span className="live-detail-page__link-icon">
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                              <polyline points="15 3 21 3 21 9" />
+                              <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                          </span>
+                          <span className="live-detail-page__link-label">
+                            {link.label || link.url}
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 

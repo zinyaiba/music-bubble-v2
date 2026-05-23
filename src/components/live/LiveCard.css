@@ -93,6 +93,13 @@
   border-color: #a5d6a7;
 }
 
+/* リリイベ - ピンク系 */
+.live-card__type--release {
+  background: #fce4ec;
+  color: #d81b60;
+  border-color: #ec407a;
+}
+
 /* 公演地（ツアーの場合） */
 .live-card__location {
   font-size: var(--font-size-xs);

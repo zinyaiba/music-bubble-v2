@@ -181,6 +181,7 @@ export function LiveEditPage() {
                 tourLocation: formData.liveType === 'tour' ? formData.tourLocation : undefined,
                 setlist: setlistWithOrder,
                 embeds: formData.embeds,
+                detailPageUrls: formData.detailPageUrls,
               }),
             { maxRetries: 2 }
           )
@@ -209,6 +210,7 @@ export function LiveEditPage() {
                 tourLocation: formData.liveType === 'tour' ? formData.tourLocation : undefined,
                 setlist: setlistWithOrder,
                 embeds: formData.embeds,
+                detailPageUrls: formData.detailPageUrls,
               }),
             { maxRetries: 2 }
           )

@@ -428,11 +428,6 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
                 aria-selected={index === highlightedIndex}
               >
                 <span className="setlist-editor__suggestion-title">{song.title}</span>
-                {song.artists && song.artists.length > 0 && (
-                  <span className="setlist-editor__suggestion-artist">
-                    {song.artists.join(', ')}
-                  </span>
-                )}
               </button>
             ))}
           </div>

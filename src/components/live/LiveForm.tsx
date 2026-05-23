@@ -26,6 +26,7 @@ export interface LiveFormData {
   tourLocation?: string
   setlist: SetlistItemFormData[]
   embeds?: MusicServiceEmbed[]
+  detailPageUrls?: DetailPageUrl[]
 }
 
 /**
@@ -41,6 +42,7 @@ interface InternalFormData {
   tourLocation: string
   setlist: SetlistItemFormData[]
   embeds: MusicServiceEmbed[]
+  detailPageUrls: DetailPageUrl[]
 }
 
 export interface LiveFormProps {
@@ -85,6 +87,7 @@ const LIVE_TYPE_OPTIONS: { value: LiveType; label: string }[] = [
   { value: 'solo', label: LIVE_TYPE_LABELS.solo },
   { value: 'festival', label: LIVE_TYPE_LABELS.festival },
   { value: 'event', label: LIVE_TYPE_LABELS.event },
+  { value: 'release', label: LIVE_TYPE_LABELS.release },
 ]
 
 /**
@@ -201,6 +204,7 @@ export function LiveForm({
       tourLocation: live?.tourLocation || '',
       setlist: liveSetlistToFormData(live),
       embeds: live?.embeds?.filter((item) => item.embed && item.embed.trim() !== '') || [],
+      detailPageUrls: live?.detailPageUrls?.filter((item) => item.url && item.url.trim() !== '') || [],
     }),
     [live, tourAddMode, fixedTourName]
   )
@@ -308,6 +312,41 @@ export function LiveForm({
   )
 
   /**
+   * 関連リンクの追加
+   */
+  const handleAddDetailUrl = useCallback(() => {
+    setFormData((prev) => ({
+      ...prev,
+      detailPageUrls: [...prev.detailPageUrls, { url: '', label: '' }],
+    }))
+  }, [])
+
+  /**
+   * 関連リンクの削除
+   */
+  const handleRemoveDetailUrl = useCallback((index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      detailPageUrls: prev.detailPageUrls.filter((_, i) => i !== index),
+    }))
+  }, [])
+
+  /**
+   * 関連リンクの変更
+   */
+  const handleDetailUrlChange = useCallback(
+    (index: number, field: 'url' | 'label', value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        detailPageUrls: prev.detailPageUrls.map((item, i) =>
+          i === index ? { ...item, [field]: value } : item
+        ),
+      }))
+    },
+    []
+  )
+
+  /**
    * バリデーション
    */
   const validate = useCallback((): boolean => {
@@ -379,18 +418,27 @@ export function LiveForm({
 
     // 有効な埋め込みコンテンツのみ
     const validEmbeds = formData.embeds.filter((item) => item.embed && item.embed.trim())
-    if (validEmbeds.length > 0) {
-      submitData.embeds = validEmbeds.map((item) => {
-        const embed = (item.embed || '').trim()
-        const label = item.label?.trim()
-        // ラベルが空の場合は埋め込み内容から自動判定
-        const autoLabel = label || getServiceNameFromEmbed(embed)
-        return {
-          embed,
-          label: autoLabel,
-        }
-      })
-    }
+    submitData.embeds = validEmbeds.length > 0
+      ? validEmbeds.map((item) => {
+          const embed = (item.embed || '').trim()
+          const label = item.label?.trim()
+          // ラベルが空の場合は埋め込み内容から自動判定
+          const autoLabel = label || getServiceNameFromEmbed(embed)
+          return {
+            embed,
+            label: autoLabel,
+          }
+        })
+      : []
+
+    // 有効な関連リンクのみ
+    const validDetailUrls = formData.detailPageUrls.filter((item) => item.url && item.url.trim())
+    submitData.detailPageUrls = validDetailUrls.length > 0
+      ? validDetailUrls.map((item) => ({
+          url: item.url.trim(),
+          label: item.label?.trim() || undefined,
+        }))
+      : []
 
     onSubmit(submitData)
   }
@@ -702,6 +750,88 @@ export function LiveForm({
           </div>
           <p className="live-form__hint">
             YouTube等の埋め込みiframeタグを貼り付けてください
+          </p>
+        </section>
+
+        {/* 関連リンクセクション */}
+        <section className="live-form__section">
+          <h3 className="live-form__section-title">関連リンク</h3>
+
+          <div className="live-form__detail-urls">
+            {formData.detailPageUrls.map((item, index) => (
+              <div key={index} className="live-form__detail-url-item">
+                <div className="live-form__detail-url-fields">
+                  <div className="live-form__field">
+                    <input
+                      type="text"
+                      className="live-form__input live-form__input--url-label"
+                      value={item.label || ''}
+                      onChange={(e) => handleDetailUrlChange(index, 'label', e.target.value)}
+                      placeholder="ラベル（例: 公式サイト、チケット情報）"
+                      disabled={isLoading}
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="live-form__field">
+                    <input
+                      type="url"
+                      className="live-form__input live-form__input--url"
+                      value={item.url}
+                      onChange={(e) => handleDetailUrlChange(index, 'url', e.target.value)}
+                      placeholder="https://example.com"
+                      disabled={isLoading}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="live-form__detail-url-remove"
+                  onClick={() => handleRemoveDetailUrl(index)}
+                  disabled={isLoading}
+                  aria-label="関連リンクを削除"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="live-form__detail-url-add"
+              onClick={handleAddDetailUrl}
+              disabled={isLoading}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              関連リンクを追加
+            </button>
+          </div>
+          <p className="live-form__hint">
+            公式サイトやチケット情報など、関連するURLを追加できます
           </p>
         </section>
       </div>

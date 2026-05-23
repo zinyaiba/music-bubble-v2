@@ -122,7 +122,7 @@
   left: 0;
   right: 0;
   margin-top: var(--spacing-xs);
-  max-height: 280px;
+  max-height: min(280px, 40vh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--color-surface);
@@ -131,6 +131,7 @@
   box-shadow: var(--shadow-lg);
   z-index: var(--z-index-dropdown);
   animation: setlist-editor-suggestions-appear 0.15s ease-out;
+  overscroll-behavior: contain;
 }
 
 @keyframes setlist-editor-suggestions-appear {
@@ -397,7 +398,7 @@
   }
 
   .setlist-editor__suggestions {
-    max-height: 240px;
+    max-height: min(240px, 35vh);
   }
 
   .setlist-editor__suggestion {
@@ -505,7 +506,7 @@
   left: 0;
   right: 0;
   margin-bottom: var(--spacing-2xs);
-  max-height: 200px;
+  max-height: min(200px, 30vh);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--color-surface);
@@ -514,6 +515,7 @@
   box-shadow: var(--shadow-lg);
   z-index: var(--z-index-dropdown);
   animation: setlist-editor-edit-suggestions-appear 0.15s ease-out;
+  overscroll-behavior: contain;
 }
 
 @keyframes setlist-editor-edit-suggestions-appear {
@@ -540,6 +542,6 @@
   }
 
   .setlist-editor__edit-suggestions {
-    max-height: 150px;
+    max-height: min(150px, 25vh);
   }
 }

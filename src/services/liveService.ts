@@ -98,6 +98,11 @@ export class LiveService {
       live.embeds = data.embeds
     }
 
+    // 関連リンクを追加
+    if (data.detailPageUrls && data.detailPageUrls.length > 0) {
+      live.detailPageUrls = data.detailPageUrls
+    }
+
     return live
   }
 
@@ -225,6 +230,11 @@ export class LiveService {
         docData.embeds = liveData.embeds
       }
 
+      // 関連リンクを追加
+      if (liveData.detailPageUrls && liveData.detailPageUrls.length > 0) {
+        docData.detailPageUrls = liveData.detailPageUrls
+      }
+
       const docRef = await addDoc(collection(db, this.COLLECTION_NAME), docData)
 
       if (import.meta.env.DEV) {
@@ -275,6 +285,9 @@ export class LiveService {
       }
       if (liveData.embeds !== undefined) {
         updateData.embeds = liveData.embeds
+      }
+      if (liveData.detailPageUrls !== undefined) {
+        updateData.detailPageUrls = liveData.detailPageUrls
       }
 
       await updateDoc(docRef, updateData)

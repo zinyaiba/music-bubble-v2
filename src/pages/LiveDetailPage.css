@@ -79,6 +79,16 @@
   color: white;
 }
 
+.live-detail-page__type-badge--event {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.live-detail-page__type-badge--release {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: white;
+}
+
 .live-detail-page__title {
   margin: 0 0 var(--spacing-xs);
   font-size: var(--font-size-xl);
@@ -451,5 +461,94 @@
 
   .live-detail-page__embed-container iframe {
     min-height: 180px;
+  }
+}
+
+/* 関連リンクセクション */
+.live-detail-page__links-section {
+  padding: var(--spacing-lg);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.live-detail-page__links-title {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.live-detail-page__links-icon {
+  color: var(--color-primary);
+}
+
+.live-detail-page__links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.live-detail-page__link-item {
+  margin: 0;
+}
+
+.live-detail-page__link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.live-detail-page__link:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+.live-detail-page__link:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-detail-page__link-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.live-detail-page__link-label {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .live-detail-page__links-section {
+    padding: var(--spacing-md);
+  }
+
+  .live-detail-page__link {
+    padding: var(--spacing-sm);
+  }
+
+  .live-detail-page__link-label {
+    font-size: var(--font-size-xs);
   }
 }

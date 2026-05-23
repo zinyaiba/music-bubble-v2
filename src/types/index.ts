@@ -107,8 +107,9 @@ export type AppError = NetworkError | DataError | ValidationError
  * - solo: 単独公演
  * - festival: フェス
  * - event: イベント
+ * - release: リリイベ
  */
-export type LiveType = 'tour' | 'solo' | 'festival' | 'event'
+export type LiveType = 'tour' | 'solo' | 'festival' | 'event' | 'release'
 
 /**
  * ライブ種別の表示名マッピング
@@ -118,6 +119,7 @@ export const LIVE_TYPE_LABELS: Record<LiveType, string> = {
   solo: '単独公演',
   festival: 'フェス',
   event: 'イベント',
+  release: 'リリイベ',
 }
 
 /**
@@ -156,6 +158,8 @@ export interface Live {
   setlist: SetlistItem[]
   /** 埋め込みコンテンツ */
   embeds?: MusicServiceEmbed[]
+  /** 関連リンク */
+  detailPageUrls?: DetailPageUrl[]
   /** 作成日時 */
   createdAt?: string
   /** 更新日時 */
@@ -173,6 +177,7 @@ export interface CreateLiveData {
   tourLocation?: string
   setlist: SetlistItem[]
   embeds?: MusicServiceEmbed[]
+  detailPageUrls?: DetailPageUrl[]
 }
 
 /**
