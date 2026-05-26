@@ -24,6 +24,7 @@ export interface LiveFormData {
   venueName: string
   dateTime: string
   tourLocation?: string
+  otherCategory?: string
   setlist: SetlistItemFormData[]
   embeds?: MusicServiceEmbed[]
   detailPageUrls?: DetailPageUrl[]
@@ -40,6 +41,7 @@ interface InternalFormData {
   month: string // MM形式
   day: string // DD形式
   tourLocation: string
+  otherCategory: string
   setlist: SetlistItemFormData[]
   embeds: MusicServiceEmbed[]
   detailPageUrls: DetailPageUrl[]
@@ -77,6 +79,7 @@ interface FormErrors {
   month?: string
   day?: string
   tourLocation?: string
+  otherCategory?: string
 }
 
 /**
@@ -88,6 +91,7 @@ const LIVE_TYPE_OPTIONS: { value: LiveType; label: string }[] = [
   { value: 'festival', label: LIVE_TYPE_LABELS.festival },
   { value: 'event', label: LIVE_TYPE_LABELS.event },
   { value: 'release', label: LIVE_TYPE_LABELS.release },
+  { value: 'other', label: LIVE_TYPE_LABELS.other },
 ]
 
 /**
@@ -202,6 +206,7 @@ export function LiveForm({
       month: getMonthFromDateTime(live?.dateTime),
       day: getDayFromDateTime(live?.dateTime),
       tourLocation: live?.tourLocation || '',
+      otherCategory: live?.otherCategory || '',
       setlist: liveSetlistToFormData(live),
       embeds: live?.embeds?.filter((item) => item.embed && item.embed.trim() !== '') || [],
       detailPageUrls: live?.detailPageUrls?.filter((item) => item.url && item.url.trim() !== '') || [],
@@ -231,6 +236,10 @@ export function LiveForm({
           // ライブ種別がtour以外に変更された場合、公演地をクリア
           if (field === 'liveType' && value !== 'tour') {
             newData.tourLocation = ''
+          }
+          // ライブ種別がother以外に変更された場合、その他カテゴリをクリア
+          if (field === 'liveType' && value !== 'other') {
+            newData.otherCategory = ''
           }
           return newData
         })
@@ -362,6 +371,11 @@ export function LiveForm({
       newErrors.title = '公演名を入力してください'
     }
 
+    // その他カテゴリの場合、自由入力内容は必須
+    if (formData.liveType === 'other' && !formData.otherCategory.trim()) {
+      newErrors.otherCategory = 'カテゴリ内容を入力してください'
+    }
+
     // 会場名は任意（バリデーションなし）
 
     // 年は必須
@@ -414,6 +428,11 @@ export function LiveForm({
     // ツアーの場合のみ公演地を含める
     if (formData.liveType === 'tour' && formData.tourLocation?.trim()) {
       submitData.tourLocation = formData.tourLocation.trim()
+    }
+
+    // その他カテゴリの場合のみ自由入力内容を含める
+    if (formData.liveType === 'other' && formData.otherCategory?.trim()) {
+      submitData.otherCategory = formData.otherCategory.trim()
     }
 
     // 有効な埋め込みコンテンツのみ
@@ -471,28 +490,61 @@ export function LiveForm({
 
           {/* ライブ種別（ツアー追加モードでは非表示） */}
           {!tourAddMode && (
-            <div
-              className={`live-form__field ${shouldShowError('liveType') ? 'live-form__field--error' : ''}`}
-            >
-              <label htmlFor="liveType" className="live-form__label">
-                ライブ種別 <span className="live-form__required">*</span>
-              </label>
-              <select
-                id="liveType"
-                className="live-form__select"
-                value={formData.liveType}
-                onChange={handleChange('liveType')}
-                onBlur={handleBlur('liveType')}
-                disabled={isLoading}
+            <>
+              <div
+                className={`live-form__field ${shouldShowError('liveType') ? 'live-form__field--error' : ''}`}
               >
-                {LIVE_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {shouldShowError('liveType') && <p className="live-form__error">{errors.liveType}</p>}
-            </div>
+                <label htmlFor="liveType" className="live-form__label">
+                  ライブ種別 <span className="live-form__required">*</span>
+                </label>
+                <select
+                  id="liveType"
+                  className="live-form__select"
+                  value={formData.liveType}
+                  onChange={handleChange('liveType')}
+                  onBlur={handleBlur('liveType')}
+                  disabled={isLoading || (isEditMode && live?.liveType === 'tour')}
+                >
+                  {LIVE_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {isEditMode && live?.liveType === 'tour' && (
+                  <p className="live-form__hint">ツアーのカテゴリは変更できません</p>
+                )}
+                {shouldShowError('liveType') && <p className="live-form__error">{errors.liveType}</p>}
+              </div>
+
+              {/* その他カテゴリの自由入力（その他の場合のみ表示） */}
+              {formData.liveType === 'other' && (
+                <div
+                  className={`live-form__field ${shouldShowError('otherCategory') ? 'live-form__field--error' : ''}`}
+                >
+                  <label htmlFor="otherCategory" className="live-form__label">
+                    ライブ種別名 <span className="live-form__required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="otherCategory"
+                    className="live-form__input"
+                    value={formData.otherCategory || ''}
+                    onChange={handleChange('otherCategory')}
+                    onBlur={handleBlur('otherCategory')}
+                    placeholder="例: ツーマンライブ"
+                    disabled={isLoading}
+                    autoComplete="off"
+                  />
+                  <p className="live-form__hint">
+                    一覧で表示する名称を入力してください。カテゴリは「その他」として分類されます
+                  </p>
+                  {shouldShowError('otherCategory') && (
+                    <p className="live-form__error">{errors.otherCategory}</p>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {/* 公演名（ツアー追加モードでは非表示） */}

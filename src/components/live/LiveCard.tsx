@@ -69,6 +69,9 @@ export function LiveCard({ live, onClick }: LiveCardProps) {
           {live.liveType === 'tour' && live.tourLocation && (
             <span className="live-card__location">{live.tourLocation}</span>
           )}
+          {live.liveType === 'other' && live.otherCategory && (
+            <span className="live-card__location">{live.otherCategory}</span>
+          )}
         </div>
 
         {/* 公演名 */}

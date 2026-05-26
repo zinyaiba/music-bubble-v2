@@ -93,6 +93,11 @@ export class LiveService {
       live.tourLocation = data.tourLocation
     }
 
+    // その他カテゴリの場合のみ自由入力内容を追加
+    if (data.otherCategory) {
+      live.otherCategory = data.otherCategory
+    }
+
     // 埋め込みコンテンツを追加
     if (data.embeds && data.embeds.length > 0) {
       live.embeds = data.embeds
@@ -225,6 +230,11 @@ export class LiveService {
         docData.tourLocation = liveData.tourLocation
       }
 
+      // その他カテゴリの場合のみ自由入力内容を追加
+      if (liveData.liveType === 'other' && liveData.otherCategory) {
+        docData.otherCategory = liveData.otherCategory
+      }
+
       // 埋め込みコンテンツを追加
       if (liveData.embeds && liveData.embeds.length > 0) {
         docData.embeds = liveData.embeds
@@ -282,6 +292,9 @@ export class LiveService {
       }
       if (liveData.tourLocation !== undefined) {
         updateData.tourLocation = liveData.tourLocation
+      }
+      if (liveData.otherCategory !== undefined) {
+        updateData.otherCategory = liveData.otherCategory
       }
       if (liveData.embeds !== undefined) {
         updateData.embeds = liveData.embeds

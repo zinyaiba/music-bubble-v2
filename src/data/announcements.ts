@@ -18,6 +18,22 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-05-27',
+    title: '「ライブ」ページアップデート',
+    content: `以下のアップデートを行いました。
+
+**主な改善点:**
+
+- ライブカテゴリに「その他」を追加
+- ライブカテゴリを編集可能に変更
+
+直近ではライブページのフィルタ機能を実装予定です。
+実装まで今しばらくお待ちください。
+`,
+    date: '2026-05-27',
+    type: 'update',
+  },
+  {
     id: 'ann-2026-05-24',
     title: '「ライブ」ページアップデート',
     content: `以下のアップデートを行いました。
