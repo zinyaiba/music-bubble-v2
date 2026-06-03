@@ -45,6 +45,7 @@ export const AnalyticsEvents = {
   タグ_削除: 'タグ_削除',
 
   // ライブ関連アクション
+  ライブ_検索実行: 'ライブ_検索実行',
   ライブ_詳細表示: 'ライブ_詳細表示',
   ライブ_編集開始: 'ライブ_編集開始',
   ライブ_保存完了: 'ライブ_保存完了',
@@ -114,8 +115,20 @@ export function trackPageView(
 /**
  * 検索アクションをトラッキング
  */
-export function trackSearch(searchType: '曲' | 'タグ', searchTerm: string): void {
-  trackEvent(searchType === '曲' ? AnalyticsEvents.曲_検索実行 : AnalyticsEvents.タグ_検索実行, {
+export function trackSearch(searchType: '曲' | 'タグ' | 'ライブ', searchTerm: string): void {
+  let eventName: AnalyticsEventName
+  switch (searchType) {
+    case '曲':
+      eventName = AnalyticsEvents.曲_検索実行
+      break
+    case 'タグ':
+      eventName = AnalyticsEvents.タグ_検索実行
+      break
+    case 'ライブ':
+      eventName = AnalyticsEvents.ライブ_検索実行
+      break
+  }
+  trackEvent(eventName, {
     search_term: searchTerm,
   })
 }
