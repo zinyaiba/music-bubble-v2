@@ -11,34 +11,39 @@
  * - 2.5: ツアーは代表日時、その他は公演日時で降順ソート
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import type { Live, TourGroup, GroupedLiveItem } from '../types'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import type { Live, LiveType } from '../types'
 import { liveService } from '../services/liveService'
-import { tourGroupingService } from '../services/tourGroupingService'
-import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
+import type { LiveSortType } from '../utils/liveSorting'
+import type { LiveContentFilterValue } from '../components/live/LiveList'
+import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { ErrorMessage } from '../components/common/ErrorMessage'
-import { LiveCard } from '../components/live/LiveCard'
-import { TourCard } from '../components/live/TourCard'
+import { LiveList } from '../components/live/LiveList'
 import './LiveListPage.css'
 
 /**
  * LiveListPage コンポーネント
- * ライブ一覧ページ - 新規追加ボタン付き
+ * ライブ一覧ページ
  */
 export function LiveListPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [lives, setLives] = useState<Live[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // ライブデータをグループ化
-  const groupedItems = useMemo<GroupedLiveItem[]>(() => {
-    return tourGroupingService.groupLives(lives)
-  }, [lives])
+  // URLから検索状態を復元
+  const initialQuery = searchParams.get('q') || ''
+  const initialSortBy = (searchParams.get('sort') as LiveSortType) || 'newest'
+  const initialContentFilter = (searchParams.get('content') as LiveContentFilterValue) || 'all'
+  const initialLiveTypeFilter = (searchParams.get('type') as LiveType | 'all') || 'all'
+  const initialYearFilter = searchParams.get('year') || 'all'
+  const initialMonthFilter = searchParams.get('month') || 'all'
+  const initialLocationFilter = searchParams.get('location') || 'all'
 
   // ライブデータの取得
   useEffect(() => {
@@ -77,28 +82,82 @@ export function LiveListPage() {
     }
   }, [])
 
-  // ライブ詳細ページへ遷移
+  // ライブ詳細ページへ遷移（検索状態を保持）
   const handleLiveClick = useCallback(
     (liveId: string) => {
+      // 現在の検索状態をsessionStorageに保存
+      const currentParams = searchParams.toString()
+      if (currentParams) {
+        sessionStorage.setItem('liveListParams', currentParams)
+      } else {
+        sessionStorage.removeItem('liveListParams')
+      }
       navigate(`/lives/${liveId}`)
     },
-    [navigate]
+    [navigate, searchParams]
   )
 
-  // ツアー詳細ページへ遷移
+  // ツアー詳細ページへ遷移（検索状態を保持）
   const handleTourClick = useCallback(
-    (tourGroup: TourGroup) => {
+    (tourName: string) => {
+      // 現在の検索状態をsessionStorageに保存
+      const currentParams = searchParams.toString()
+      if (currentParams) {
+        sessionStorage.setItem('liveListParams', currentParams)
+      } else {
+        sessionStorage.removeItem('liveListParams')
+      }
       // ツアー名をURLエンコードして遷移
-      const encodedTourName = encodeURIComponent(tourGroup.tourName)
+      const encodedTourName = encodeURIComponent(tourName)
       navigate(`/tours/${encodedTourName}`)
     },
-    [navigate]
+    [navigate, searchParams]
   )
 
-  // 新規ライブ追加ページへ遷移
+  // 検索状態の変更をURLに反映
+  const handleSearchStateChange = useCallback(
+    (
+      query: string,
+      sortBy: LiveSortType,
+      contentFilter: LiveContentFilterValue,
+      liveTypeFilter: LiveType | 'all',
+      yearFilter: string,
+      monthFilter: string,
+      locationFilter: string
+    ) => {
+      const params = new URLSearchParams()
+      if (query) params.set('q', query)
+      if (sortBy !== 'newest') params.set('sort', sortBy)
+      if (contentFilter !== 'all') params.set('content', contentFilter)
+      if (liveTypeFilter !== 'all') params.set('type', liveTypeFilter)
+      if (yearFilter !== 'all') params.set('year', yearFilter)
+      if (monthFilter !== 'all') params.set('month', monthFilter)
+      if (locationFilter !== 'all') params.set('location', locationFilter)
+      setSearchParams(params, { replace: true })
+
+      // 検索実行時にトラッキング
+      if (query) {
+        trackSearch('ライブ', query)
+      }
+      // ソート変更時にトラッキング
+      if (sortBy !== 'newest') {
+        trackEvent(AnalyticsEvents.ページ閲覧_ライブ一覧, { sort_type: sortBy })
+      }
+    },
+    [setSearchParams]
+  )
+
+  // 新規ライブ追加ページへ遷移（検索状態を保持）
   const handleAddLive = useCallback(() => {
+    // 現在の検索状態をsessionStorageに保存
+    const currentParams = searchParams.toString()
+    if (currentParams) {
+      sessionStorage.setItem('liveListParams', currentParams)
+    } else {
+      sessionStorage.removeItem('liveListParams')
+    }
     navigate('/lives/new')
-  }, [navigate])
+  }, [navigate, searchParams])
 
   // ナビゲーション
   const handleNavigate = useCallback(
@@ -135,7 +194,7 @@ export function LiveListPage() {
 
         {/* ライブリスト */}
         <div className="live-list-page__content">
-          {groupedItems.length === 0 ? (
+          {lives.length === 0 && !isLoading ? (
             <div className="live-list-page__empty">
               <div className="live-list-page__empty-icon">
                 <svg
@@ -159,23 +218,20 @@ export function LiveListPage() {
               </p>
             </div>
           ) : (
-            <div className="live-list-page__list">
-              {groupedItems.map((item) =>
-                item.type === 'tour' ? (
-                  <TourCard
-                    key={`tour-${item.data.id}`}
-                    tourGroup={item.data}
-                    onClick={handleTourClick}
-                  />
-                ) : (
-                  <LiveCard
-                    key={`live-${item.data.id}`}
-                    live={item.data}
-                    onClick={handleLiveClick}
-                  />
-                )
-              )}
-            </div>
+            <LiveList
+              lives={lives}
+              onLiveClick={handleLiveClick}
+              onTourClick={handleTourClick}
+              emptyMessage="ライブが見つかりません"
+              initialQuery={initialQuery}
+              initialSortBy={initialSortBy}
+              initialContentFilter={initialContentFilter}
+              initialLiveTypeFilter={initialLiveTypeFilter}
+              initialYearFilter={initialYearFilter}
+              initialMonthFilter={initialMonthFilter}
+              initialLocationFilter={initialLocationFilter}
+              onSearchStateChange={handleSearchStateChange}
+            />
           )}
         </div>
 

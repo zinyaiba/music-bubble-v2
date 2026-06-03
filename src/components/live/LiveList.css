@@ -1,0 +1,241 @@
+/**
+ * LiveList スタイル
+ * ライブ一覧コンポーネント
+ */
+
+.live-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  height: 100%;
+  padding: var(--spacing-md);
+}
+
+/* ========================================
+   検索エリア
+   ======================================== */
+
+.live-list__search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.live-list__search-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.live-list__search-input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.live-list__search-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.live-list__search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.live-list__search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-list__search-clear {
+  position: absolute;
+  right: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-list__search-clear:hover {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+
+.live-list__search-clear:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.live-list__search-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+}
+
+.live-list__search-count {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* ========================================
+   コントロール（フィルタ・ソート）
+   ======================================== */
+
+.live-list__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.live-list__control-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px var(--spacing-sm);
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+
+.live-list__control-group:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.live-list__control-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.live-list__control-group select {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  appearance: none;
+}
+
+.live-list__control-group select:focus {
+  outline: none;
+}
+
+.live-list__sort-select,
+.live-list__type-filter,
+.live-list__content-filter,
+.live-list__year-filter,
+.live-list__month-filter,
+.live-list__location-filter {
+  min-width: 70px;
+}
+
+/* ========================================
+   ライブリスト
+   ======================================== */
+
+.live-list__items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 空の状態 */
+.live-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+  min-height: 200px;
+}
+
+.live-list__empty-message {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+.live-list__empty-clear {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.live-list__empty-clear:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.live-list__empty-clear:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+/* ========================================
+   レスポンシブ対応
+   ======================================== */
+
+@media (max-width: 480px) {
+  .live-list {
+    padding: var(--spacing-sm);
+  }
+
+  .live-list__controls {
+    /* 横並びを維持し、必要に応じて改行 */
+    flex-wrap: wrap;
+  }
+
+  .live-list__control-group {
+    /* 自動的に幅を調整 */
+    flex: 0 1 auto;
+  }
+
+  .live-list__year-filter,
+  .live-list__month-filter,
+  .live-list__location-filter {
+    min-width: 50px;
+  }
+}
+
+@media (min-width: 768px) {
+  .live-list {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}

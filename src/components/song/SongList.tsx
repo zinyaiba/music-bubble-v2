@@ -606,7 +606,7 @@ export function SongList({
               onChange={handleYearFilterChange}
               aria-label="年代フィルタ"
             >
-              <option value="all">全年({filteredSongsBeforeDate.length})</option>
+              <option value="all">全年</option>
               {availableYears.map((year) => (
                 <option key={year} value={year.toString()}>
                   {year}({yearCounts.get(year) || 0})
@@ -619,7 +619,7 @@ export function SongList({
               onChange={handleMonthFilterChange}
               aria-label="月フィルタ"
             >
-              <option value="all">全月({filteredSongsAfterYear.length})</option>
+              <option value="all">全月</option>
               {availableMonths.map((month) => (
                 <option key={month} value={month.toString()}>
                   {month}月({monthCounts.get(month) || 0})
@@ -632,7 +632,7 @@ export function SongList({
               onChange={handleDayFilterChange}
               aria-label="日フィルタ"
             >
-              <option value="all">全日({filteredSongsAfterMonth.length})</option>
+              <option value="all">全日</option>
               {availableDays.map((day) => (
                 <option key={day} value={day.toString()}>
                   {day}日({dayCounts.get(day) || 0})
@@ -645,7 +645,7 @@ export function SongList({
               onChange={handleWeekdayFilterChange}
               aria-label="曜日フィルタ"
             >
-              <option value="all">全曜日({filteredSongsAfterDay.length})</option>
+              <option value="all">全曜日</option>
               {[0, 1, 2, 3, 4, 5, 6].map((weekday) => (
                 <option key={weekday} value={weekday.toString()}>
                   {WEEKDAYS[weekday]}曜({weekdayCounts.get(weekday) || 0})

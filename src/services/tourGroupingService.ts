@@ -26,9 +26,10 @@ export class TourGroupingService {
    * - liveType='tour'のライブを同じtitleでグループ化
    * - liveType='solo'/'festival'は個別項目として返す
    * @param lives ライブデータの配列
-   * @returns グループ化されたアイテムの配列（日時降順）
+   * @param sortOrder ソート順（'newest' | 'oldest'、デフォルト: 'newest'）
+   * @returns グループ化されたアイテムの配列
    */
-  public groupLives(lives: Live[]): GroupedLiveItem[] {
+  public groupLives(lives: Live[], sortOrder: 'newest' | 'oldest' = 'newest'): GroupedLiveItem[] {
     // ツアーとその他を分離
     const tourLives: Live[] = []
     const otherLives: Live[] = []
@@ -67,7 +68,7 @@ export class TourGroupingService {
     }
 
     // 日時でソートして返す
-    return this.sortGroupedItems(groupedItems)
+    return this.sortGroupedItems(groupedItems, sortOrder)
   }
 
   /**
@@ -104,14 +105,16 @@ export class TourGroupingService {
   /**
    * グループ化されたアイテムを日時でソート
    * @param items グループ化されたアイテム
-   * @returns ソートされたアイテム（降順）
+   * @param sortOrder ソート順（'newest' | 'oldest'）
+   * @returns ソートされたアイテム
    */
-  public sortGroupedItems(items: GroupedLiveItem[]): GroupedLiveItem[] {
+  public sortGroupedItems(items: GroupedLiveItem[], sortOrder: 'newest' | 'oldest' = 'newest'): GroupedLiveItem[] {
     return [...items].sort((a, b) => {
       // 代表日時を取得
       const dateA = this.getRepresentativeDate(a)
       const dateB = this.getRepresentativeDate(b)
-      return dateB - dateA // 降順（新しい順）
+      // ソート順に応じて昇順/降順を切り替え
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB
     })
   }
 
