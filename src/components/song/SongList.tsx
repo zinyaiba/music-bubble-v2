@@ -411,6 +411,19 @@ export function SongList({
     setQuery('')
   }, [])
 
+  // すべてのフィルタをクリア
+  const handleClearAllFilters = useCallback(() => {
+    setQuery('')
+    setTitleOnly(false)
+    setSortBy('newest')
+    setDisplayMode('all')
+    setContentFilter('all')
+    setYearFilter('all')
+    setMonthFilter('all')
+    setDayFilter('all')
+    setWeekdayFilter('all')
+  }, [])
+
   // タイトルのみ検索の切り替え
   const handleTitleOnlyChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setTitleOnly(e.target.checked)
@@ -457,6 +470,18 @@ export function SongList({
 
   // 現在の表示モード情報を取得
   const currentModeInfo = DISPLAY_MODES.find((m) => m.mode === displayMode) || DISPLAY_MODES[0]
+
+  // フィルタが適用されているかチェック
+  const hasActiveFilters =
+    query !== '' ||
+    titleOnly !== false ||
+    sortBy !== 'newest' ||
+    displayMode !== 'all' ||
+    contentFilter !== 'all' ||
+    yearFilter !== 'all' ||
+    monthFilter !== 'all' ||
+    dayFilter !== 'all' ||
+    weekdayFilter !== 'all'
 
   return (
     <div className="song-list">
@@ -653,7 +678,33 @@ export function SongList({
                 </option>
               ))}
             </select>
+            <div className="song-list__spacer"></div>
+            {/* フィルタクリアボタン */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="song-list__clear-filters-button"
+                onClick={handleClearAllFilters}
+                aria-label="すべてのフィルタをクリア"
+                title="すべてクリア"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" />
+                  <line x1="18" y1="6" x2="6" y2="18" stroke="#e74c3c" />
+                  <line x1="6" y1="6" x2="18" y2="18" stroke="#e74c3c" />
+                </svg>
+              </button>
+            )}
           </div>
+          {/* フィルタクリアボタン */}
           <button
             type="button"
             className="song-list__view-toggle"

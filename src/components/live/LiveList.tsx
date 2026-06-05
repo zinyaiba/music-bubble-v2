@@ -311,6 +311,27 @@ export function LiveList({
     setLocationFilter(e.target.value)
   }, [])
 
+  // すべてのフィルタをクリア
+  const handleClearAllFilters = useCallback(() => {
+    setQuery('')
+    setSortBy('newest')
+    setContentFilter('all')
+    setLiveTypeFilter('all')
+    setYearFilter('all')
+    setMonthFilter('all')
+    setLocationFilter('all')
+  }, [])
+
+  // フィルタが適用されているかチェック
+  const hasActiveFilters =
+    query !== '' ||
+    sortBy !== 'newest' ||
+    contentFilter !== 'all' ||
+    liveTypeFilter !== 'all' ||
+    yearFilter !== 'all' ||
+    monthFilter !== 'all' ||
+    locationFilter !== 'all'
+
   return (
     <div className="live-list">
       {/* 検索バー */}
@@ -503,6 +524,31 @@ export function LiveList({
                 </option>
               ))}
             </select>
+            <div className="live-list__spacer"></div>
+            {/* フィルタクリアボタン */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="live-list__clear-filters-button"
+                onClick={handleClearAllFilters}
+                aria-label="すべてのフィルタをクリア"
+                title="すべてクリア"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" />
+                  <line x1="18" y1="6" x2="6" y2="18" stroke="#e74c3c" />
+                  <line x1="6" y1="6" x2="18" y2="18" stroke="#e74c3c" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </div>

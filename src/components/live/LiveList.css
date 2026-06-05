@@ -166,7 +166,48 @@
 .live-list__year-filter,
 .live-list__month-filter,
 .live-list__location-filter {
-  min-width: 50px;
+  min-width: 48px;
+  max-width: 90px;
+}
+
+/* スペーサー（右詰め用） */
+.live-list__spacer {
+  flex: 1;
+  min-width: 4px;
+}
+
+/* フィルタクリアボタン */
+.live-list__clear-filters-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  background: var(--color-background-secondary);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.live-list__clear-filters-button:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.live-list__clear-filters-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.live-list__clear-filters-button svg {
+  flex-shrink: 0;
 }
 
 /* ========================================
@@ -253,7 +294,23 @@
   .live-list__location-filter {
     padding: 3px 2px;
     font-size: 10px;
-    min-width: 40px;
+    min-width: 38px;
+    max-width: 70px;
+  }
+
+  .live-list__spacer {
+    display: block;
+  }
+
+  .live-list__clear-filters-button {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+  }
+
+  .live-list__clear-filters-button svg {
+    width: 12px;
+    height: 12px;
   }
 }
 
@@ -264,3 +321,7 @@
     width: 100%;
   }
 }
+
+/* ========================================
+   フィルタクリアボタン（削除）
+   ======================================== */

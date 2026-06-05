@@ -240,11 +240,13 @@
   box-shadow: 0 0 0 2px var(--color-primary-alpha);
 }
 
+.song-list__year-filter,
 .song-list__month-filter,
 .song-list__day-filter,
 .song-list__weekday-filter {
   flex: 1;
-  min-width: 0;
+  min-width: 48px;
+  max-width: 80px;
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-family: var(--font-family);
@@ -259,7 +261,8 @@
 
 .song-list__month-filter:focus,
 .song-list__day-filter:focus,
-.song-list__weekday-filter:focus {
+.song-list__weekday-filter:focus,
+.song-list__year-filter:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--color-primary-alpha);
 }
@@ -269,6 +272,45 @@
   display: flex;
   gap: 4px;
   flex: 1;
+}
+
+/* スペーサー（右詰め用） */
+.song-list__spacer {
+  flex: 1;
+  min-width: 4px;
+}
+
+/* フィルタクリアボタン */
+.song-list__clear-filters-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--spacing-xs);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.song-list__clear-filters-button:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.song-list__clear-filters-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+
+.song-list__clear-filters-button svg {
+  flex-shrink: 0;
 }
 
 .song-list__view-toggle {
@@ -431,6 +473,11 @@
     order: 10;
   }
 
+  /* スペーサーを表示 */
+  .song-list__spacer {
+    display: block;
+  }
+
   /* 表示切替ボタン */
   .song-list__view-toggle {
     flex: 0 0 auto;
@@ -458,6 +505,19 @@
   .song-list__weekday-filter {
     font-size: 10px;
     padding: 4px 1px;
+    min-width: 40px;
+    max-width: 60px;
+  }
+
+  .song-list__clear-filters-button {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+
+  .song-list__clear-filters-button svg {
+    width: 12px;
+    height: 12px;
   }
 }
 
@@ -487,3 +547,5 @@
     padding: var(--spacing-sm);
   }
 }
+
+/* フィルタクリアボタン（削除） */
