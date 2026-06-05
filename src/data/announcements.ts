@@ -27,6 +27,10 @@ export const announcements: Announcement[] = [
 
 お陰様でたくさんのコンテンツが登録されていますので、サムネイルで一覧表示できるようにしました。
 たくさん動画を見て盛り上げましょう！
+動画の登録方法は以下ページを参考にしてください。PCから共有ボタンで取得できます。
+<a href="https://support.google.com/youtube/answer/171780?hl=ja">埋め込み用リンクの取得方法</a>
+
+※埋め込む動画は各公式チャンネルのみとしていただくようお願い致します。
 `,
     date: '2026-06-05',
     type: 'feature',
