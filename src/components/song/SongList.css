@@ -460,3 +460,30 @@
     padding: 4px 1px;
   }
 }
+
+/* サムネイルモード時のグリッドレイアウト */
+.song-list__items--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  grid-auto-rows: auto;
+  align-items: start;
+}
+
+/* タブレット表示 */
+@media (max-width: 768px) and (min-width: 481px) {
+  .song-list__items--grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-sm);
+  }
+}
+
+/* スマホ表示 */
+@media (max-width: 480px) {
+  .song-list__items--grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+  }
+}

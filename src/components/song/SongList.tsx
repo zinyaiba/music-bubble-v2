@@ -24,6 +24,7 @@ const DISPLAY_MODES: { mode: SongDisplayMode; icon: string; label: string }[] = 
   { mode: 'composer', icon: '🎼', label: '作曲' },
   { mode: 'arranger', icon: '🎧', label: '編曲' },
   { mode: 'release', icon: '📅', label: '発売日' },
+  { mode: 'thumbnail', icon: '🖼️', label: 'サムネイル' },
   { mode: 'all', icon: 'ALL', label: 'すべて表示' },
 ]
 
@@ -666,7 +667,7 @@ export function SongList({
       </div>
 
       {/* 楽曲リスト */}
-      <div className="song-list__items">
+      <div className={`song-list__items ${displayMode === 'thumbnail' ? 'song-list__items--grid' : ''}`}>
         {filteredAndSortedSongs.length > 0 ? (
           filteredAndSortedSongs.map((song) => (
             <SongCard
