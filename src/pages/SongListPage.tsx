@@ -30,16 +30,68 @@ export function SongListPage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // URLから検索状態を復元
-  const initialQuery = searchParams.get('q') || ''
-  const initialTitleOnly = searchParams.get('titleOnly') === 'true'
-  const initialSortBy = (searchParams.get('sort') as SongSortType) || 'newest'
-  const initialDisplayMode = (searchParams.get('display') as SongDisplayMode) || 'all'
-  const initialContentFilter = (searchParams.get('content') as ContentFilterValue) || 'all'
-  const initialYearFilter = searchParams.get('year') || 'all'
-  const initialMonthFilter = searchParams.get('month') || 'all'
-  const initialDayFilter = searchParams.get('day') || 'all'
-  const initialWeekdayFilter = searchParams.get('weekday') || 'all'
+  // URLから検索状態を復元、なければlocalStorageから復元
+  const getInitialState = () => {
+    // URLパラメータが優先
+    if (searchParams.toString()) {
+      return {
+        query: searchParams.get('q') || '',
+        titleOnly: searchParams.get('titleOnly') === 'true',
+        sortBy: (searchParams.get('sort') as SongSortType) || 'newest',
+        displayMode: (searchParams.get('display') as SongDisplayMode) || 'all',
+        contentFilter: (searchParams.get('content') as ContentFilterValue) || 'all',
+        yearFilter: searchParams.get('year') || 'all',
+        monthFilter: searchParams.get('month') || 'all',
+        dayFilter: searchParams.get('day') || 'all',
+        weekdayFilter: searchParams.get('weekday') || 'all',
+      }
+    }
+
+    // localStorageから復元を試みる
+    try {
+      const saved = localStorage.getItem('songListState')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return {
+          query: parsed.query || '',
+          titleOnly: parsed.titleOnly || false,
+          sortBy: parsed.sortBy || 'newest',
+          displayMode: parsed.displayMode || 'all',
+          contentFilter: parsed.contentFilter || 'all',
+          yearFilter: parsed.yearFilter || 'all',
+          monthFilter: parsed.monthFilter || 'all',
+          dayFilter: parsed.dayFilter || 'all',
+          weekdayFilter: parsed.weekdayFilter || 'all',
+        }
+      }
+    } catch (err) {
+      console.error('Failed to restore song list state:', err)
+    }
+
+    // デフォルト値
+    return {
+      query: '',
+      titleOnly: false,
+      sortBy: 'newest' as SongSortType,
+      displayMode: 'all' as SongDisplayMode,
+      contentFilter: 'all' as ContentFilterValue,
+      yearFilter: 'all',
+      monthFilter: 'all',
+      dayFilter: 'all',
+      weekdayFilter: 'all',
+    }
+  }
+
+  const initialState = getInitialState()
+  const initialQuery = initialState.query
+  const initialTitleOnly = initialState.titleOnly
+  const initialSortBy = initialState.sortBy
+  const initialDisplayMode = initialState.displayMode
+  const initialContentFilter = initialState.contentFilter
+  const initialYearFilter = initialState.yearFilter
+  const initialMonthFilter = initialState.monthFilter
+  const initialDayFilter = initialState.dayFilter
+  const initialWeekdayFilter = initialState.weekdayFilter
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
@@ -49,22 +101,15 @@ export function SongListPage() {
     trackEvent(AnalyticsEvents.ページ閲覧_曲一覧)
   }, [])
 
-  // 楽曲詳細ページへ遷移（検索状態を保持）
+  // 楽曲詳細ページへ遷移
   const handleSongClick = useCallback(
     (songId: string) => {
-      // 現在の検索状態をsessionStorageに保存
-      const currentParams = searchParams.toString()
-      if (currentParams) {
-        sessionStorage.setItem('songListParams', currentParams)
-      } else {
-        sessionStorage.removeItem('songListParams')
-      }
       navigate(`/songs/${songId}`)
     },
-    [navigate, searchParams]
+    [navigate]
   )
 
-  // 検索状態の変更をURLに反映
+  // 検索状態の変更をURLとlocalStorageに反映
   const handleSearchStateChange = useCallback(
     (
       query: string,
@@ -77,6 +122,7 @@ export function SongListPage() {
       dayFilter: string,
       weekdayFilter: string
     ) => {
+      // URLパラメータを更新
       const params = new URLSearchParams()
       if (query) params.set('q', query)
       if (titleOnly) params.set('titleOnly', 'true')
@@ -88,6 +134,24 @@ export function SongListPage() {
       if (dayFilter !== 'all') params.set('day', dayFilter)
       if (weekdayFilter !== 'all') params.set('weekday', weekdayFilter)
       setSearchParams(params, { replace: true })
+
+      // localStorageに保存
+      try {
+        const state = {
+          query,
+          titleOnly,
+          sortBy,
+          displayMode,
+          contentFilter,
+          yearFilter,
+          monthFilter,
+          dayFilter,
+          weekdayFilter,
+        }
+        localStorage.setItem('songListState', JSON.stringify(state))
+      } catch (err) {
+        console.error('Failed to save song list state:', err)
+      }
 
       // 検索実行時にトラッキング
       if (query) {
@@ -103,16 +167,9 @@ export function SongListPage() {
 
   // 新規楽曲追加ページへ遷移
   const handleAddSong = useCallback(() => {
-    // 現在の検索状態をsessionStorageに保存
-    const currentParams = searchParams.toString()
-    if (currentParams) {
-      sessionStorage.setItem('songListParams', currentParams)
-    } else {
-      sessionStorage.removeItem('songListParams')
-    }
     trackEvent(AnalyticsEvents.曲_新規作成)
     navigate('/songs/new')
-  }, [navigate, searchParams])
+  }, [navigate])
 
   // ナビゲーション
   const handleNavigate = useCallback(

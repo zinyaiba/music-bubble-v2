@@ -115,14 +115,35 @@ export function SongDetailPage() {
     loadSong()
   }, [songId])
 
-  // 戻るナビゲーション（常に楽曲一覧へ、検索状態を復元）
+  // 戻るナビゲーション（検索状態を保持）
   const handleBack = useCallback(() => {
-    const savedParams = sessionStorage.getItem('songListParams')
-    if (savedParams) {
-      navigate(`/songs?${savedParams}`)
-    } else {
-      navigate('/songs')
+    // localStorageに保存された検索状態を復元してURLパラメータとして遷移
+    try {
+      const saved = localStorage.getItem('songListState')
+      if (saved) {
+        const state = JSON.parse(saved)
+        const params = new URLSearchParams()
+        if (state.query) params.set('q', state.query)
+        if (state.titleOnly) params.set('titleOnly', 'true')
+        if (state.sortBy && state.sortBy !== 'newest') params.set('sort', state.sortBy)
+        if (state.displayMode && state.displayMode !== 'all') params.set('display', state.displayMode)
+        if (state.contentFilter && state.contentFilter !== 'all')
+          params.set('content', state.contentFilter)
+        if (state.yearFilter && state.yearFilter !== 'all') params.set('year', state.yearFilter)
+        if (state.monthFilter && state.monthFilter !== 'all')
+          params.set('month', state.monthFilter)
+        if (state.dayFilter && state.dayFilter !== 'all') params.set('day', state.dayFilter)
+        if (state.weekdayFilter && state.weekdayFilter !== 'all')
+          params.set('weekday', state.weekdayFilter)
+
+        const paramString = params.toString()
+        navigate(paramString ? `/songs?${paramString}` : '/songs')
+        return
+      }
+    } catch (err) {
+      console.error('Failed to restore song list state:', err)
     }
+    navigate('/songs')
   }, [navigate])
 
   // ひとつ前に戻る（ヒストリーバック）

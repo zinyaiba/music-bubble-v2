@@ -36,14 +36,60 @@ export function LiveListPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // URLから検索状態を復元
-  const initialQuery = searchParams.get('q') || ''
-  const initialSortBy = (searchParams.get('sort') as LiveSortType) || 'newest'
-  const initialContentFilter = (searchParams.get('content') as LiveContentFilterValue) || 'all'
-  const initialLiveTypeFilter = (searchParams.get('type') as LiveType | 'all') || 'all'
-  const initialYearFilter = searchParams.get('year') || 'all'
-  const initialMonthFilter = searchParams.get('month') || 'all'
-  const initialLocationFilter = searchParams.get('location') || 'all'
+  // URLから検索状態を復元、なければlocalStorageから復元
+  const getInitialState = () => {
+    // URLパラメータが優先
+    if (searchParams.toString()) {
+      return {
+        query: searchParams.get('q') || '',
+        sortBy: (searchParams.get('sort') as LiveSortType) || 'newest',
+        contentFilter: (searchParams.get('content') as LiveContentFilterValue) || 'all',
+        liveTypeFilter: (searchParams.get('type') as LiveType | 'all') || 'all',
+        yearFilter: searchParams.get('year') || 'all',
+        monthFilter: searchParams.get('month') || 'all',
+        locationFilter: searchParams.get('location') || 'all',
+      }
+    }
+
+    // localStorageから復元を試みる
+    try {
+      const saved = localStorage.getItem('liveListState')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return {
+          query: parsed.query || '',
+          sortBy: parsed.sortBy || 'newest',
+          contentFilter: parsed.contentFilter || 'all',
+          liveTypeFilter: parsed.liveTypeFilter || 'all',
+          yearFilter: parsed.yearFilter || 'all',
+          monthFilter: parsed.monthFilter || 'all',
+          locationFilter: parsed.locationFilter || 'all',
+        }
+      }
+    } catch (err) {
+      console.error('Failed to restore live list state:', err)
+    }
+
+    // デフォルト値
+    return {
+      query: '',
+      sortBy: 'newest' as LiveSortType,
+      contentFilter: 'all' as LiveContentFilterValue,
+      liveTypeFilter: 'all' as LiveType | 'all',
+      yearFilter: 'all',
+      monthFilter: 'all',
+      locationFilter: 'all',
+    }
+  }
+
+  const initialState = getInitialState()
+  const initialQuery = initialState.query
+  const initialSortBy = initialState.sortBy
+  const initialContentFilter = initialState.contentFilter
+  const initialLiveTypeFilter = initialState.liveTypeFilter
+  const initialYearFilter = initialState.yearFilter
+  const initialMonthFilter = initialState.monthFilter
+  const initialLocationFilter = initialState.locationFilter
 
   // ライブデータの取得
   useEffect(() => {
@@ -85,36 +131,22 @@ export function LiveListPage() {
   // ライブ詳細ページへ遷移（検索状態を保持）
   const handleLiveClick = useCallback(
     (liveId: string) => {
-      // 現在の検索状態をsessionStorageに保存
-      const currentParams = searchParams.toString()
-      if (currentParams) {
-        sessionStorage.setItem('liveListParams', currentParams)
-      } else {
-        sessionStorage.removeItem('liveListParams')
-      }
       navigate(`/lives/${liveId}`)
     },
-    [navigate, searchParams]
+    [navigate]
   )
 
   // ツアー詳細ページへ遷移（検索状態を保持）
   const handleTourClick = useCallback(
     (tourName: string) => {
-      // 現在の検索状態をsessionStorageに保存
-      const currentParams = searchParams.toString()
-      if (currentParams) {
-        sessionStorage.setItem('liveListParams', currentParams)
-      } else {
-        sessionStorage.removeItem('liveListParams')
-      }
       // ツアー名をURLエンコードして遷移
       const encodedTourName = encodeURIComponent(tourName)
       navigate(`/tours/${encodedTourName}`)
     },
-    [navigate, searchParams]
+    [navigate]
   )
 
-  // 検索状態の変更をURLに反映
+  // 検索状態の変更をURLとlocalStorageに反映
   const handleSearchStateChange = useCallback(
     (
       query: string,
@@ -125,6 +157,7 @@ export function LiveListPage() {
       monthFilter: string,
       locationFilter: string
     ) => {
+      // URLパラメータを更新
       const params = new URLSearchParams()
       if (query) params.set('q', query)
       if (sortBy !== 'newest') params.set('sort', sortBy)
@@ -134,6 +167,22 @@ export function LiveListPage() {
       if (monthFilter !== 'all') params.set('month', monthFilter)
       if (locationFilter !== 'all') params.set('location', locationFilter)
       setSearchParams(params, { replace: true })
+
+      // localStorageに保存
+      try {
+        const state = {
+          query,
+          sortBy,
+          contentFilter,
+          liveTypeFilter,
+          yearFilter,
+          monthFilter,
+          locationFilter,
+        }
+        localStorage.setItem('liveListState', JSON.stringify(state))
+      } catch (err) {
+        console.error('Failed to save live list state:', err)
+      }
 
       // 検索実行時にトラッキング
       if (query) {
@@ -147,17 +196,10 @@ export function LiveListPage() {
     [setSearchParams]
   )
 
-  // 新規ライブ追加ページへ遷移（検索状態を保持）
+  // 新規ライブ追加ページへ遷移
   const handleAddLive = useCallback(() => {
-    // 現在の検索状態をsessionStorageに保存
-    const currentParams = searchParams.toString()
-    if (currentParams) {
-      sessionStorage.setItem('liveListParams', currentParams)
-    } else {
-      sessionStorage.removeItem('liveListParams')
-    }
     navigate('/lives/new')
-  }, [navigate, searchParams])
+  }, [navigate])
 
   // ナビゲーション
   const handleNavigate = useCallback(

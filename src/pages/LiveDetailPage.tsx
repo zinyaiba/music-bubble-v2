@@ -157,8 +157,33 @@ export function LiveDetailPage() {
     loadData()
   }, [liveId])
 
-  // 戻るナビゲーション
+  // 戻るナビゲーション（検索状態を保持）
   const handleBack = useCallback(() => {
+    // localStorageに保存された検索状態を復元してURLパラメータとして遷移
+    try {
+      const saved = localStorage.getItem('liveListState')
+      if (saved) {
+        const state = JSON.parse(saved)
+        const params = new URLSearchParams()
+        if (state.query) params.set('q', state.query)
+        if (state.sortBy && state.sortBy !== 'newest') params.set('sort', state.sortBy)
+        if (state.contentFilter && state.contentFilter !== 'all')
+          params.set('content', state.contentFilter)
+        if (state.liveTypeFilter && state.liveTypeFilter !== 'all')
+          params.set('type', state.liveTypeFilter)
+        if (state.yearFilter && state.yearFilter !== 'all') params.set('year', state.yearFilter)
+        if (state.monthFilter && state.monthFilter !== 'all')
+          params.set('month', state.monthFilter)
+        if (state.locationFilter && state.locationFilter !== 'all')
+          params.set('location', state.locationFilter)
+
+        const paramString = params.toString()
+        navigate(paramString ? `/lives?${paramString}` : '/lives')
+        return
+      }
+    } catch (err) {
+      console.error('Failed to restore live list state:', err)
+    }
     navigate('/lives')
   }, [navigate])
 
