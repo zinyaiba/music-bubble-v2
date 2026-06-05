@@ -56,6 +56,11 @@
   transition: all var(--transition-fast);
 }
 
+.live-list__search-input::placeholder {
+  color: var(--color-text-disabled);
+  font-size: var(--font-size-xs);
+}
+
 .live-list__search-input:focus {
   outline: none;
   border-color: var(--color-primary);
