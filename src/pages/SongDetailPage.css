@@ -122,7 +122,8 @@
   box-shadow: var(--shadow-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
-  z-index: var(--z-index-floating-button);
+  z-index: 1000;
+  pointer-events: auto;
 }
 
 .song-detail-page__floating-back:hover {
