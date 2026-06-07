@@ -3,7 +3,7 @@
  * ライブ一覧表示と検索・フィルタ・並び替え機能
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import type { Live, LiveType, GroupedLiveItem } from '../../types'
 import { searchLives } from '../../services/liveSearchService'
 import type { LiveSortType } from '../../utils/liveSorting'
@@ -120,6 +120,10 @@ export interface LiveListProps {
     monthFilter: string,
     locationFilter: string
   ) => void
+  /** 初期スクロール位置 */
+  initialScrollPosition?: number
+  /** スクロール位置保存時のコールバック */
+  onSaveScrollPosition?: (scrollTop: number) => void
 }
 
 /**
@@ -139,7 +143,10 @@ export function LiveList({
   initialMonthFilter = 'all',
   initialLocationFilter = 'all',
   onSearchStateChange,
+  initialScrollPosition = 0,
+  onSaveScrollPosition,
 }: LiveListProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState(initialQuery)
   const [sortBy, setSortBy] = useState<LiveSortType>(initialSortBy)
   const [contentFilter, setContentFilter] = useState<LiveContentFilterValue>(initialContentFilter)
@@ -331,6 +338,35 @@ export function LiveList({
     yearFilter !== 'all' ||
     monthFilter !== 'all' ||
     locationFilter !== 'all'
+
+  // 初期スクロール位置を復元
+  useEffect(() => {
+    if (scrollContainerRef.current && initialScrollPosition > 0) {
+      scrollContainerRef.current.scrollTop = initialScrollPosition
+    }
+  }, [initialScrollPosition])
+
+  // ライブカードクリック時にスクロール位置を保存
+  const handleLiveCardClick = useCallback(
+    (liveId: string) => {
+      if (scrollContainerRef.current && onSaveScrollPosition) {
+        onSaveScrollPosition(scrollContainerRef.current.scrollTop)
+      }
+      onLiveClick(liveId)
+    },
+    [onLiveClick, onSaveScrollPosition]
+  )
+
+  // ツアーカードクリック時にスクロール位置を保存
+  const handleTourCardClick = useCallback(
+    (tourName: string) => {
+      if (scrollContainerRef.current && onSaveScrollPosition) {
+        onSaveScrollPosition(scrollContainerRef.current.scrollTop)
+      }
+      onTourClick(tourName)
+    },
+    [onTourClick, onSaveScrollPosition]
+  )
 
   return (
     <div className="live-list">
@@ -554,20 +590,20 @@ export function LiveList({
       </div>
 
       {/* ライブリスト */}
-      <div className="live-list__items">
+      <div className="live-list__items" ref={scrollContainerRef}>
         {groupedItems.length > 0 ? (
           groupedItems.map((item) =>
             item.type === 'tour' ? (
               <TourCard
                 key={`tour-${item.data.id}`}
                 tourGroup={item.data}
-                onClick={(tourGroup) => onTourClick(tourGroup.tourName)}
+                onClick={(tourGroup) => handleTourCardClick(tourGroup.tourName)}
               />
             ) : (
               <LiveCard
                 key={`live-${item.data.id}`}
                 live={item.data}
-                onClick={onLiveClick}
+                onClick={handleLiveCardClick}
               />
             )
           )

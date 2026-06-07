@@ -105,6 +105,57 @@
   }
 }
 
+/* 右下浮きボタン */
+.song-detail-page__floating-back {
+  position: fixed;
+  right: var(--spacing-md);
+  bottom: calc(var(--navigation-height) + var(--spacing-md) + var(--safe-area-bottom));
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  z-index: var(--z-index-floating-button);
+}
+
+.song-detail-page__floating-back:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.song-detail-page__floating-back:focus {
+  outline: none;
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-detail-page__floating-back:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 480px) {
+  .song-detail-page__floating-back {
+    width: 48px;
+    height: 48px;
+    right: var(--spacing-sm);
+    bottom: calc(var(--navigation-height) + var(--spacing-sm) + var(--safe-area-bottom));
+  }
+
+  .song-detail-page__floating-back svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 /* 削除確認ダイアログ */
 .song-detail-page__delete-overlay {
   position: fixed;

@@ -35,6 +35,7 @@ export function LiveListPage() {
   const [lives, setLives] = useState<Live[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [scrollPosition, setScrollPosition] = useState<number>(0)
 
   // URLから検索状態を復元、なければlocalStorageから復元
   const getInitialState = () => {
@@ -125,6 +126,30 @@ export function LiveListPage() {
       setError('ライブデータの取得に失敗しました')
     } finally {
       setIsLoading(false)
+    }
+  }, [])
+
+  // スクロール位置を復元（マウント時）
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('liveListScrollPosition')
+      if (saved) {
+        const position = parseInt(saved, 10)
+        if (!isNaN(position)) {
+          setScrollPosition(position)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to restore scroll position:', err)
+    }
+  }, [])
+
+  // スクロール位置を保存
+  const handleSaveScrollPosition = useCallback((scrollTop: number) => {
+    try {
+      sessionStorage.setItem('liveListScrollPosition', scrollTop.toString())
+    } catch (err) {
+      console.error('Failed to save scroll position:', err)
     }
   }, [])
 
@@ -273,6 +298,8 @@ export function LiveListPage() {
               initialMonthFilter={initialMonthFilter}
               initialLocationFilter={initialLocationFilter}
               onSearchStateChange={handleSearchStateChange}
+              initialScrollPosition={scrollPosition}
+              onSaveScrollPosition={handleSaveScrollPosition}
             />
           )}
         </div>

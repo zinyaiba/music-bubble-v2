@@ -7,7 +7,7 @@
  * - 7.2: タイトル、アーティスト、作詞家、作曲家、編曲家、タグで楽曲をフィルタリングする検索機能
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import type { Song } from '../../types'
 import { searchSongs } from '../../services/songSearchService'
 import { sortSongs } from '../../utils/songSorting'
@@ -156,6 +156,10 @@ export interface SongListProps {
     dayFilter: string,
     weekdayFilter: string
   ) => void
+  /** 初期スクロール位置 */
+  initialScrollPosition?: number
+  /** スクロール位置保存時のコールバック */
+  onSaveScrollPosition?: (scrollTop: number) => void
 }
 
 /**
@@ -176,7 +180,10 @@ export function SongList({
   initialDayFilter = 'all',
   initialWeekdayFilter = 'all',
   onSearchStateChange,
+  initialScrollPosition = 0,
+  onSaveScrollPosition,
 }: SongListProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState(initialQuery)
   const [titleOnly, setTitleOnly] = useState(initialTitleOnly)
   const [sortBy, setSortBy] = useState<SongSortType>(initialSortBy)
@@ -483,6 +490,24 @@ export function SongList({
     dayFilter !== 'all' ||
     weekdayFilter !== 'all'
 
+  // 初期スクロール位置を復元
+  useEffect(() => {
+    if (scrollContainerRef.current && initialScrollPosition > 0) {
+      scrollContainerRef.current.scrollTop = initialScrollPosition
+    }
+  }, [initialScrollPosition])
+
+  // 楽曲カードクリック時にスクロール位置を保存
+  const handleSongCardClick = useCallback(
+    (songId: string) => {
+      if (scrollContainerRef.current && onSaveScrollPosition) {
+        onSaveScrollPosition(scrollContainerRef.current.scrollTop)
+      }
+      onSongClick(songId)
+    },
+    [onSongClick, onSaveScrollPosition]
+  )
+
   return (
     <div className="song-list">
       {/* 検索バー */}
@@ -718,13 +743,13 @@ export function SongList({
       </div>
 
       {/* 楽曲リスト */}
-      <div className={`song-list__items ${displayMode === 'thumbnail' ? 'song-list__items--grid' : ''}`}>
+      <div className={`song-list__items ${displayMode === 'thumbnail' ? 'song-list__items--grid' : ''}`} ref={scrollContainerRef}>
         {filteredAndSortedSongs.length > 0 ? (
           filteredAndSortedSongs.map((song) => (
             <SongCard
               key={song.id}
               song={song}
-              onClick={() => onSongClick(song.id)}
+              onClick={() => handleSongCardClick(song.id)}
               displayMode={displayMode}
             />
           ))

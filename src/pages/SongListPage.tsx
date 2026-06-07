@@ -8,7 +8,7 @@
  * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { SongSortType } from '../utils/songSorting'
 import type { SongDisplayMode } from '../components/song/SongCard'
@@ -95,10 +95,35 @@ export function SongListPage() {
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
+  const [scrollPosition, setScrollPosition] = useState<number>(0)
 
   // ページ閲覧トラッキング
   useEffect(() => {
     trackEvent(AnalyticsEvents.ページ閲覧_曲一覧)
+  }, [])
+
+  // スクロール位置を復元（マウント時）
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('songListScrollPosition')
+      if (saved) {
+        const position = parseInt(saved, 10)
+        if (!isNaN(position)) {
+          setScrollPosition(position)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to restore scroll position:', err)
+    }
+  }, [])
+
+  // スクロール位置を保存
+  const handleSaveScrollPosition = useCallback((scrollTop: number) => {
+    try {
+      sessionStorage.setItem('songListScrollPosition', scrollTop.toString())
+    } catch (err) {
+      console.error('Failed to save scroll position:', err)
+    }
   }, [])
 
   // 楽曲詳細ページへ遷移
@@ -224,6 +249,8 @@ export function SongListPage() {
             initialDayFilter={initialDayFilter}
             initialWeekdayFilter={initialWeekdayFilter}
             onSearchStateChange={handleSearchStateChange}
+            initialScrollPosition={scrollPosition}
+            onSaveScrollPosition={handleSaveScrollPosition}
           />
         </div>
 
