@@ -1,0 +1,157 @@
+/**
+ * SongTimelineItem スタイル
+ *
+ * 個別楽曲をタイムラインアイテムとして表示するカード。
+ * 既存デザインシステムのCSS変数に準拠。
+ *
+ * Requirements: 1.4, 5.1, 10.1
+ */
+
+.song-timeline-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  background: var(--color-card-background, var(--color-surface));
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.song-timeline-item:hover {
+  background: var(--color-surface-hover);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.song-timeline-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.song-timeline-item:active {
+  transform: scale(0.98);
+}
+
+/* ヘッダー */
+.song-timeline-item__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.song-timeline-item__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary, var(--color-text));
+  line-height: var(--line-height-tight);
+}
+
+.song-timeline-item__artist {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* リリース情報 */
+.song-timeline-item__release {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.song-timeline-item__release-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.song-timeline-item__release-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+/* 埋め込みコンテンツ */
+.song-timeline-item__embeds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  cursor: default;
+}
+
+.song-timeline-item__embed-item {
+  width: 100%;
+}
+
+.song-timeline-item__embed-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+/* iframe（直接記述・タグ埋め込みの両方）が
+   タイムラインレイアウトを壊さないように制御 */
+.song-timeline-item__embed-container iframe,
+.song-timeline-item__embed {
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  display: block;
+}
+
+/* 外部リンク */
+.song-timeline-item__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  cursor: default;
+}
+
+.song-timeline-item__link-item {
+  display: inline-flex;
+}
+
+.song-timeline-item__link {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.song-timeline-item__link:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .song-timeline-item {
+    padding: 12px;
+    margin: 12px 0;
+  }
+
+  .song-timeline-item__title {
+    font-size: var(--font-size-sm);
+  }
+}

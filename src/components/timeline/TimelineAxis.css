@@ -1,0 +1,33 @@
+/**
+ * TimelineAxis スタイル
+ *
+ * 垂直タイムライン軸を可視的な垂直線として表示する。
+ *
+ * レスポンシブ:
+ * - デスクトップ (768px以上): 幅 2px（中央配置は TimelineGroup 側で制御）
+ * - モバイル (767px以下): 幅 1px（左端配置は TimelineGroup 側で制御）
+ *
+ * Requirements: 1.1, 9.2, 9.4
+ */
+
+/* ===== 共通（ブレークポイント非依存） ===== */
+.timeline-axis {
+  height: 100%;
+  background-color: var(--color-border);
+  /* タイムライン軸が縦いっぱいに伸びるよう絶対配置に対応 */
+  align-self: stretch;
+}
+
+/* ===== デスクトップ (768px以上): 軸の幅 2px ===== */
+@media (min-width: 768px) {
+  .timeline-axis {
+    width: 2px;
+  }
+}
+
+/* ===== モバイル (767px以下): 軸の幅 1px ===== */
+@media (max-width: 767px) {
+  .timeline-axis {
+    width: 1px;
+  }
+}

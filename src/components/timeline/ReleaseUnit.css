@@ -1,0 +1,221 @@
+/**
+ * ReleaseUnit スタイル
+ *
+ * リリース単位（シングル/アルバム）のタイムラインアイテム表示
+ * Requirements: 4.4, 5.3, 10.3
+ */
+
+.release-unit {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width-thin, 1px) solid var(--color-border);
+  border-radius: var(--border-radius-lg, 8px);
+  background: var(--color-surface);
+  margin: var(--spacing-md, 16px) 0;
+  overflow: hidden;
+}
+
+/* ヘッダー（クリックで展開/折りたたみ） */
+.release-unit__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-md, 16px);
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.2s ease);
+  user-select: none;
+}
+
+.release-unit__header:hover {
+  background: var(--color-surface-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.release-unit__header:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.release-unit__header:active {
+  transform: scale(0.98);
+}
+
+.release-unit__header-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+  min-width: 0;
+}
+
+.release-unit__type-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  padding: 2px var(--spacing-sm, 8px);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-primary-dark);
+  background: var(--color-primary-alpha);
+  border-radius: var(--border-radius-full, 9999px);
+}
+
+.release-unit__name {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text);
+  line-height: var(--line-height-tight, 1.25);
+}
+
+.release-unit__count {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary);
+}
+
+/* 展開アイコン（▼）展開時に180度回転 */
+.release-unit__toggle-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm, 0.875rem);
+  transition: transform 0.3s ease;
+}
+
+.release-unit__toggle-icon--expanded {
+  transform: rotate(180deg);
+}
+
+/* 展開コンテンツ */
+.release-unit__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+  padding: 0 var(--spacing-md, 16px) var(--spacing-md, 16px);
+  /* 楽曲リストはインデント 16px */
+  padding-left: calc(var(--spacing-md, 16px) + 16px);
+  border-top: var(--border-width-thin, 1px) solid var(--color-border-light);
+  animation: release-unit-expand 0.3s ease;
+}
+
+@keyframes release-unit-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.release-unit__section-title {
+  margin: var(--spacing-md, 16px) 0 var(--spacing-sm, 8px);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-muted);
+}
+
+/* 収録楽曲リスト */
+.release-unit__song-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.release-unit__song-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--spacing-sm, 8px);
+  border-radius: var(--border-radius-md, 6px);
+  background: var(--color-background);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s ease);
+}
+
+.release-unit__song-item:hover {
+  background: var(--color-surface-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.release-unit__song-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.release-unit__song-item:active {
+  transform: scale(0.98);
+}
+
+.release-unit__song-title {
+  font-size: var(--font-size-md, 1rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text);
+}
+
+.release-unit__song-artist {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary);
+}
+
+/* 埋め込みコンテンツ */
+.release-unit__embed-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+}
+
+.release-unit__embed-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+}
+
+.release-unit__embed-label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-secondary);
+}
+
+.release-unit__embed-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--border-radius-md, 6px);
+  overflow: hidden;
+  background: var(--color-background-light);
+}
+
+.release-unit__embed-container iframe,
+.release-unit__embed {
+  width: 100%;
+  min-height: 152px;
+  border: none;
+  border-radius: var(--border-radius-md, 6px);
+}
+
+/* Spotify埋め込み用の高さ調整 */
+.release-unit__embed-container iframe[src*='spotify'],
+.release-unit__embed[src*='spotify'] {
+  min-height: 152px;
+  height: 152px;
+}
+
+/* YouTube埋め込み用のアスペクト比 */
+.release-unit__embed-container iframe[src*='youtube'],
+.release-unit__embed-container iframe[src*='youtu.be'],
+.release-unit__embed[src*='youtube'],
+.release-unit__embed[src*='youtu.be'] {
+  aspect-ratio: 16 / 9;
+  min-height: auto;
+  height: auto;
+}

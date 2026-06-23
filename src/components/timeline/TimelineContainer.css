@@ -1,0 +1,64 @@
+/**
+ * TimelineContainer スタイル
+ *
+ * タイムライン全体のコンテナ。
+ * - 縦方向にスクロール可能な領域を提供する
+ * - 年月グループを縦に積み上げる
+ * - レスポンシブ対応（左右余白でデスクトップ／モバイルを切替）
+ *
+ * レスポンシブ:
+ * - デスクトップ (768px以上): 左右の余白 各40px
+ * - モバイル (767px以下): 左右の余白 各16px（アイテム幅 = 画面幅 - 余白）
+ *
+ * Requirements: 1.1, 7.4, 9.4
+ */
+
+/* ===== 共通（ブレークポイント非依存） ===== */
+
+.timeline-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  /* スクロール可能な縦方向の領域 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+/* グループ間の区切り（最後のグループの余白は TimelineGroup 側で吸収） */
+.timeline-container > * + * {
+  margin-top: 8px;
+}
+
+/* 空状態 */
+.timeline-container--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.timeline-container__empty-message {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ===== デスクトップ (768px以上) =====
+ * 左右の余白: 各40px
+ */
+@media (min-width: 768px) {
+  .timeline-container {
+    padding: 24px 40px;
+  }
+}
+
+/* ===== モバイル (767px以下) =====
+ * 左右の余白: 各16px
+ */
+@media (max-width: 767px) {
+  .timeline-container {
+    padding: 16px;
+  }
+}

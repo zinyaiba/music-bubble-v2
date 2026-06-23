@@ -1,0 +1,207 @@
+/**
+ * MajorEventItem スタイル
+ *
+ * 重要イベント（単独公演・ツアー）をタイムライン軸の両側にまたがる形で
+ * 中央に目立つように表示する。通常のタイムラインアイテムと視覚的に区別する。
+ *
+ * Requirements:
+ * - 2.3: Major_Event を中央に配置
+ * - 2.4: スタイリングで通常アイテムと視覚的に区別
+ */
+
+.major-event-item {
+  /* 軸の両側にまたがる中央配置 */
+  width: 100%;
+  max-width: 800px;
+  margin: 24px auto;
+  padding: 24px;
+  box-sizing: border-box;
+
+  /* 通常アイテムと区別する強調スタイル */
+  border: 2px solid var(--color-primary);
+  border-radius: var(--border-radius-lg);
+  background-color: rgba(244, 114, 182, 0.1); /* --color-primary を約10%透過 */
+
+  /* 目立たせるためのタイポグラフィ */
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, var(--color-text));
+
+  position: relative;
+  z-index: 1;
+}
+
+.major-event-item__badge {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--color-primary);
+  border-radius: var(--border-radius-full);
+}
+
+.major-event-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.major-event-item__body--clickable {
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+  border-radius: var(--border-radius-md);
+}
+
+.major-event-item__body--clickable:hover {
+  opacity: 0.85;
+  box-shadow: var(--shadow-md);
+}
+
+.major-event-item__body--clickable:active {
+  transform: scale(0.98);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.major-event-item__body--clickable:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.major-event-item__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary, var(--color-text));
+}
+
+.major-event-item__venue,
+.major-event-item__date,
+.major-event-item__count {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* ツアーヘッダー（展開トグル） */
+.major-event-item__tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  border-radius: var(--border-radius-md);
+  transition: opacity var(--transition-fast);
+}
+
+.major-event-item__tour-header:hover {
+  opacity: 0.85;
+  box-shadow: var(--shadow-md);
+}
+
+.major-event-item__tour-header:active {
+  transform: scale(0.98);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.major-event-item__tour-header:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.major-event-item__tour-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.major-event-item__toggle {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  transition: transform 0.3s ease;
+}
+
+.major-event-item__toggle--expanded {
+  transform: rotate(180deg);
+}
+
+/* 展開時の公演リスト（0.3s アニメーション） */
+.major-event-item__performances {
+  list-style: none;
+  margin: 16px 0 0 0;
+  padding: 0 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 16px;
+  animation: major-event-item-expand 0.3s ease;
+}
+
+@keyframes major-event-item-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.major-event-item__performance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.major-event-item__performance:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.major-event-item__performance:active {
+  transform: scale(0.98);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.major-event-item__performance:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+}
+
+.major-event-item__performance-date {
+  flex-shrink: 0;
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.major-event-item__performance-venue {
+  color: var(--color-text-primary, var(--color-text));
+}
+
+/* モバイル対応 */
+@media (max-width: 767px) {
+  .major-event-item {
+    padding: 16px;
+    margin: 16px auto;
+    font-size: 1rem;
+  }
+
+  .major-event-item__title {
+    font-size: 1.1rem;
+  }
+}

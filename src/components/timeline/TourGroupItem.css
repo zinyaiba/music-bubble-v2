@@ -1,0 +1,197 @@
+/**
+ * TourGroupItem スタイル
+ * ツアーグループのタイムラインアイテム表示
+ *
+ * Requirements:
+ * - 3.2: ツアー名、開催期間、公演数の表示
+ * - 3.3: 展開/折りたたみ機能
+ * - 10.2: 展開/折りたたみインタラクション
+ */
+
+.tour-group-item {
+  border: var(--border-width-thin, 1px) solid var(--color-border);
+  border-radius: var(--border-radius-lg, 8px);
+  background: var(--color-card-background, var(--color-surface));
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast, 0.2s ease);
+}
+
+.tour-group-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ヘッダー（クリック可能） */
+.tour-group-item__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast, 0.2s ease);
+}
+
+.tour-group-item__header:hover {
+  background: var(--color-background-secondary, rgba(0, 0, 0, 0.03));
+  box-shadow: var(--shadow-sm);
+}
+
+/* キーボードフォーカス時の視覚的フィードバック（outline） */
+.tour-group-item__header:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.tour-group-item__header:active {
+  transform: scale(0.98);
+}
+
+/* コンテンツ */
+.tour-group-item__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+}
+
+/* メタ情報（種別バッジ + 公演数） */
+.tour-group-item__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  flex-wrap: wrap;
+}
+
+.tour-group-item__type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.tour-group-item__count {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold, 600);
+  background: var(--color-card-background, var(--color-surface));
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm, 4px);
+  border: var(--border-width-thin, 1px) solid var(--color-border);
+}
+
+/* ツアー名 */
+.tour-group-item__title {
+  margin: 0;
+  font-size: var(--font-size-md, 1rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, var(--color-text));
+  line-height: var(--line-height-tight, 1.25);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 開催期間 */
+.tour-group-item__date-range {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary);
+}
+
+/* 展開アイコン */
+.tour-group-item__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-primary);
+  transition: transform 0.3s ease;
+}
+
+.tour-group-item__icon--expanded {
+  transform: rotate(180deg);
+}
+
+/* 個別公演リスト（展開時に 0.3s アニメーション） */
+.tour-group-item__performances {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--spacing-md, 16px) var(--spacing-md, 16px);
+  border-top: var(--border-width-thin, 1px) solid var(--color-border);
+  animation: tour-group-item-expand 0.3s ease;
+}
+
+@keyframes tour-group-item-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tour-group-item__performance {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-sm, 8px) 0 var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border-bottom: var(--border-width-thin, 1px) solid var(--color-border);
+}
+
+.tour-group-item__performance:last-child {
+  border-bottom: none;
+}
+
+.tour-group-item__performance-date {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.tour-group-item__performance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tour-group-item__performance-location {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, var(--color-text));
+}
+
+.tour-group-item__performance-venue {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, var(--color-text-secondary));
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .tour-group-item__header {
+    padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  }
+
+  .tour-group-item__title {
+    font-size: var(--font-size-sm, 0.875rem);
+  }
+
+  .tour-group-item__date-range {
+    font-size: var(--font-size-xs, 0.75rem);
+  }
+
+  .tour-group-item__performance {
+    flex-direction: column;
+    gap: 2px;
+  }
+}

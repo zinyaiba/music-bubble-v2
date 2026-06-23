@@ -57,3 +57,5 @@ export {
 } from './analyticsService'
 export { LiveService, liveService } from './liveService'
 export { TourGroupingService, tourGroupingService } from './tourGroupingService'
+export { LiveSearchService, liveSearchService } from './liveSearchService'
+export { TimelineService } from './timelineService'

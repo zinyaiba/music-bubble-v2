@@ -221,3 +221,112 @@ export interface TourGroup {
 export type GroupedLiveItem =
   | { type: 'tour'; data: TourGroup }
   | { type: 'live'; data: Live }
+
+// ============================================
+// Timeline Page Types
+// ============================================
+
+/**
+ * タイムラインアイテムの種別
+ */
+export type TimelineItemType = 'song' | 'live' | 'release-unit' | 'tour-group' | 'major-event'
+
+/**
+ * タイムラインアイテムの配置
+ */
+export type TimelineItemPosition = 'left' | 'right' | 'center'
+
+/**
+ * 基本タイムラインアイテム
+ */
+export interface BaseTimelineItem {
+  /** 一意識別子 */
+  id: string
+  /** アイテム種別 */
+  type: TimelineItemType
+  /** タイムライン上の配置 */
+  position: TimelineItemPosition
+  /** 代表日時（ISO 8601形式） */
+  date: string
+  /** 年月グループキー（YYYY-MM形式） */
+  yearMonth: string
+}
+
+/**
+ * 楽曲タイムラインアイテム
+ */
+export interface SongTimelineItem extends BaseTimelineItem {
+  type: 'song'
+  position: 'right'
+  song: Song
+}
+
+/**
+ * リリース単位タイムラインアイテム
+ * 同じsingleName/albumNameを持つ楽曲のグループ
+ */
+export interface ReleaseUnitTimelineItem extends BaseTimelineItem {
+  type: 'release-unit'
+  position: 'right'
+  releaseName: string
+  releaseType: 'single' | 'album'
+  songs: Song[]
+  /** 展開状態 */
+  isExpanded?: boolean
+}
+
+/**
+ * ライブイベントタイムラインアイテム
+ */
+export interface LiveTimelineItem extends BaseTimelineItem {
+  type: 'live'
+  position: 'left'
+  live: Live
+}
+
+/**
+ * ツアーグループタイムラインアイテム
+ */
+export interface TourGroupTimelineItem extends BaseTimelineItem {
+  type: 'tour-group'
+  position: 'left'
+  tourGroup: TourGroup
+  /** 展開状態 */
+  isExpanded?: boolean
+}
+
+/**
+ * 重要イベントタイムラインアイテム
+ * 単独公演またはツアーグループ
+ */
+export interface MajorEventTimelineItem extends BaseTimelineItem {
+  type: 'major-event'
+  position: 'center'
+  eventType: 'solo' | 'tour'
+  /** 単独公演データ（eventType='solo'の場合） */
+  live?: Live
+  /** ツアーグループデータ（eventType='tour'の場合） */
+  tourGroup?: TourGroup
+  /** 展開状態 */
+  isExpanded?: boolean
+}
+
+/**
+ * タイムラインアイテムのユニオン型
+ */
+export type TimelineItem =
+  | SongTimelineItem
+  | ReleaseUnitTimelineItem
+  | LiveTimelineItem
+  | TourGroupTimelineItem
+  | MajorEventTimelineItem
+
+/**
+ * 年月グループ
+ */
+export interface TimelineYearMonthGroup {
+  /** 年月キー（YYYY-MM形式） */
+  yearMonth: string
+  /** グループ内のアイテムリスト */
+  items: TimelineItem[]
+}

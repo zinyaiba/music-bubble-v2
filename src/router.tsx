@@ -21,6 +21,7 @@ import { LiveEditPage } from './pages/LiveEditPage'
 import { TourDetailPage } from './pages/TourDetailPage'
 import { TagPage } from './pages/TagPage'
 import { InfoPage } from './pages/InfoPage'
+import { TimelinePage } from './pages/TimelinePage'
 
 /**
  * プレースホルダーページ（後のフェーズで実装）
@@ -110,6 +111,12 @@ const router = createBrowserRouter(
         {
           path: 'info',
           element: <InfoPage />,
+        },
+        {
+          // 直接URLアクセスのみ（ナビゲーションメニューには表示しない）
+          // Requirements: 6.1, 6.2, 6.3, 6.4
+          path: 'timeline',
+          element: <TimelinePage />,
         },
         {
           path: '*',
