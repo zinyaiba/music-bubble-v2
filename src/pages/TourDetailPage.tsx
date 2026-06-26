@@ -199,28 +199,39 @@ export function TourDetailPage() {
     navigate('/lives')
   }, [navigate])
 
+  // 1スライドあたりの実際のスクロール量を取得
+  // コンテナにはpaddingがあり、各スライドはコンテナの内容幅（offsetWidthより狭い）になるため、
+  // container.offsetWidthではなく実際のスライド要素の幅を基準にする必要がある。
+  // これを誤るとindexに比例してスクロール位置がズレていく。
+  const getSlideWidth = useCallback((): number => {
+    const container = carouselRef.current
+    if (!container) return 0
+    const firstSlide = container.firstElementChild as HTMLElement | null
+    return firstSlide?.offsetWidth || container.offsetWidth
+  }, [])
+
   // スクロールイベントで現在のインデックスを更新
   const handleScroll = useCallback(() => {
     if (!carouselRef.current || !tourGroup) return
     const container = carouselRef.current
-    const scrollLeft = container.scrollLeft
-    const itemWidth = container.offsetWidth
-    const newIndex = Math.round(scrollLeft / itemWidth)
+    const itemWidth = getSlideWidth()
+    if (itemWidth === 0) return
+    const newIndex = Math.round(container.scrollLeft / itemWidth)
     if (newIndex !== currentIndex && newIndex >= 0 && newIndex < tourGroup.performances.length) {
       setCurrentIndex(newIndex)
     }
-  }, [currentIndex, tourGroup])
+  }, [currentIndex, tourGroup, getSlideWidth])
 
   // インジケータークリックで該当公演にスクロール
   const scrollToIndex = useCallback((index: number) => {
     if (!carouselRef.current) return
     const container = carouselRef.current
-    const itemWidth = container.offsetWidth
+    const itemWidth = getSlideWidth()
     container.scrollTo({
       left: itemWidth * index,
       behavior: 'smooth'
     })
-  }, [])
+  }, [getSlideWidth])
 
   // 楽曲詳細ページへ遷移 - 要件 4.3
   const handleSongClick = useCallback(
@@ -493,6 +504,61 @@ export function TourDetailPage() {
                             </div>
                           )}
                         </div>
+                      </div>
+                    )}
+
+                    {/* 関連リンク */}
+                    {performance.detailPageUrls && performance.detailPageUrls.length > 0 && (
+                      <div className="tour-detail-page__links">
+                        <h3 className="tour-detail-page__links-title">
+                          <svg
+                            className="tour-detail-page__links-icon"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                          </svg>
+                          関連リンク
+                        </h3>
+                        <ul className="tour-detail-page__links-list">
+                          {performance.detailPageUrls.map((link, index) => (
+                            <li key={index} className="tour-detail-page__link-item">
+                              <a
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="tour-detail-page__link"
+                              >
+                                <span className="tour-detail-page__link-icon">
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                  </svg>
+                                </span>
+                                <span className="tour-detail-page__link-label">
+                                  {link.label || link.url}
+                                </span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
 
