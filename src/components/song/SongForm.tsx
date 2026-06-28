@@ -26,6 +26,7 @@ export interface SongFormProps {
 interface FormData {
   title: string
   artists: string
+  originalArtists: string
   lyricists: string
   composers: string
   arrangers: string
@@ -200,6 +201,7 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
     return {
       title: song?.title || '',
       artists: arrayToString(song?.artists),
+      originalArtists: arrayToString(song?.originalArtists),
       lyricists: arrayToString(song?.lyricists),
       composers: arrayToString(song?.composers),
       arrangers: arrayToString(song?.arrangers),
@@ -389,6 +391,7 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
     const songData: Partial<Song> = {
       title: formData.title.trim(),
       artists: stringToArray(formData.artists), // 空配列も明示的に設定
+      originalArtists: stringToArray(formData.originalArtists),
       lyricists: stringToArray(formData.lyricists),
       composers: stringToArray(formData.composers),
       arrangers: stringToArray(formData.arrangers),
@@ -503,6 +506,25 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
               autoComplete="off"
             />
             <p className="song-form__hint">例: 栗林みな実, Minami</p>
+          </div>
+
+          {/* 原曲アーティスト */}
+          <div className="song-form__field">
+            <label htmlFor="originalArtists" className="song-form__label">
+              原曲アーティスト
+            </label>
+            <input
+              type="text"
+              id="originalArtists"
+              className="song-form__input"
+              value={formData.originalArtists}
+              onChange={handleChange('originalArtists')}
+              onBlur={handleBlur('originalArtists')}
+              placeholder="カンマ区切りで複数入力可"
+              disabled={isSubmitting}
+              autoComplete="off"
+            />
+            <p className="song-form__hint">カバー曲の場合に原曲のアーティストを入力</p>
           </div>
         </section>
 

@@ -37,6 +37,7 @@ export type ContentFilterValue =
   | 'minami'
   | 'wild3'
   | 'other-artist'
+  | 'cover'
 
 /** コンテンツフィルタの定義 */
 const CONTENT_FILTERS: { value: ContentFilterValue; label: string }[] = [
@@ -47,6 +48,7 @@ const CONTENT_FILTERS: { value: ContentFilterValue; label: string }[] = [
   { value: 'minami', label: 'Minami' },
   { value: 'wild3', label: 'ワイルド三人娘' },
   { value: 'other-artist', label: 'その他アーティスト' },
+  { value: 'cover', label: 'カバー曲' },
 ]
 
 /** 楽曲がコンテンツを持っているかチェック */
@@ -82,6 +84,11 @@ function isOtherArtist(song: Song): boolean {
   return !isKuribayashi(song) && !isMinami(song) && !isWild3(song)
 }
 
+/** カバー曲（原曲アーティストが登録されている）かチェック */
+function isCover(song: Song): boolean {
+  return !!song.originalArtists && song.originalArtists.length > 0
+}
+
 /** フィルタを適用 */
 function applyFilter(songs: Song[], filter: ContentFilterValue): Song[] {
   switch (filter) {
@@ -97,6 +104,8 @@ function applyFilter(songs: Song[], filter: ContentFilterValue): Song[] {
       return songs.filter(isWild3)
     case 'other-artist':
       return songs.filter(isOtherArtist)
+    case 'cover':
+      return songs.filter(isCover)
     default:
       return songs
   }

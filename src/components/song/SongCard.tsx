@@ -207,7 +207,15 @@ export function SongCard({ song, onClick, displayMode = 'all' }: SongCardProps) 
           <>
             {/* アーティスト名 */}
             {(displayMode === 'artist' || displayMode === 'all') && (
-              <p className="song-card__artist">{artists}</p>
+              <p className="song-card__artist">
+                {artists}
+                {song.originalArtists && song.originalArtists.length > 0 && (
+                  <span className="song-card__original-artist">
+                    <span className="song-card__original-artist-label">原曲</span>
+                    {formatArray(song.originalArtists)}
+                  </span>
+                )}
+              </p>
             )}
 
             {/* クレジット情報 */}

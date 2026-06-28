@@ -90,6 +90,7 @@ export class FirebaseService {
 
     // 拡張フィールド - 値が存在する場合のみ追加
     if (data.artists) song.artists = data.artists
+    if (data.originalArtists) song.originalArtists = data.originalArtists
     if (data.releaseYear) song.releaseYear = data.releaseYear
     if (data.releaseDate) song.releaseDate = data.releaseDate
     if (data.singleName) song.singleName = data.singleName

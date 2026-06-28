@@ -69,6 +69,25 @@
   white-space: nowrap;
 }
 
+/* 原曲アーティスト */
+.song-card__original-artist {
+  margin-left: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.song-card__original-artist-label {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-medium);
+  margin-right: var(--spacing-xs);
+  border: 1px solid;
+  background: #fce4ec;
+  color: #c2185b;
+  border-color: #f48fb1;
+}
+
 /* クレジット情報 */
 .song-card__credits {
   display: flex;

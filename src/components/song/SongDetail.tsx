@@ -179,6 +179,12 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
       <section className="song-detail__credits-section">
         <h2 className="song-detail__section-title">クレジット</h2>
         <dl className="song-detail__credits">
+          {song.originalArtists && song.originalArtists.length > 0 && (
+            <div className="song-detail__credit-item">
+              <dt className="song-detail__credit-label">原曲アーティスト</dt>
+              <dd className="song-detail__credit-value">{formatArray(song.originalArtists)}</dd>
+            </div>
+          )}
           <div className="song-detail__credit-item">
             <dt className="song-detail__credit-label">作詞</dt>
             <dd className="song-detail__credit-value">{formatArray(song.lyricists)}</dd>

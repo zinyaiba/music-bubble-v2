@@ -14,6 +14,7 @@ export interface Song {
   id: string
   title: string
   artists?: string[]
+  originalArtists?: string[] // 原曲アーティスト
   lyricists: string[]
   composers: string[]
   arrangers: string[]
