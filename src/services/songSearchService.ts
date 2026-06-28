@@ -13,7 +13,15 @@ import type { Song } from '../types'
 /**
  * 検索対象フィールドの型定義
  */
-export type SearchField = 'title' | 'artist' | 'lyricist' | 'composer' | 'arranger' | 'tag' | 'all'
+export type SearchField =
+  | 'title'
+  | 'artist'
+  | 'originalArtist'
+  | 'lyricist'
+  | 'composer'
+  | 'arranger'
+  | 'tag'
+  | 'all'
 
 /**
  * 検索オプション
@@ -61,6 +69,17 @@ export function matchesTitleSearch(song: Song, query: string, caseSensitive = fa
  */
 export function matchesArtistSearch(song: Song, query: string, caseSensitive = false): boolean {
   return matchesQueryInArray(song.artists, query, caseSensitive)
+}
+
+/**
+ * 楽曲が原曲アーティストで検索クエリに一致するかチェック
+ */
+export function matchesOriginalArtistSearch(
+  song: Song,
+  query: string,
+  caseSensitive = false
+): boolean {
+  return matchesQueryInArray(song.originalArtists, query, caseSensitive)
 }
 
 /**
@@ -118,6 +137,8 @@ export function matchesSearchQuery(
       return matchesTitleSearch(song, trimmedQuery, caseSensitive)
     case 'artist':
       return matchesArtistSearch(song, trimmedQuery, caseSensitive)
+    case 'originalArtist':
+      return matchesOriginalArtistSearch(song, trimmedQuery, caseSensitive)
     case 'lyricist':
       return matchesLyricistSearch(song, trimmedQuery, caseSensitive)
     case 'composer':
@@ -132,6 +153,7 @@ export function matchesSearchQuery(
       return (
         matchesTitleSearch(song, trimmedQuery, caseSensitive) ||
         matchesArtistSearch(song, trimmedQuery, caseSensitive) ||
+        matchesOriginalArtistSearch(song, trimmedQuery, caseSensitive) ||
         matchesLyricistSearch(song, trimmedQuery, caseSensitive) ||
         matchesComposerSearch(song, trimmedQuery, caseSensitive) ||
         matchesArrangerSearch(song, trimmedQuery, caseSensitive) ||
@@ -188,6 +210,13 @@ export class SongSearchService {
    */
   public searchByArtist(songs: Song[], query: string): Song[] {
     return searchSongs(songs, query, { field: 'artist' })
+  }
+
+  /**
+   * 原曲アーティストで検索
+   */
+  public searchByOriginalArtist(songs: Song[], query: string): Song[] {
+    return searchSongs(songs, query, { field: 'originalArtist' })
   }
 
   /**

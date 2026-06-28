@@ -24,6 +24,7 @@ export {
   matchesSearchQuery,
   matchesTitleSearch,
   matchesArtistSearch,
+  matchesOriginalArtistSearch,
   matchesLyricistSearch,
   matchesComposerSearch,
   matchesArrangerSearch,
