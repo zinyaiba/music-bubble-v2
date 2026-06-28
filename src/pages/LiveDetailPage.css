@@ -376,7 +376,25 @@
 
   .live-detail-page__actions {
     padding: var(--spacing-md);
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* 編集は主ボタンとして広く、削除は小さくして誤タップを防ぐ */
+  .live-detail-page__action-button--edit {
+    flex: 1;
+  }
+
+  .live-detail-page__action-button--delete {
+    flex: 0 0 auto;
+    order: -1;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+
+  .live-detail-page__action-button--delete svg {
+    width: 14px;
+    height: 14px;
   }
 
   .live-detail-page__error-container {
