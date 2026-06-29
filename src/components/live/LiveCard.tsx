@@ -8,6 +8,7 @@
 
 import type { Live } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
+import { MarqueeText } from '../common/MarqueeText'
 import './LiveCard.css'
 
 export interface LiveCardProps {
@@ -75,7 +76,9 @@ export function LiveCard({ live, onClick }: LiveCardProps) {
         </div>
 
         {/* 公演名 */}
-        <h3 className="live-card__title">{live.title}</h3>
+        <h3 className="live-card__title">
+          <MarqueeText text={live.title} />
+        </h3>
 
         {/* 会場名 */}
         <p className="live-card__venue">{live.venueName}</p>

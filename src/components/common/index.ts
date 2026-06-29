@@ -19,3 +19,6 @@ export type { OfflineIndicatorProps } from './OfflineIndicator'
 
 export { TabSwitcher } from './TabSwitcher'
 export type { TabSwitcherProps, TabItem } from './TabSwitcher'
+
+export { MarqueeText } from './MarqueeText'
+export type { MarqueeTextProps } from './MarqueeText'

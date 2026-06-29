@@ -1,0 +1,62 @@
+/**
+ * MarqueeText スタイル
+ *
+ * テキストがはみ出す場合のみ自動スクロールするコンポーネント。
+ * 通常時は1行省略表示（…）、はみ出し時は全文をスクロール表示する。
+ */
+
+.marquee-text {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  /* はみ出さない場合は末尾を省略表示 */
+  text-overflow: ellipsis;
+}
+
+.marquee-text__content {
+  display: inline-block;
+  white-space: nowrap;
+  /* 通常時は親要素の省略表示に従う */
+  max-width: 100%;
+}
+
+/* スクロール中: コンテンツを横に流す */
+.marquee-text--scrolling {
+  text-overflow: clip;
+}
+
+.marquee-text--scrolling .marquee-text__content {
+  max-width: none;
+  /* hover で一時停止して読みやすく */
+  animation-name: marquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.marquee-text:hover .marquee-text__content,
+.marquee-text:focus-within .marquee-text__content {
+  animation-play-state: paused;
+}
+
+/* 複製テキスト（途切れ防止用） */
+.marquee-text__clone {
+  padding-left: var(--marquee-gap, 48px);
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* 元テキスト + 間隔ぶんだけ移動すると複製が元の位置に来てループが連続する */
+    transform: translateX(calc(-50% - (var(--marquee-gap, 48px) / 2)));
+  }
+}
+
+/* アニメーション抑制設定では動かさない（JS 側でも判定済みだが二重で保証） */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-text--scrolling .marquee-text__content {
+    animation: none;
+  }
+}

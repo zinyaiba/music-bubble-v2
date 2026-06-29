@@ -16,6 +16,7 @@
 import { useState } from 'react'
 import type { MajorEventTimelineItem } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
+import { MarqueeText } from '../common/MarqueeText'
 import './MajorEventItem.css'
 
 export interface MajorEventItemProps {
@@ -107,7 +108,9 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
           onKeyDown={handleKeyDown}
           aria-label={`${event.live.title} - ${event.live.venueName}`}
         >
-          <h3 className="major-event-item__title">{event.live.title}</h3>
+          <h3 className="major-event-item__title">
+            <MarqueeText text={event.live.title} />
+          </h3>
           <p className="major-event-item__venue">{event.live.venueName}</p>
           <p className="major-event-item__date">{formatDate(event.live.dateTime)}</p>
         </div>

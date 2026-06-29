@@ -11,6 +11,7 @@
 
 import type { Live } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
+import { MarqueeText } from '../common/MarqueeText'
 import './LiveTimelineItem.css'
 
 export interface LiveTimelineItemProps {
@@ -87,7 +88,9 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
       </div>
 
       {/* 公演名 */}
-      <h3 className="live-timeline-item__title">{live.title}</h3>
+      <h3 className="live-timeline-item__title">
+        <MarqueeText text={live.title} />
+      </h3>
 
       {/* 会場名 */}
       <p className="live-timeline-item__venue">{live.venueName}</p>
