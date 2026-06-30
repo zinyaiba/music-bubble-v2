@@ -13,13 +13,20 @@ import { TourCard } from './TourCard'
 import './LiveList.css'
 
 /** コンテンツフィルタの型 */
-export type LiveContentFilterValue = 'all' | 'with-content' | 'without-content'
+export type LiveContentFilterValue =
+  | 'all'
+  | 'with-content'
+  | 'without-content'
+  | 'with-setlist'
+  | 'without-setlist'
 
 /** コンテンツフィルタの定義 */
 const CONTENT_FILTERS: { value: LiveContentFilterValue; label: string }[] = [
-  { value: 'all', label: 'コンテンツ' },
+  { value: 'all', label: 'コンテンツ・セトリ' },
   { value: 'with-content', label: 'コンテンツあり' },
   { value: 'without-content', label: 'コンテンツなし' },
+  { value: 'with-setlist', label: 'セトリ登録あり' },
+  { value: 'without-setlist', label: 'セトリ登録なし' },
 ]
 
 /** ライブ種別フィルタの定義 */
@@ -38,6 +45,11 @@ function hasContent(live: Live): boolean {
   return live.embeds !== undefined && live.embeds.length > 0
 }
 
+/** ライブがセトリ登録を持っているかチェック */
+function hasSetlist(live: Live): boolean {
+  return live.setlist !== undefined && live.setlist.length > 0
+}
+
 /** コンテンツフィルタを適用 */
 function applyContentFilter(lives: Live[], filter: LiveContentFilterValue): Live[] {
   switch (filter) {
@@ -45,6 +57,10 @@ function applyContentFilter(lives: Live[], filter: LiveContentFilterValue): Live
       return lives.filter(hasContent)
     case 'without-content':
       return lives.filter((live) => !hasContent(live))
+    case 'with-setlist':
+      return lives.filter(hasSetlist)
+    case 'without-setlist':
+      return lives.filter((live) => !hasSetlist(live))
     default:
       return lives
   }
