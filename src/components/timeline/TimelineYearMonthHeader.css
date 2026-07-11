@@ -19,12 +19,9 @@
   align-items: center;
   padding: 12px 0;
   margin: 0;
-  /* 背後のカード/軸が透けないように背景でマスクする */
-  background: linear-gradient(
-    to bottom,
-    var(--color-background) 60%,
-    transparent 100%
-  );
+  /* ヘッダー自体は背景を持たず、中央のピルラベルのみを表示する。
+     （以前の背景グラデーションが横帯の線のように見えていたため透明化） */
+  background: transparent;
   pointer-events: none;
 }
 
