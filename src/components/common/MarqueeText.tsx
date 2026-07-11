@@ -19,7 +19,7 @@ export interface MarqueeTextProps {
   text: string
   /** 付与する追加クラス名（フォントサイズ等の見た目を継承させる用途） */
   className?: string
-  /** スクロール速度（px/秒）。大きいほど速い。デフォルト 40 */
+  /** スクロール速度（px/秒）。大きいほど速い。デフォルト 100 */
   speed?: number
   /** 折り返し用テキスト同士の間隔(px)。デフォルト 48 */
   gap?: number
@@ -29,7 +29,7 @@ export interface MarqueeTextProps {
  * MarqueeText コンポーネント
  * テキストがはみ出す場合のみ自動スクロールする
  */
-export function MarqueeText({ text, className, speed = 40, gap = 48 }: MarqueeTextProps) {
+export function MarqueeText({ text, className, speed = 100, gap = 48 }: MarqueeTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null)
   const contentRef = useRef<HTMLSpanElement>(null)
   const [isOverflowing, setIsOverflowing] = useState(false)
