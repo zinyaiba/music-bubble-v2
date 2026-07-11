@@ -5,9 +5,12 @@
  * 中央の垂直軸を挟み、左にライブ、右に楽曲、中央に重要イベントを配置する。
  *
  * レスポンシブ:
- * - デスクトップ (768px以上): 3カラム（左:ライブ | 中央:軸 | 右:楽曲）、
- *   軸は中央、左右余白は TimelineContainer 側で各40px、アイテム最大幅400px
- * - モバイル (767px以下): 単一カラム（軸を左端に配置し、アイテムを軸の右側に縦並び）
+ * - デスクトップ (768px以上): 3カラム（左:ライブ | 中央:軸 | 右:楽曲）
+ * - モバイル (767px以下): 左右レイアウトを維持したまま、ギャップ・余白を詰めて
+ *   コンパクトに表示する（左:ライブ | 中央:軸 | 右:楽曲）
+ *
+ * 重要: 中央の軸線はカードの背面に配置する（z-index）。
+ *       軸をまたぐカード（重要イベント）は不透明な背景で軸線を覆い隠す。
  *
  * Requirements: 1.1, 1.3, 1.4, 2.3, 7.3, 9.4
  */
@@ -17,6 +20,11 @@
 .timeline-group {
   width: 100%;
   margin: 0 0 32px;
+  /* コンテナのジグザグ線(SVG, z-index:0)より前面に重ねる。
+     セクション背景は透明なので、ガター・行間では線が透けて見え、
+     不透明なカードの背面では線が隠れる。 */
+  position: relative;
+  z-index: 1;
 }
 
 /* 本体: 中央軸を絶対配置するため relative */
@@ -25,20 +33,27 @@
   width: 100%;
 }
 
-/* 垂直軸（本体全体を縦に貫く連続した線。配置はブレークポイントで切替） */
+/* 垂直軸（本体全体を縦に貫く連続した線）。
+   カードの背面に描画するため z-index を最背面に固定する。 */
 .timeline-group__axis {
   position: absolute;
   top: 0;
   bottom: 0;
   display: flex;
   pointer-events: none;
+  z-index: 0;
 }
+
+
 
 /* アイテム行のスタック */
 .timeline-group__rows {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  /* 軸より前面に配置し、カードが軸線を覆えるようにする */
+  position: relative;
+  z-index: 1;
 }
 
 /* 各行はグリッド（カラム構成はブレークポイントで切替） */
@@ -58,11 +73,13 @@
   align-items: center;
   justify-content: center;
   padding-top: 16px;
+  /* ドットは軸線の上に載せる */
+  position: relative;
+  z-index: 2;
 }
 
 /* ===== デスクトップ (768px以上) =====
  * 3カラムレイアウト: [ 左(ライブ) | 中央(軸ガター/ドット) | 右(楽曲) ]
- * 軸は中央、アイテム幅は最大400px（重要イベントは最大800px）
  */
 @media (min-width: 768px) {
   /* 中央の垂直軸 */
@@ -124,43 +141,84 @@
 }
 
 /* ===== モバイル (767px以下) =====
- * 単一カラムレイアウト。軸を左端に配置し、アイテムを軸の右側に縦並びにする。
- * 軸はドットカラム（幅24px）の中央(12px)に合わせて配置する。
+ * 軸線を行ごとに動的配置してカードの表示領域を最大化する。
+ * - 楽曲（右アイテム）: 線を画面左端へ寄せ、カードを右いっぱいに広げる
+ * - ライブ（左アイテム）: 線を画面右端へ寄せ、カードを左いっぱいに広げる
+ * - 重要イベント（中央）: 線を消して全幅表示
+ * 線が中央で統一されなくなるが、左右の区別とカード幅を優先する。
  */
 @media (max-width: 767px) {
-  /* 軸をドットカラム中央(12px)に合わせて左端へ配置 */
+  /* 連続した中央軸は使わず、コンテナ側の SVG ジグザグ線でドット位置を結ぶ */
   .timeline-group__axis {
-    left: 12px;
-    transform: translateX(-50%);
+    display: none;
   }
 
-  /* 2カラムグリッド: [ ドット(24px) | アイテム(1fr) ] */
   .timeline-group__row {
-    grid-template-columns: 24px 1fr;
-    column-gap: 12px;
+    column-gap: 10px;
   }
 
-  /* 接続ドットは左カラム */
+  /* ドットカラム: ドットをカード上部に合わせて配置（線は SVG ジグザグで描画） */
   .timeline-group__connector {
+    align-items: flex-start;
+    padding-top: 14px;
+  }
+
+  /* 楽曲（右アイテム）: [ 線(16px) | カード(1fr) ] 線を左へ、カードを右いっぱいに */
+  .timeline-group__row--right {
+    grid-template-columns: 16px 1fr;
+  }
+
+  .timeline-group__row--right .timeline-group__connector {
     grid-column: 1;
   }
 
-  /* 左・右・中央すべて軸の右側の1カラム（grid-column 2）に縦並び配置 */
-  .timeline-group__cell--left,
-  .timeline-group__cell--right,
-  .timeline-group__cell--center {
+  .timeline-group__row--right .timeline-group__cell--right {
     grid-column: 2;
-    grid-row: 1;
     display: flex;
     justify-content: flex-start;
   }
 
-  /* モバイルでは重要イベント行でもドットを表示 */
-  .timeline-group__row--center .timeline-group__connector {
-    visibility: visible;
+  .timeline-group__row--right .timeline-group__cell--left {
+    display: none;
   }
 
-  /* アイテムは利用可能幅いっぱい（画面幅 - 余白 - 軸カラム） */
+  /* ライブ（左アイテム）: [ カード(1fr) | 線(16px) ] 線を右へ、カードを左いっぱいに */
+  .timeline-group__row--left {
+    grid-template-columns: 1fr 16px;
+  }
+
+  .timeline-group__row--left .timeline-group__cell--left {
+    grid-column: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .timeline-group__row--left .timeline-group__connector {
+    grid-column: 2;
+  }
+
+  .timeline-group__row--left .timeline-group__cell--right {
+    display: none;
+  }
+
+  /* 重要イベント（中央）: 全幅表示。線・ドット・左右の空セルは非表示 */
+  .timeline-group__row--center {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-group__row--center .timeline-group__connector,
+  .timeline-group__row--center .timeline-group__cell--left,
+  .timeline-group__row--center .timeline-group__cell--right {
+    display: none;
+  }
+
+  .timeline-group__row--center .timeline-group__cell--center {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* カードは各行の利用可能幅いっぱい */
   .timeline-group__cell--left > *,
   .timeline-group__cell--right > *,
   .timeline-group__cell--center > * {

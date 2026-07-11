@@ -15,6 +15,8 @@
 import { useState } from 'react'
 import type { JSX } from 'react'
 import type { ReleaseUnitTimelineItem, MusicServiceEmbed, Song } from '../../types'
+import { MarqueeText } from '../common/MarqueeText'
+import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import './ReleaseUnit.css'
 
 export interface ReleaseUnitProps {
@@ -102,7 +104,14 @@ export function ReleaseUnit({
   const [isExpanded, setIsExpanded] = useState<boolean>(releaseUnit.isExpanded ?? false)
 
   const songCount = releaseUnit.songs.length
-  const releaseTypeLabel = releaseUnit.releaseType === 'album' ? 'アルバム' : 'シングル'
+
+  // Music_Card（リリース単位）の視覚設定を解決する。
+  // single/album はいずれも同一 Pink_Palette 色相を用い、区別はテキスト + アイコンで行う。
+  const cardStyle = resolveCardStyle({
+    kind: 'release-unit',
+    releaseType: releaseUnit.releaseType,
+  })
+  const releaseTypeLabel = cardStyle.badge.label
   const aggregatedEmbeds = aggregateEmbeds(releaseUnit.songs)
   const hasEmbeds = aggregatedEmbeds.length > 0
 
@@ -133,7 +142,7 @@ export function ReleaseUnit({
   }
 
   return (
-    <article className="release-unit" role="article">
+    <article className={`release-unit ${cardStyle.categoryClass}`} role="article">
       {/* ヘッダー（クリックで展開/折りたたみ） */}
       <div
         className="release-unit__header"
@@ -145,8 +154,18 @@ export function ReleaseUnit({
         aria-label={`${releaseUnit.releaseName}（${releaseTypeLabel}、収録曲数${songCount}曲）`}
       >
         <div className="release-unit__header-info">
-          <span className="release-unit__type-badge">{releaseTypeLabel}</span>
-          <h3 className="release-unit__name">{releaseUnit.releaseName}</h3>
+          {/* Type_Badge: single/album をアイコン + テキストで区別（色以外の判別手段） */}
+          <span className="release-unit__type-badge">
+            {cardStyle.badge.icon && (
+              <span className="release-unit__type-badge-icon" aria-hidden="true">
+                {cardStyle.badge.icon}
+              </span>
+            )}
+            {cardStyle.badge.label}
+          </span>
+          <h3 className="release-unit__name">
+            <MarqueeText text={releaseUnit.releaseName} />
+          </h3>
           <span className="release-unit__count">収録曲数: {songCount}曲</span>
         </div>
         <span
@@ -159,10 +178,43 @@ export function ReleaseUnit({
         </span>
       </div>
 
-      {/* 展開コンテンツ */}
+      {/* 埋め込みコンテンツ（全楽曲分を集約）: 開かずとも常時表示して華やかに */}
+      {hasEmbeds && (
+        <div className="release-unit__embeds release-unit__embeds--always">
+          <div className="release-unit__embed-list">
+            {aggregatedEmbeds.map((item) => (
+              <div key={item.key} className="release-unit__embed-item">
+                <span className="release-unit__embed-label">
+                  {item.songTitle} - {getEmbedServiceName(item.embed.embed, item.embed.label)}
+                </span>
+                {isIframeTag(item.embed.embed) ? (
+                  <div
+                    className="release-unit__embed-container"
+                    dangerouslySetInnerHTML={{ __html: item.embed.embed }}
+                  />
+                ) : (
+                  <div className="release-unit__embed-container">
+                    <iframe
+                      src={item.embed.embed}
+                      className="release-unit__embed"
+                      title={`${item.songTitle} - ${getEmbedServiceName(
+                        item.embed.embed,
+                        item.embed.label
+                      )}`}
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 展開コンテンツ: 収録楽曲リスト */}
       {isExpanded && (
         <div className="release-unit__content">
-          {/* 収録楽曲リスト */}
           <div className="release-unit__songs">
             <h4 className="release-unit__section-title">収録楽曲</h4>
             <ul className="release-unit__song-list">
@@ -176,51 +228,14 @@ export function ReleaseUnit({
                   tabIndex={0}
                   aria-label={song.title}
                 >
-                  <span className="release-unit__song-title">{song.title}</span>
-                  {song.artists && song.artists.length > 0 && (
-                    <span className="release-unit__song-artist">
-                      {song.artists.join(', ')}
-                    </span>
-                  )}
+                  {/* タイトルは1行表示（はみ出し時は横スクロール）。アーティスト名は非表示 */}
+                  <span className="release-unit__song-title">
+                    <MarqueeText text={song.title} />
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
-
-          {/* 埋め込みコンテンツ（全楽曲分を集約） */}
-          {hasEmbeds && (
-            <div className="release-unit__embeds">
-              <h4 className="release-unit__section-title">埋め込みコンテンツ</h4>
-              <div className="release-unit__embed-list">
-                {aggregatedEmbeds.map((item) => (
-                  <div key={item.key} className="release-unit__embed-item">
-                    <span className="release-unit__embed-label">
-                      {item.songTitle} - {getEmbedServiceName(item.embed.embed, item.embed.label)}
-                    </span>
-                    {isIframeTag(item.embed.embed) ? (
-                      <div
-                        className="release-unit__embed-container"
-                        dangerouslySetInnerHTML={{ __html: item.embed.embed }}
-                      />
-                    ) : (
-                      <div className="release-unit__embed-container">
-                        <iframe
-                          src={item.embed.embed}
-                          className="release-unit__embed"
-                          title={`${item.songTitle} - ${getEmbedServiceName(
-                            item.embed.embed,
-                            item.embed.label
-                          )}`}
-                          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </article>

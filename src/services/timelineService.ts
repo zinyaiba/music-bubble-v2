@@ -103,7 +103,8 @@ export class TimelineService {
   /**
    * 日付文字列またはreleaseYearとreleaseDateから年月キー（YYYY-MM）を抽出
    * @param dateInput ISO 8601形式の文字列または{year: number, date: string}オブジェクト
-   * @returns YYYY-MM形式の文字列、日付情報が欠落している場合は'9999-99'
+   * @returns YYYY-MM形式の文字列。年のみ判明の場合は'YYYY-99'（その年の末尾に配置）、
+   *          年も不明な場合は'9999-99'（表示対象から除外される）
    */
   public extractYearMonth(
     dateInput: string | { year?: number; date?: string }
@@ -124,11 +125,17 @@ export class TimelineService {
       } else {
         // Song型の場合（releaseYear + releaseDate）
         const { year, date } = dateInput
-        
-        if (!year || !date) {
-          return '9999-99' // 日付不明の場合
+
+        if (!year) {
+          // 年すら不明な場合は完全な日付不明（後で除外される）
+          return '9999-99'
         }
-        
+
+        if (!date) {
+          // 年はわかるが月が不明な場合は、その年の末尾にまとめる（月キーは99）
+          return `${year}-99`
+        }
+
         // releaseDateはMMDD形式
         const month = date.substring(0, 2)
         return `${year}-${month}`
@@ -216,8 +223,11 @@ export class TimelineService {
         const month = firstSong.releaseDate.substring(0, 2)
         const day = firstSong.releaseDate.substring(2, 4)
         date = `${year}-${month}-${day}T00:00:00.000Z`
+      } else if (firstSong.releaseYear) {
+        // 年のみ判明: その年の末尾に配置
+        date = `${firstSong.releaseYear}-12-31T00:00:00.000Z`
       } else {
-        // 日付が不明な場合はフォールバック
+        // 日付が完全に不明な場合はフォールバック（後で除外される）
         date = '9999-12-31T00:00:00.000Z'
       }
 
@@ -253,6 +263,9 @@ export class TimelineService {
         const month = song.releaseDate.substring(0, 2)
         const day = song.releaseDate.substring(2, 4)
         date = `${year}-${month}-${day}T00:00:00.000Z`
+      } else if (song.releaseYear) {
+        // 年のみ判明: その年の末尾に配置
+        date = `${song.releaseYear}-12-31T00:00:00.000Z`
       } else {
         date = '9999-12-31T00:00:00.000Z'
       }
@@ -360,9 +373,13 @@ export class TimelineService {
     sortOrder: 'asc' | 'desc' = 'desc'
   ): TimelineYearMonthGroup[] {
     // yearMonthごとにアイテムをグループ化
+    // 年すら不明なアイテム（'9999-99'）は「日付不明」として表示しないため除外する
     const groupMap = new Map<string, TimelineItem[]>()
     for (const item of items) {
       const { yearMonth } = item
+      if (yearMonth === '9999-99') {
+        continue
+      }
       if (!groupMap.has(yearMonth)) {
         groupMap.set(yearMonth, [])
       }

@@ -387,9 +387,9 @@ describe('TimelineService', () => {
       expect(result).toBe('9999-99')
     })
 
-    it('should return 9999-99 for missing date', () => {
+    it('should return YYYY-99 for known year but missing date (grouped at year end)', () => {
       const result = timelineService.extractYearMonth({ year: 2022 })
-      expect(result).toBe('9999-99')
+      expect(result).toBe('2022-99')
     })
 
     it('should return 9999-99 for invalid ISO string', () => {

@@ -26,6 +26,25 @@
   box-sizing: border-box;
 }
 
+/* コンテンツラッパー: ジグザグ線(SVG)の絶対配置基準。全グループを内包する。 */
+.timeline-container__inner {
+  position: relative;
+  width: 100%;
+}
+
+/* 全グループを横断するジグザグ線（SVG、モバイル用）。
+   カード背面に描画するため z-index を最背面(0)に置き、
+   各グループ(section)は z-index:1 で前面に重ねる。
+   グループ背景は透明なのでガター・行間では線が見え、
+   不透明なカード（中央のツアー/単独公演を含む）の背面では隠れる。 */
+.timeline-container__zigzag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* グループ間の区切り（最後のグループの余白は TimelineGroup 側で吸収） */
 .timeline-container > * + * {
   margin-top: 8px;

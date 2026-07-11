@@ -24,7 +24,7 @@ interface UseTimelineDataResult {
 }
 
 interface UseTimelineDataOptions {
-  /** グループのソート順（'asc' | 'desc'、デフォルト: 'desc'） */
+  /** グループのソート順（'asc' | 'desc'、デフォルト: 'asc'） */
   sortOrder?: 'asc' | 'desc'
 }
 
@@ -43,7 +43,7 @@ const timelineService = TimelineService.getInstance(
 export function useTimelineData(
   options: UseTimelineDataOptions = {}
 ): UseTimelineDataResult {
-  const { sortOrder = 'desc' } = options
+  const { sortOrder = 'asc' } = options
 
   const [data, setData] = useState<TimelineYearMonthGroup[] | null>(null)
   const [loading, setLoading] = useState(true)

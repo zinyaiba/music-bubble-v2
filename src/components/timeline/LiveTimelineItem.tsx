@@ -11,6 +11,7 @@
 
 import type { Live } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
+import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import { MarqueeText } from '../common/MarqueeText'
 import './LiveTimelineItem.css'
 
@@ -49,6 +50,11 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
   const liveTypeLabel = LIVE_TYPE_LABELS[live.liveType]
   const formattedDateTime = formatDateTime(live.dateTime)
 
+  // Other_Live_Card の視覚設定（カテゴリクラス・サブ種別配色）を解決する。
+  // badge.subTypeClass に基づき既存 live-timeline-item__type--* 配色を再利用する。
+  const cardStyle = resolveCardStyle({ kind: 'live', liveType: live.liveType })
+  const subTypeClass = cardStyle.badge.subTypeClass ?? 'other'
+
   // 補足的な場所情報（ツアーの公演地 / その他カテゴリ）
   const locationDetail =
     live.liveType === 'tour'
@@ -63,7 +69,7 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
 
   return (
     <article
-      className="live-timeline-item"
+      className={`live-timeline-item ${cardStyle.categoryClass}`}
       onClick={handleClick}
       role="article"
       tabIndex={0}
@@ -78,7 +84,7 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
       {/* ヘッダー（種別バッジ + 補足の場所情報） */}
       <div className="live-timeline-item__header">
         <span
-          className={`live-timeline-item__type live-timeline-item__type--${live.liveType}`}
+          className={`live-timeline-item__type live-timeline-item__type--${subTypeClass}`}
         >
           {liveTypeLabel}
         </span>

@@ -9,15 +9,19 @@
  */
 
 .tour-group-item {
-  border: var(--border-width-thin, 1px) solid var(--color-border);
-  border-radius: var(--border-radius-lg, 8px);
-  background: var(--color-card-background, var(--color-surface));
+  border: var(--border-width-thin, 1px) solid var(--color-secondary-light);
+  /* 軸側（右）にパープルのアクセントバー */
+  border-right: 4px solid var(--color-secondary);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f6f3ff 0%, #ece5ff 100%);
   overflow: hidden;
-  transition: box-shadow var(--transition-fast, 0.2s ease);
+  transition: all var(--transition-fast, 0.2s ease);
 }
 
 .tour-group-item:hover {
   box-shadow: var(--shadow-md);
+  border-color: var(--color-secondary);
+  transform: translateY(-1px);
 }
 
 /* ヘッダー（クリック可能） */
@@ -70,18 +74,18 @@
   border-radius: var(--border-radius-sm, 4px);
   font-size: var(--font-size-xs, 0.75rem);
   font-weight: var(--font-weight-medium, 500);
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
   color: #fff;
 }
 
 .tour-group-item__count {
   font-size: var(--font-size-xs, 0.75rem);
-  color: var(--color-primary);
+  color: var(--color-secondary-dark);
   font-weight: var(--font-weight-semibold, 600);
-  background: var(--color-card-background, var(--color-surface));
+  background: #ffffff;
   padding: 2px 8px;
   border-radius: var(--border-radius-sm, 4px);
-  border: var(--border-width-thin, 1px) solid var(--color-border);
+  border: var(--border-width-thin, 1px) solid var(--color-secondary-light);
 }
 
 /* ツアー名 */

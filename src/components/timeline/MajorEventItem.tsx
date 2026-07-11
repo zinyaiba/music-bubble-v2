@@ -15,7 +15,7 @@
 
 import { useState } from 'react'
 import type { MajorEventTimelineItem } from '../../types'
-import { LIVE_TYPE_LABELS } from '../../types'
+import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import { MarqueeText } from '../common/MarqueeText'
 import './MajorEventItem.css'
 
@@ -66,7 +66,13 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
   const [isExpanded, setIsExpanded] = useState<boolean>(event.isExpanded ?? false)
 
   const isSolo = event.eventType === 'solo'
-  const typeLabel = isSolo ? LIVE_TYPE_LABELS.solo : LIVE_TYPE_LABELS.tour
+
+  // カテゴリ判定・視覚設定を resolveCardStyle に集約する（Requirements 2.1, 2.2）。
+  // Solo_Card / Tour_Card はいずれも Purple_Palette・center 配置で解決される。
+  const cardStyle = resolveCardStyle({ kind: 'major-event', eventType: event.eventType })
+  // Type_Badge のラベルは LIVE_TYPE_LABELS.solo（単独公演）/ .tour（ツアー）に由来する
+  // 色に依存しないテキスト補助要素（Requirements 3.6）。
+  const typeLabel = cardStyle.badge.label
 
   const handleToggle = () => {
     setIsExpanded((prev) => !prev)
@@ -92,7 +98,7 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
 
   return (
     <article
-      className="major-event-item"
+      className={`major-event-item major-event-item--${event.eventType} ${cardStyle.categoryClass}`}
       role="article"
       aria-label={`重要イベント: ${typeLabel}`}
     >
@@ -134,7 +140,9 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
             aria-label={`${event.tourGroup.tourName} - ${event.tourGroup.performanceCount}公演`}
           >
             <div className="major-event-item__tour-info">
-              <h3 className="major-event-item__title">{event.tourGroup.tourName}</h3>
+              <h3 className="major-event-item__title">
+                <MarqueeText text={event.tourGroup.tourName} />
+              </h3>
               <p className="major-event-item__date">
                 {formatDateRange(event.tourGroup.firstDate, event.tourGroup.lastDate)}
               </p>

@@ -10,6 +10,8 @@
 
 import type { JSX } from 'react'
 import type { Song, MusicServiceEmbed } from '../../types'
+import { MarqueeText } from '../common/MarqueeText'
+import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import './SongTimelineItem.css'
 
 export interface SongTimelineItemProps {
@@ -17,14 +19,6 @@ export interface SongTimelineItemProps {
   song: Song
   /** クリック時のコールバック */
   onClick?: (songId: string) => void
-}
-
-/**
- * 配列を表示用文字列に変換
- */
-function formatArray(arr: string[] | undefined, fallback = '-'): string {
-  if (!arr || arr.length === 0) return fallback
-  return arr.join(', ')
 }
 
 /**
@@ -86,27 +80,16 @@ function isIframeTag(content: string | undefined): boolean {
 }
 
 /**
- * 外部リンクのラベルを取得
- */
-function getLinkLabel(url: string, label?: string): string {
-  if (label) return label
-  if (url.includes('spotify')) return 'Spotify'
-  if (url.includes('youtube') || url.includes('youtu.be')) return 'YouTube'
-  if (url.includes('apple')) return 'Apple Music'
-  if (url.includes('amazon')) return 'Amazon Music'
-  return 'リンク'
-}
-
-/**
  * SongTimelineItem コンポーネント
  * 個別楽曲をタイムラインアイテムとして表示
  */
 export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.Element {
-  const artists = formatArray(song.artists)
   const releaseDisplay = formatReleaseDate(song.releaseYear, song.releaseDate)
   const embeds = getEmbeds(song)
   const hasEmbeds = embeds.length > 0
-  const hasLinks = !!song.detailPageUrls && song.detailPageUrls.length > 0
+
+  // Music_Card（個別曲）の視覚設定を解決（Pink_Palette / right / 曲バッジ）
+  const cardStyle = resolveCardStyle({ kind: 'song' })
 
   const handleClick = () => {
     onClick?.(song.id)
@@ -121,19 +104,27 @@ export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.
 
   return (
     <article
-      className="song-timeline-item"
+      className={`song-timeline-item ${cardStyle.categoryClass}`}
       role="article"
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      aria-label={`${song.title} - ${artists}`}
+      aria-label={song.title}
     >
-      {/* ヘッダー: タイトルとアーティスト */}
+      {/* ヘッダー: 種別バッジ（曲）+ タイトル（シングル・アルバムなしの楽曲のためアーティスト名は非表示） */}
       <header className="song-timeline-item__header">
-        <h3 className="song-timeline-item__title">{song.title}</h3>
-        {song.artists && song.artists.length > 0 && (
-          <p className="song-timeline-item__artist">{artists}</p>
-        )}
+        {/* Type_Badge: 色以外の判別手段としてテキストラベルを必ず表示 */}
+        <span className="song-timeline-item__type-badge">
+          {cardStyle.badge.icon && (
+            <span className="song-timeline-item__type-badge-icon" aria-hidden="true">
+              {cardStyle.badge.icon}
+            </span>
+          )}
+          {cardStyle.badge.label}
+        </span>
+        <h3 className="song-timeline-item__title">
+          <MarqueeText text={song.title} />
+        </h3>
       </header>
 
       {/* リリース情報 */}
@@ -184,23 +175,6 @@ export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.
         </div>
       )}
 
-      {/* 外部リンク */}
-      {hasLinks && (
-        <ul className="song-timeline-item__links" onClick={(e) => e.stopPropagation()}>
-          {song.detailPageUrls!.map((link, index) => (
-            <li key={index} className="song-timeline-item__link-item">
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="song-timeline-item__link"
-              >
-                {getLinkLabel(link.url, link.label)}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
     </article>
   )
 }

@@ -28,8 +28,8 @@ import './TimelinePage.css'
 export function TimelinePage() {
   const navigate = useNavigate()
 
-  // ソート順の状態管理（デフォルト: 新しい順）
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  // ソート順の状態管理（デフォルト: 古い順）
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   // タイムラインデータの取得（ソート順変更時に再取得・再ソート）
   const { data, loading, error, retry } = useTimelineData({ sortOrder })
@@ -72,6 +72,7 @@ export function TimelinePage() {
                 : '古い順で表示中。クリックで新しい順に切り替え'
             }
           >
+            {/* 並び替えアイコン: 上下矢印。desc（新しい順）は下向き、asc（古い順）は上向きを強調 */}
             <svg
               width="18"
               height="18"
@@ -82,10 +83,18 @@ export function TimelinePage() {
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
+              className={`timeline-page__sort-icon timeline-page__sort-icon--${sortOrder}`}
             >
-              <path d="M3 6h18" />
-              <path d="M7 12h10" />
-              <path d="M11 18h2" />
+              {/* 上向き矢印（古い順 = asc のとき強調） */}
+              <g className="timeline-page__sort-arrow timeline-page__sort-arrow--asc">
+                <path d="M7 4v16" />
+                <path d="M3 8l4-4 4 4" />
+              </g>
+              {/* 下向き矢印（新しい順 = desc のとき強調） */}
+              <g className="timeline-page__sort-arrow timeline-page__sort-arrow--desc">
+                <path d="M17 20V4" />
+                <path d="M21 16l-4 4-4-4" />
+              </g>
             </svg>
             <span>{sortOrder === 'desc' ? '新しい順' : '古い順'}</span>
           </button>

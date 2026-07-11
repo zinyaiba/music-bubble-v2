@@ -9,32 +9,45 @@
  * - 10.1, 10.4: クリック可能・視覚的フィードバック
  */
 
+/*
+ * Other_Live_Card（カテゴリD）: 4 カテゴリ中で最小の強調度。
+ * Purple_Palette を主色相とし、淡い背景 + 細ボーダー（--border-width-thin）+
+ * カテゴリ中最小の外形サイズ（padding / margin / gap を最小）のアウトライン風スタイル。
+ * 色・スペーシング・影・角丸・トランジションはすべて variables.css の CSS 変数で指定する。
+ */
 .live-timeline-item {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-  background-color: var(--color-card-background, var(--color-surface));
+  /* 細ボーダーで囲むアウトライン風。塗りは最小限 */
+  border: var(--border-width-thin) solid var(--color-secondary-light);
+  border-radius: var(--border-radius-lg);
+  /* カテゴリ中最小の外形サイズ（padding / margin を小さめに） */
+  padding: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+  /* Purple_Palette の淡い塗り（楽曲カードと差別化） */
+  background: var(--color-secondary-alpha);
   cursor: pointer;
   transition: all var(--transition-fast);
   user-select: none;
+  /* 内容が表示領域を超えても横崩れしないよう縮小可能にする */
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .live-timeline-item:hover {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-primary-light);
+  border-color: var(--color-secondary-dark);
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
-/* キーボードフォーカス時の視覚的フィードバック（outline） */
+/* キーボードフォーカス時の視覚的フィードバック（outline）— 全カード共通の変数ベース指定
+   （Other_Live_Card は Purple_Palette を主色相とする） */
 .live-timeline-item:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+  outline: var(--border-width-normal) solid var(--color-secondary);
+  outline-offset: var(--spacing-xs);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 var(--border-width-thick) var(--color-secondary-alpha);
 }
 
 .live-timeline-item:active {
@@ -113,17 +126,21 @@
 /* 公演名 */
 .live-timeline-item__title {
   margin: 0;
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-dark);
   line-height: var(--line-height-tight);
+  min-width: 0;
 }
 
 /* 会場名 */
 .live-timeline-item__venue {
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
+  /* 長い文字列でも表示領域内で折り返し、横崩れを防ぐ */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* 日時 */
@@ -131,15 +148,25 @@
   margin: 0;
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 480px) {
+/* レスポンシブ対応: 左右2カラムで幅が狭くなるためコンパクト表示 */
+@media (max-width: 767px) {
   .live-timeline-item {
-    padding: var(--spacing-md);
+    gap: 2px;
+    padding: var(--spacing-xs);
+    margin: var(--spacing-xs) 0;
+    border-radius: var(--border-radius-md);
   }
 
   .live-timeline-item__title {
     font-size: var(--font-size-sm);
+  }
+
+  .live-timeline-item__venue,
+  .live-timeline-item__datetime {
+    font-size: var(--font-size-xs);
   }
 }

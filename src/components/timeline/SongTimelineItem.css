@@ -11,28 +11,35 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border: 1px solid var(--color-primary-light);
+  /* 軸側（左）にピンクのアクセントバー */
+  border-left: 4px solid var(--color-primary);
+  border-radius: 10px;
   padding: 16px;
   margin: 16px 0;
-  background: var(--color-card-background, var(--color-surface));
+  /* ピンク系の淡いグラデーションで華やかに */
+  background: linear-gradient(135deg, #fff5fa 0%, #ffe9f3 100%);
   cursor: pointer;
   transition: all var(--transition-fast);
   user-select: none;
+  /* 内容が表示領域を超えても横崩れしないよう縮小可能にする */
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .song-timeline-item:hover {
-  background: var(--color-surface-hover);
+  background: linear-gradient(135deg, #ffeef6 0%, #ffdcec 100%);
   box-shadow: var(--shadow-md);
-  border-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
-/* キーボードフォーカス時の視覚的フィードバック（outline） */
+/* キーボードフォーカス時の視覚的フィードバック（outline）— 全カード共通の変数ベース指定 */
 .song-timeline-item:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: var(--border-width-normal) solid var(--color-primary);
+  outline-offset: var(--spacing-xs);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+  box-shadow: 0 0 0 var(--border-width-thick) var(--color-primary-alpha);
 }
 
 .song-timeline-item:active {
@@ -48,15 +55,17 @@
 
 .song-timeline-item__title {
   margin: 0;
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary, var(--color-text));
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-dark);
   line-height: var(--line-height-tight);
+  /* 折り返さず1行表示（はみ出し時は MarqueeText が横スクロール） */
+  min-width: 0;
 }
 
 .song-timeline-item__artist {
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
 
@@ -79,9 +88,29 @@
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  background: #e3f2fd;
-  color: #1565c0;
-  border: 1px solid #90caf9;
+  /* Pink_Palette に統一（旧ブルー系 #1565c0 / #90caf9 を置換） */
+  background: var(--color-background-light);
+  color: var(--color-primary-dark);
+  border: var(--border-width-thin) solid var(--color-primary-light);
+}
+
+/* 種別バッジ（Type_Badge）: 色に依存しないテキスト判別要素 */
+.song-timeline-item__type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  align-self: flex-start;
+  padding: 1px 8px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  /* Pink_Palette 主色相を使用（テキストと十分なコントラストを確保） */
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.song-timeline-item__type-badge-icon {
+  line-height: 1;
 }
 
 /* 埋め込みコンテンツ */
@@ -144,14 +173,46 @@
   border-color: var(--color-primary-light);
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 480px) {
+/* レスポンシブ対応: 左右2カラムで幅が狭くなるためコンパクト表示 */
+@media (max-width: 767px) {
   .song-timeline-item {
-    padding: 12px;
-    margin: 12px 0;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
+    /* アクセントバー（Auxiliary_Element）は維持しつつ細める */
+    border-left-width: var(--border-width-thick);
+    border-radius: var(--border-radius-md);
   }
 
   .song-timeline-item__title {
     font-size: var(--font-size-sm);
+  }
+
+  .song-timeline-item__artist,
+  .song-timeline-item__release-date {
+    font-size: var(--font-size-xs);
+  }
+
+  /* 埋め込み（サムネ/プレイヤー）を全体的に小さめに表示。
+     Spotify は幅が狭いと縦積みレイアウトになりスクロールバーが出るため、
+     横1列のコンパクト表示に収まる幅(約300px以上)を確保する。 */
+  .song-timeline-item__embed-container {
+    max-width: 340px;
+  }
+
+  /* Spotify はコンパクトプレイヤーの自然な高さ(152px)を確保してスクロールバーを出さない */
+  .song-timeline-item__embed-container iframe[src*='spotify'],
+  .song-timeline-item__embed[src*='spotify'] {
+    height: 152px;
+    min-height: 152px;
+  }
+
+  /* YouTube は 16:9 を維持して縮小 */
+  .song-timeline-item__embed-container iframe[src*='youtube'],
+  .song-timeline-item__embed-container iframe[src*='youtu.be'],
+  .song-timeline-item__embed[src*='youtube'],
+  .song-timeline-item__embed[src*='youtu.be'] {
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 }

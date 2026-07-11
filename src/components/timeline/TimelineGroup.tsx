@@ -81,7 +81,7 @@ export function TimelineGroup({
 
       {/* 本体: 中央の軸を挟んで左右にアイテムを配置 */}
       <div className="timeline-group__body">
-        {/* 中央の垂直タイムライン軸（本体全体を縦に貫く） */}
+        {/* 中央の垂直タイムライン軸（デスクトップ用。本体全体を縦に貫く） */}
         <div className="timeline-group__axis" aria-hidden="true">
           <TimelineAxis />
         </div>
@@ -97,7 +97,7 @@ export function TimelineGroup({
                 {item.position === 'left' && renderTimelineItem(item, handlers)}
               </div>
 
-              {/* 軸との接続ドット */}
+              {/* 軸との接続ドット（モバイルではジグザグ線が通る側に配置される） */}
               <div className="timeline-group__connector" aria-hidden="true">
                 <TimelineDot />
               </div>

@@ -42,11 +42,11 @@ export function testExtractYearMonth() {
   console.log(`Missing year → ${result3}`)
   console.assert(result3 === '9999-99', `Expected '9999-99', got '${result3}'`)
 
-  // テスト4: 日付情報欠落（dateなし）
+  // テスト4: 月のみ欠落（yearあり）→ その年の末尾グループ（YYYY-99）
   const missingDate = { year: 2024 }
   const result4 = timelineService.extractYearMonth(missingDate)
   console.log(`Missing date → ${result4}`)
-  console.assert(result4 === '9999-99', `Expected '9999-99', got '${result4}'`)
+  console.assert(result4 === '2024-99', `Expected '2024-99', got '${result4}'`)
 
   // テスト5: 無効なISO日付
   const invalidDate = 'invalid-date'

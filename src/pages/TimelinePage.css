@@ -63,6 +63,25 @@
   transform: scale(0.98);
 }
 
+/* 並び替えアイコン: アクティブな方向の矢印を強調し、非アクティブを薄く表示 */
+.timeline-page__sort-icon {
+  flex-shrink: 0;
+}
+
+.timeline-page__sort-arrow {
+  transition: opacity var(--transition-fast);
+}
+
+.timeline-page__sort-icon--asc .timeline-page__sort-arrow--desc,
+.timeline-page__sort-icon--desc .timeline-page__sort-arrow--asc {
+  opacity: 0.3;
+}
+
+.timeline-page__sort-icon--asc .timeline-page__sort-arrow--asc,
+.timeline-page__sort-icon--desc .timeline-page__sort-arrow--desc {
+  color: var(--color-primary-dark);
+}
+
 /* エラー表示 */
 .timeline-page__error {
   padding: var(--spacing-md);

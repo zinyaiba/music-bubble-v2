@@ -1,20 +1,58 @@
 /**
  * TimelineYearMonthHeader スタイル
  *
- * 年月グループの見出しスタイル
- * Requirements: 7.2
+ * 年月グループの見出し。
+ * - スクロール時に画面上部へ固定表示される（position: sticky）
+ * - 中央にピル型の華やかなラベルを表示する
  *
- * Note: 設計書では color に var(--color-text-primary) を指定しているが、
- * プロジェクトの variables.css には未定義のため、最も近い定義済み変数
- * var(--color-text) を使用している。
+ * Requirements: 7.2
  */
 
 .timeline-year-month-header {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--color-text);
-  background-color: var(--color-background);
-  padding: 16px 0;
+  /* スクロール時に上部固定。スクロールコンテナ（.timeline-container）内で sticky */
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
   margin: 0;
-  text-align: center;
+  /* 背後のカード/軸が透けないように背景でマスクする */
+  background: linear-gradient(
+    to bottom,
+    var(--color-background) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ピル型ラベル: グラデーションで華やかに */
+.timeline-year-month-header__label {
+  display: inline-block;
+  padding: 6px 20px;
+  font-size: 1.05rem;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-secondary) 100%
+  );
+  border-radius: var(--border-radius-full);
+  box-shadow: var(--shadow-md);
+  letter-spacing: var(--letter-spacing-wide);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .timeline-year-month-header {
+    padding: 8px 0;
+  }
+
+  .timeline-year-month-header__label {
+    padding: 4px 16px;
+    font-size: 0.95rem;
+  }
 }
