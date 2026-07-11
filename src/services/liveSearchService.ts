@@ -6,6 +6,7 @@
  */
 
 import type { Live } from '../types'
+import { LIVE_TYPE_LABELS } from '../types'
 
 /**
  * 検索オプション
@@ -44,6 +45,7 @@ function matchesQueryInArray(
  * - 会場名
  * - セトリの楽曲名
  * - 公演地（ツアーの場合）
+ * - ライブ種別名（カテゴリ表示名 / その他・海外の自由入力名）
  */
 export function matchesSearchQuery(
   live: Live,
@@ -71,6 +73,17 @@ export function matchesSearchQuery(
 
   // 公演地での検索（ツアーの場合）
   if (live.tourLocation && matchesQuery(live.tourLocation, trimmedQuery, caseSensitive)) {
+    return true
+  }
+
+  // ライブ種別名での検索（カテゴリの表示名: ツアー/フェス/海外/その他 など）
+  const liveTypeLabel = LIVE_TYPE_LABELS[live.liveType]
+  if (liveTypeLabel && matchesQuery(liveTypeLabel, trimmedQuery, caseSensitive)) {
+    return true
+  }
+
+  // ライブ種別名での検索（その他・海外カテゴリの自由入力名）
+  if (live.otherCategory && matchesQuery(live.otherCategory, trimmedQuery, caseSensitive)) {
     return true
   }
 

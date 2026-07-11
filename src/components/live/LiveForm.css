@@ -533,7 +533,8 @@
 }
 
 .live-form__input--url-label {
-  font-size: var(--font-size-sm);
+  /* モバイルで16px未満だとフォーカス時に自動ズームするため最低16pxを確保 */
+  font-size: max(16px, var(--font-size-sm));
 }
 
 .live-form__input--url {

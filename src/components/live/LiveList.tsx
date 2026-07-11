@@ -37,6 +37,7 @@ const LIVE_TYPE_FILTERS: { value: LiveType | 'all'; label: string }[] = [
   { value: 'festival', label: 'フェス' },
   { value: 'event', label: 'イベント' },
   { value: 'release', label: 'リリイベ' },
+  { value: 'overseas', label: '海外' },
   { value: 'other', label: 'その他' },
 ]
 

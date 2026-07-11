@@ -32,7 +32,7 @@ export interface CardBadge {
    * サブ種別配色クラスのサフィックス（Other_Live_Card のみ）。
    * 既存 live-timeline-item__type--{festival|event|release|other} を再利用する。
    */
-  subTypeClass?: 'festival' | 'event' | 'release' | 'other'
+  subTypeClass?: 'festival' | 'event' | 'release' | 'overseas' | 'other'
 }
 
 /** カードの視覚設定（描画に必要な情報の集約） */
@@ -131,6 +131,7 @@ function resolveLiveCardStyle(liveType: LiveType): TimelineCardVisualConfig {
     case 'festival':
     case 'event':
     case 'release':
+    case 'overseas':
     case 'other':
       return buildConfig('other-live', {
         label: LIVE_TYPE_LABELS[liveType],

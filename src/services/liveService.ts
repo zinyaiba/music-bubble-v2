@@ -230,8 +230,11 @@ export class LiveService {
         docData.tourLocation = liveData.tourLocation
       }
 
-      // その他カテゴリの場合のみ自由入力内容を追加
-      if (liveData.liveType === 'other' && liveData.otherCategory) {
+      // その他・海外カテゴリの場合のみライブ種別名を追加
+      if (
+        (liveData.liveType === 'other' || liveData.liveType === 'overseas') &&
+        liveData.otherCategory
+      ) {
         docData.otherCategory = liveData.otherCategory
       }
 

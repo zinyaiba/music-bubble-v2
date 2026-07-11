@@ -100,6 +100,13 @@
   border-color: #ec407a;
 }
 
+/* 海外 - ティール系 */
+.live-card__type--overseas {
+  background: #e0f2f1;
+  color: #00796b;
+  border-color: #80cbc4;
+}
+
 /* その他 - グレー系 */
 .live-card__type--other {
   background: #f5f5f5;

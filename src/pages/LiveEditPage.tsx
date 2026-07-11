@@ -179,7 +179,10 @@ export function LiveEditPage() {
                 venueName: formData.venueName,
                 dateTime: formData.dateTime,
                 tourLocation: formData.liveType === 'tour' ? formData.tourLocation : undefined,
-                otherCategory: formData.liveType === 'other' ? formData.otherCategory : undefined,
+                otherCategory:
+                  formData.liveType === 'other' || formData.liveType === 'overseas'
+                    ? formData.otherCategory
+                    : undefined,
                 setlist: setlistWithOrder,
                 embeds: formData.embeds,
                 detailPageUrls: formData.detailPageUrls,
@@ -209,7 +212,10 @@ export function LiveEditPage() {
                 venueName: formData.venueName,
                 dateTime: formData.dateTime,
                 tourLocation: formData.liveType === 'tour' ? formData.tourLocation : undefined,
-                otherCategory: formData.liveType === 'other' ? formData.otherCategory : undefined,
+                otherCategory:
+                  formData.liveType === 'other' || formData.liveType === 'overseas'
+                    ? formData.otherCategory
+                    : undefined,
                 setlist: setlistWithOrder,
                 embeds: formData.embeds,
                 detailPageUrls: formData.detailPageUrls,

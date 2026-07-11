@@ -109,9 +109,10 @@ export type AppError = NetworkError | DataError | ValidationError
  * - festival: フェス
  * - event: イベント
  * - release: リリイベ
+ * - overseas: 海外
  * - other: その他
  */
-export type LiveType = 'tour' | 'solo' | 'festival' | 'event' | 'release' | 'other'
+export type LiveType = 'tour' | 'solo' | 'festival' | 'event' | 'release' | 'overseas' | 'other'
 
 /**
  * ライブ種別の表示名マッピング
@@ -122,6 +123,7 @@ export const LIVE_TYPE_LABELS: Record<LiveType, string> = {
   festival: 'フェス',
   event: 'イベント',
   release: 'リリイベ',
+  overseas: '海外',
   other: 'その他',
 }
 
@@ -157,7 +159,7 @@ export interface Live {
   dateTime: string
   /** 公演地（ツアーの場合のみ） */
   tourLocation?: string
-  /** その他カテゴリの自由入力内容（liveType='other'の場合のみ） */
+  /** カテゴリの自由入力内容（liveType='other'または'overseas'の場合のみ） */
   otherCategory?: string
   /** セトリ */
   setlist: SetlistItem[]

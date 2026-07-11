@@ -18,7 +18,13 @@ import type { LiveType } from '../types'
  */
 
 /** Other_Live として扱う liveType サブ種別 */
-const OTHER_LIVE_TYPES = ['festival', 'event', 'release', 'other'] as const satisfies LiveType[]
+const OTHER_LIVE_TYPES = [
+  'festival',
+  'event',
+  'release',
+  'overseas',
+  'other',
+] as const satisfies LiveType[]
 
 /** 全 liveType（solo/tour を含む runtime 入力も網羅） */
 const ALL_LIVE_TYPES = [
@@ -27,6 +33,7 @@ const ALL_LIVE_TYPES = [
   'festival',
   'event',
   'release',
+  'overseas',
   'other',
 ] as const satisfies LiveType[]
 

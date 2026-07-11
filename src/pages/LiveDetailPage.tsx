@@ -348,13 +348,14 @@ export function LiveDetailPage() {
                   </div>
                 )}
 
-                {/* その他カテゴリの場合は自由入力内容を表示 */}
-                {live.liveType === 'other' && live.otherCategory && (
-                  <div className="live-detail-page__info-row">
-                    <span className="live-detail-page__info-label">カテゴリ</span>
-                    <span className="live-detail-page__info-value">{live.otherCategory}</span>
-                  </div>
-                )}
+                {/* その他・海外カテゴリの場合はライブ種別名を表示 */}
+                {(live.liveType === 'other' || live.liveType === 'overseas') &&
+                  live.otherCategory && (
+                    <div className="live-detail-page__info-row">
+                      <span className="live-detail-page__info-label">カテゴリ</span>
+                      <span className="live-detail-page__info-value">{live.otherCategory}</span>
+                    </div>
+                  )}
               </div>
 
               {/* 埋め込みコンテンツセクション（上部に配置） */}

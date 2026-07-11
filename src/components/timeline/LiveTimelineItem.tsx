@@ -55,11 +55,11 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
   const cardStyle = resolveCardStyle({ kind: 'live', liveType: live.liveType })
   const subTypeClass = cardStyle.badge.subTypeClass ?? 'other'
 
-  // 補足的な場所情報（ツアーの公演地 / その他カテゴリ）
+  // 補足的な場所情報（ツアーの公演地 / その他・海外カテゴリのライブ種別名）
   const locationDetail =
     live.liveType === 'tour'
       ? live.tourLocation
-      : live.liveType === 'other'
+      : live.liveType === 'other' || live.liveType === 'overseas'
         ? live.otherCategory
         : undefined
 
