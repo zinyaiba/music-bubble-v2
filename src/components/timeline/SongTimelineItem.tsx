@@ -11,6 +11,7 @@
 import type { JSX } from 'react'
 import type { Song, MusicServiceEmbed } from '../../types'
 import { MarqueeText } from '../common/MarqueeText'
+import { LazyEmbed } from '../common/LazyEmbed'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import './SongTimelineItem.css'
 
@@ -69,14 +70,6 @@ function getEmbedServiceName(embedContent: string | undefined, label?: string): 
   if (embedContent.includes('apple')) return 'Apple Music'
   if (embedContent.includes('soundcloud')) return 'SoundCloud'
   return '音楽サービス'
-}
-
-/**
- * 埋め込みコンテンツがiframeタグかどうかチェック
- */
-function isIframeTag(content: string | undefined): boolean {
-  if (!content) return false
-  return content.trim().toLowerCase().startsWith('<iframe')
 }
 
 /**
@@ -154,22 +147,12 @@ export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.
         >
           {embeds.map((item, index) => (
             <div key={index} className="song-timeline-item__embed-item">
-              {isIframeTag(item.embed) ? (
-                <div
-                  className="song-timeline-item__embed-container"
-                  dangerouslySetInnerHTML={{ __html: item.embed }}
-                />
-              ) : (
-                <div className="song-timeline-item__embed-container">
-                  <iframe
-                    src={item.embed}
-                    className="song-timeline-item__embed"
-                    title={`${song.title} - ${getEmbedServiceName(item.embed, item.label)}`}
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                  />
-                </div>
-              )}
+              {/* サムネイル先行・タップで iframe 生成（メモリ節約） */}
+              <LazyEmbed
+                embed={item.embed}
+                title={`${song.title} - ${getEmbedServiceName(item.embed, item.label)}`}
+                label={item.label}
+              />
             </div>
           ))}
         </div>

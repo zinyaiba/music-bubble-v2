@@ -96,8 +96,15 @@ export function TimelineContainer({
       points.push(`${x.toFixed(1)},${bottom.toFixed(1)}`)
     })
 
-    setSvgSize({ width: innerRect.width, height: innerRect.height })
-    setZigzagPoints(points.join(' '))
+    // 座標・サイズが前回と同じなら state を更新しない（再レンダー抑制）。
+    // これにより ResizeObserver 連鎖による無駄な再計算・再描画を防ぐ。
+    const nextPoints = points.join(' ')
+    setZigzagPoints((prev) => (prev === nextPoints ? prev : nextPoints))
+    setSvgSize((prev) =>
+      prev.width === innerRect.width && prev.height === innerRect.height
+        ? prev
+        : { width: innerRect.width, height: innerRect.height }
+    )
   }, [])
 
   useLayoutEffect(() => {
@@ -111,14 +118,27 @@ export function TimelineContainer({
     const inner = innerRef.current
     if (!inner) return
 
+    // requestAnimationFrame でスロットルし、短時間に連続するサイズ変化
+    // （iframe 読み込み・カード展開・画面回転など）を1フレーム1回の測定に集約する。
+    // これにより ResizeObserver の連鎖的な発火による負荷スパイクを防ぐ。
+    let rafId = 0
+    const scheduleMeasure = () => {
+      if (rafId) return
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0
+        measureZigzag()
+      })
+    }
+
     // 内容サイズ変化（カード展開・折りたたみ・画面回転など）を監視して再測定
-    const resizeObserver = new ResizeObserver(() => measureZigzag())
+    const resizeObserver = new ResizeObserver(scheduleMeasure)
     resizeObserver.observe(inner)
-    window.addEventListener('resize', measureZigzag)
+    window.addEventListener('resize', scheduleMeasure)
 
     return () => {
+      if (rafId) window.cancelAnimationFrame(rafId)
       resizeObserver.disconnect()
-      window.removeEventListener('resize', measureZigzag)
+      window.removeEventListener('resize', scheduleMeasure)
     }
   }, [isMobile, measureZigzag, groups])
 

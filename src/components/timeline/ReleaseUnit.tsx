@@ -16,6 +16,7 @@ import { useState } from 'react'
 import type { JSX } from 'react'
 import type { ReleaseUnitTimelineItem, MusicServiceEmbed, Song } from '../../types'
 import { MarqueeText } from '../common/MarqueeText'
+import { LazyEmbed } from '../common/LazyEmbed'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import './ReleaseUnit.css'
 
@@ -49,14 +50,6 @@ function getEmbedServiceName(embedContent: string | undefined, label?: string): 
   if (embedContent.includes('apple')) return 'Apple Music'
   if (embedContent.includes('soundcloud')) return 'SoundCloud'
   return '音楽サービス'
-}
-
-/**
- * 埋め込みコンテンツがiframeタグかどうかチェック
- */
-function isIframeTag(content: string | undefined): boolean {
-  if (!content) return false
-  return content.trim().toLowerCase().startsWith('<iframe')
 }
 
 /**
@@ -187,25 +180,14 @@ export function ReleaseUnit({
                 <span className="release-unit__embed-label">
                   {item.songTitle} - {getEmbedServiceName(item.embed.embed, item.embed.label)}
                 </span>
-                {isIframeTag(item.embed.embed) ? (
-                  <div
-                    className="release-unit__embed-container"
-                    dangerouslySetInnerHTML={{ __html: item.embed.embed }}
-                  />
-                ) : (
-                  <div className="release-unit__embed-container">
-                    <iframe
-                      src={item.embed.embed}
-                      className="release-unit__embed"
-                      title={`${item.songTitle} - ${getEmbedServiceName(
-                        item.embed.embed,
-                        item.embed.label
-                      )}`}
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
+                {/* サムネイル先行・タップで iframe 生成（メモリ節約） */}
+                <LazyEmbed
+                  embed={item.embed.embed}
+                  title={`${item.songTitle} - ${getEmbedServiceName(
+                    item.embed.embed,
+                    item.embed.label
+                  )}`}
+                />
               </div>
             ))}
           </div>
