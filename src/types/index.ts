@@ -23,15 +23,7 @@ export interface Song {
   releaseYear?: number // 発売年（4桁の数値）
   releaseDate?: string // 発売日（月日、MMDD形式、例: 0315）
   singleName?: string
-  /** シングルとしての発売年。未設定時は releaseYear を使用 */
-  singleReleaseYear?: number
-  /** シングルとしての発売日（月日、MMDD形式）。未設定時は releaseDate を使用 */
-  singleReleaseDate?: string
   albumName?: string
-  /** アルバム収録時の発売年。未設定時は releaseYear を使用 */
-  albumReleaseYear?: number
-  /** アルバム収録時の発売日（月日、MMDD形式）。未設定時は releaseDate を使用 */
-  albumReleaseDate?: string
   /** @deprecated 後方互換性のため残存。新規は musicServiceEmbeds を使用 */
   musicServiceEmbed?: string
   /** 複数の埋め込みコンテンツ */
@@ -229,9 +221,7 @@ export interface TourGroup {
  * グループ化されたライブ一覧の項目
  * ツアーグループまたは単独ライブのいずれか
  */
-export type GroupedLiveItem =
-  | { type: 'tour'; data: TourGroup }
-  | { type: 'live'; data: Live }
+export type GroupedLiveItem = { type: 'tour'; data: TourGroup } | { type: 'live'; data: Live }
 
 // ============================================
 // Timeline Page Types

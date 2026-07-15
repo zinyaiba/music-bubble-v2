@@ -25,16 +25,73 @@
   overflow: hidden;
 }
 
-/* ソート切り替えコントロール */
+/* ソート切り替え・年ショートカット */
 .timeline-page__controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-md);
   padding: var(--spacing-md);
   flex-shrink: 0;
+  min-width: 0;
+}
+
+.timeline-page__year-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.timeline-page__year-shortcuts-label {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.timeline-page__year-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+
+.timeline-page__year-button {
+  flex-shrink: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-primary-dark);
+  background: var(--color-card-background);
+  border: var(--border-width-thin) solid var(--color-primary-light);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.timeline-page__year-button:hover {
+  color: #ffffff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-page__year-button:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.timeline-page__year-button:active {
+  transform: scale(0.96);
 }
 
 .timeline-page__sort-toggle {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -98,6 +155,17 @@
 /* モバイル対応 */
 @media (max-width: 767px) {
   .timeline-page__controls {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: var(--spacing-sm);
     padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .timeline-page__sort-toggle {
+    align-self: flex-end;
+  }
+
+  .timeline-page__year-shortcuts {
+    width: 100%;
   }
 }

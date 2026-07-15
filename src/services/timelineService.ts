@@ -204,21 +204,21 @@ export class TimelineService {
       // singleNameを持つグループを優先してリリース種別を決定
       const releaseType = releaseSongs[0].singleName ? 'single' : 'album'
 
-      // リリース種別ごとの発売日でソート（古い順）
+      // 楽曲共通の発売日でソート（古い順）
       const sortedSongs = [...releaseSongs].sort((a, b) => {
-        const releaseA = getSongReleaseDate(a, releaseType)
-        const releaseB = getSongReleaseDate(b, releaseType)
+        const releaseA = getSongReleaseDate(a)
+        const releaseB = getSongReleaseDate(b)
         const dateA = this.extractYearMonth(releaseA)
         const dateB = this.extractYearMonth(releaseB)
         return dateA.localeCompare(dateB)
       })
 
-      // 最初の楽曲のリリース別日付を代表日時として使用
+      // 最初の楽曲の共通発売日を代表日時として使用
       const firstSong = sortedSongs[0]
-      const releaseDate = getSongReleaseDate(firstSong, releaseType)
+      const releaseDate = getSongReleaseDate(firstSong)
       const yearMonth = this.extractYearMonth(releaseDate)
 
-      // リリース別の発売日を ISO 8601形式に変換
+      // 発売日を ISO 8601形式に変換
       let date: string
       if (releaseDate.year && releaseDate.date) {
         const month = releaseDate.date.substring(0, 2)

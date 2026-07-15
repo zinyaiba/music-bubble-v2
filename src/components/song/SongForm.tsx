@@ -34,13 +34,7 @@ interface FormData {
   releaseMonth: string
   releaseDay: string
   singleName: string
-  singleReleaseYear: string
-  singleReleaseMonth: string
-  singleReleaseDay: string
   albumName: string
-  albumReleaseYear: string
-  albumReleaseMonth: string
-  albumReleaseDay: string
   musicServiceEmbeds: MusicServiceEmbed[]
   detailPageUrls: DetailPageUrl[]
 }
@@ -50,22 +44,8 @@ interface FormErrors {
   releaseYear?: string
   releaseMonth?: string
   releaseDay?: string
-  singleReleaseYear?: string
-  singleReleaseMonth?: string
-  singleReleaseDay?: string
-  albumReleaseYear?: string
-  albumReleaseMonth?: string
-  albumReleaseDay?: string
   detailPageUrls?: string[]
 }
-
-type ReleaseDateFormField =
-  | 'singleReleaseYear'
-  | 'singleReleaseMonth'
-  | 'singleReleaseDay'
-  | 'albumReleaseYear'
-  | 'albumReleaseMonth'
-  | 'albumReleaseDay'
 
 /**
  * 配列を文字列に変換（カンマ区切り）
@@ -218,12 +198,6 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
   // フォームデータの初期化
   const initialFormData: FormData = useMemo(() => {
     const { month, day } = parseReleaseDate(song?.releaseDate)
-    const { month: singleMonth, day: singleDay } = parseReleaseDate(
-      song?.singleReleaseDate
-    )
-    const { month: albumMonth, day: albumDay } = parseReleaseDate(
-      song?.albumReleaseDate
-    )
     return {
       title: song?.title || '',
       artists: arrayToString(song?.artists),
@@ -235,13 +209,7 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
       releaseMonth: month,
       releaseDay: day,
       singleName: song?.singleName || '',
-      singleReleaseYear: song?.singleReleaseYear?.toString() || '',
-      singleReleaseMonth: singleMonth,
-      singleReleaseDay: singleDay,
       albumName: song?.albumName || '',
-      albumReleaseYear: song?.albumReleaseYear?.toString() || '',
-      albumReleaseMonth: albumMonth,
-      albumReleaseDay: albumDay,
       musicServiceEmbeds: getInitialEmbeds(song),
       detailPageUrls: song?.detailPageUrls || [],
     }
@@ -387,19 +355,6 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
       newErrors.releaseDay = '1〜31の数値を入力してください'
     }
 
-    const releaseDateFields = [
-      ['singleReleaseYear', formData.singleReleaseYear, isValidYear, '有効な年を入力してください'],
-      ['singleReleaseMonth', formData.singleReleaseMonth, isValidMonth, '1〜12の数値を入力してください'],
-      ['singleReleaseDay', formData.singleReleaseDay, isValidDay, '1〜31の数値を入力してください'],
-      ['albumReleaseYear', formData.albumReleaseYear, isValidYear, '有効な年を入力してください'],
-      ['albumReleaseMonth', formData.albumReleaseMonth, isValidMonth, '1〜12の数値を入力してください'],
-      ['albumReleaseDay', formData.albumReleaseDay, isValidDay, '1〜31の数値を入力してください'],
-    ] as const
-
-    releaseDateFields.forEach(([field, value, validator, message]) => {
-      if (value && !validator(value)) newErrors[field] = message
-    })
-
     // 外部リンクのバリデーション
     const urlErrors: string[] = []
     formData.detailPageUrls.forEach((link, index) => {
@@ -454,21 +409,7 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
     songData.releaseDate = releaseDate // undefinedの場合も明示的に設定
 
     songData.singleName = formData.singleName.trim() || undefined
-    songData.singleReleaseYear = formData.singleReleaseYear
-      ? parseInt(formData.singleReleaseYear, 10)
-      : undefined
-    songData.singleReleaseDate = formatReleaseDate(
-      formData.singleReleaseMonth,
-      formData.singleReleaseDay
-    )
     songData.albumName = formData.albumName.trim() || undefined
-    songData.albumReleaseYear = formData.albumReleaseYear
-      ? parseInt(formData.albumReleaseYear, 10)
-      : undefined
-    songData.albumReleaseDate = formatReleaseDate(
-      formData.albumReleaseMonth,
-      formData.albumReleaseDay
-    )
 
     // 有効な埋め込みコンテンツのみ（空の場合も明示的に空配列を設定）
     const validEmbeds = formData.musicServiceEmbeds.filter(
@@ -515,52 +456,6 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
     },
     [touched, errors]
   )
-
-  const renderReleaseDateFields = (
-    label: string,
-    yearField: ReleaseDateFormField,
-    monthField: ReleaseDateFormField,
-    dayField: ReleaseDateFormField
-  ) => {
-    const fields = [
-      { field: yearField, label: '年', placeholder: '例: 2025' },
-      { field: monthField, label: '月', placeholder: '例: 11' },
-      { field: dayField, label: '日', placeholder: '例: 11' },
-    ]
-
-    return (
-      <div className="song-form__release-date-group">
-        <p className="song-form__label">{label}</p>
-        <div className="song-form__row song-form__row--three">
-          {fields.map(({ field, label: fieldLabel, placeholder }) => (
-            <div
-              key={field}
-              className={`song-form__field ${shouldShowError(field) ? 'song-form__field--error' : ''}`}
-            >
-              <label htmlFor={field} className="song-form__label">
-                {fieldLabel}
-              </label>
-              <input
-                type="text"
-                id={field}
-                className="song-form__input"
-                value={formData[field]}
-                onChange={handleChange(field)}
-                onBlur={handleBlur(field)}
-                placeholder={placeholder}
-                disabled={isSubmitting}
-                autoComplete="off"
-                inputMode="numeric"
-              />
-              {shouldShowError(field) && (
-                <p className="song-form__error">{errors[field]}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
 
   return (
     <form className="song-form" onSubmit={handleSubmit} noValidate>
@@ -788,13 +683,6 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
             />
           </div>
 
-          {renderReleaseDateFields(
-            'シングル発売日（未入力の場合は上記の発売日を使用）',
-            'singleReleaseYear',
-            'singleReleaseMonth',
-            'singleReleaseDay'
-          )}
-
           {/* アルバム名 */}
           <div className="song-form__field">
             <label htmlFor="albumName" className="song-form__label">
@@ -812,13 +700,6 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
               autoComplete="off"
             />
           </div>
-
-          {renderReleaseDateFields(
-            'アルバム発売日（未入力の場合は上記の発売日を使用）',
-            'albumReleaseYear',
-            'albumReleaseMonth',
-            'albumReleaseDay'
-          )}
         </section>
 
         {/* 埋め込みコンテンツセクション */}

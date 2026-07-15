@@ -28,6 +28,14 @@ interface FirebaseSong extends Omit<Song, 'id' | 'createdAt' | 'updatedAt'> {
   isPublic?: boolean
 }
 
+/** 廃止済みのリリース別発売日。保存を拒否し、更新時に既存値も削除する。 */
+const REMOVED_RELEASE_DATE_FIELDS: ReadonlySet<string> = new Set([
+  'singleReleaseYear',
+  'singleReleaseDate',
+  'albumReleaseYear',
+  'albumReleaseDate',
+])
+
 /**
  * Firebase Firestoreサービスクラス
  */
@@ -94,11 +102,7 @@ export class FirebaseService {
     if (data.releaseYear) song.releaseYear = data.releaseYear
     if (data.releaseDate) song.releaseDate = data.releaseDate
     if (data.singleName) song.singleName = data.singleName
-    if (data.singleReleaseYear) song.singleReleaseYear = data.singleReleaseYear
-    if (data.singleReleaseDate) song.singleReleaseDate = data.singleReleaseDate
     if (data.albumName) song.albumName = data.albumName
-    if (data.albumReleaseYear) song.albumReleaseYear = data.albumReleaseYear
-    if (data.albumReleaseDate) song.albumReleaseDate = data.albumReleaseDate
     if (data.musicServiceEmbed) song.musicServiceEmbed = data.musicServiceEmbed
     if (data.musicServiceEmbeds) song.musicServiceEmbeds = data.musicServiceEmbeds
     if (data.detailPageUrls) song.detailPageUrls = data.detailPageUrls
@@ -229,9 +233,9 @@ export class FirebaseService {
         isPublic: true,
       }
 
-      // songDataからundefinedでない値のみをコピー（idは除外）
+      // songDataからundefinedでない値のみをコピー（id・廃止済みフィールドは除外）
       for (const [key, value] of Object.entries(songData)) {
-        if (key !== 'id' && value !== undefined) {
+        if (key !== 'id' && !REMOVED_RELEASE_DATE_FIELDS.has(key) && value !== undefined) {
           docData[key] = value
         }
       }
@@ -265,8 +269,13 @@ export class FirebaseService {
         updatedAt: serverTimestamp(),
       }
 
+      // 編集対象に旧フィールドが残っている場合は、同時にFirestoreから削除する
+      REMOVED_RELEASE_DATE_FIELDS.forEach((field) => {
+        updateData[field] = deleteField()
+      })
+
       for (const [key, value] of Object.entries(songData)) {
-        if (key === 'id') continue // idフィールドは除外
+        if (key === 'id' || REMOVED_RELEASE_DATE_FIELDS.has(key)) continue
         if (value === undefined) {
           // undefinedの場合はフィールドを削除
           updateData[key] = deleteField()

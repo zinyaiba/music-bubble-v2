@@ -20,6 +20,7 @@
 .timeline-group {
   width: 100%;
   margin: 0 0 32px;
+  scroll-margin-top: var(--spacing-md);
   /* コンテナのジグザグ線(SVG, z-index:0)より前面に重ねる。
      セクション背景は透明なので、ガター・行間では線が透けて見え、
      不透明なカードの背面では線が隠れる。 */
@@ -43,8 +44,6 @@
   pointer-events: none;
   z-index: 0;
 }
-
-
 
 /* アイテム行のスタック */
 .timeline-group__rows {

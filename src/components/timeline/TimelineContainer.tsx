@@ -146,9 +146,7 @@ export function TimelineContainer({
   if (groups.length === 0) {
     return (
       <div className="timeline-container timeline-container--empty">
-        <p className="timeline-container__empty-message">
-          表示できるタイムラインがありません
-        </p>
+        <p className="timeline-container__empty-message">表示できるタイムラインがありません</p>
       </div>
     )
   }
@@ -178,14 +176,21 @@ export function TimelineContainer({
         )}
 
         {/* 受け取った順序をそのまま維持してレンダリング */}
-        {groups.map((group) => (
-          <TimelineGroup
-            key={group.yearMonth}
-            group={group}
-            onSongClick={onSongClick}
-            onLiveClick={onLiveClick}
-          />
-        ))}
+        {groups.map((group, index) => {
+          const year = group.yearMonth.slice(0, 4)
+          const previousYear = groups[index - 1]?.yearMonth.slice(0, 4)
+          const yearAnchorId = year !== previousYear ? `timeline-year-${year}` : undefined
+
+          return (
+            <TimelineGroup
+              key={group.yearMonth}
+              group={group}
+              anchorId={yearAnchorId}
+              onSongClick={onSongClick}
+              onLiveClick={onLiveClick}
+            />
+          )
+        })}
       </div>
     </div>
   )

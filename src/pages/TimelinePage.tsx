@@ -12,7 +12,7 @@
  * - 9.1: 既存のデザインシステムと一貫したスタイリングを使用する
  */
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTimelineData } from '../hooks/useTimelineData'
 import { Header } from '../components/common/Header'
@@ -34,9 +34,23 @@ export function TimelinePage() {
   // タイムラインデータの取得（ソート順変更時に再取得・再ソート）
   const { data, loading, error, retry } = useTimelineData({ sortOrder })
 
+  // 現在の表示順を維持した年ショートカット一覧
+  const years = useMemo(
+    () => (data ? Array.from(new Set(data.map((group) => group.yearMonth.slice(0, 4)))) : []),
+    [data]
+  )
+
   // ソート順の切り替え
   const handleToggleSortOrder = useCallback(() => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
+  }, [])
+
+  // 指定した年の先頭へ移動
+  const handleYearJump = useCallback((year: string) => {
+    document.getElementById(`timeline-year-${year}`)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
   }, [])
 
   // 楽曲クリック時: 楽曲詳細ページへ遷移
@@ -62,6 +76,25 @@ export function TimelinePage() {
       <main className="timeline-page__main">
         {/* ソート切り替えコントロール */}
         <div className="timeline-page__controls">
+          {years.length > 0 && (
+            <nav className="timeline-page__year-shortcuts" aria-label="年別ショートカット">
+              <span className="timeline-page__year-shortcuts-label">年へ移動</span>
+              <div className="timeline-page__year-buttons">
+                {years.map((year) => (
+                  <button
+                    key={year}
+                    type="button"
+                    className="timeline-page__year-button"
+                    onClick={() => handleYearJump(year)}
+                    aria-label={`${year}年へ移動`}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            </nav>
+          )}
+
           <button
             type="button"
             className="timeline-page__sort-toggle"

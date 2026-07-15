@@ -33,6 +33,8 @@ import './TimelineGroup.css'
 export interface TimelineGroupProps {
   /** 年月グループデータ */
   group: TimelineYearMonthGroup
+  /** 年ショートカットの移動先ID（その年の先頭グループのみ） */
+  anchorId?: string
   /** 楽曲（個別楽曲・リリース単位内の楽曲）クリック時のコールバック */
   onSongClick?: (songId: string) => void
   /** ライブ（個別ライブ・重要イベント）クリック時のコールバック */
@@ -69,13 +71,18 @@ function renderTimelineItem(
  */
 export function TimelineGroup({
   group,
+  anchorId,
   onSongClick,
   onLiveClick,
 }: TimelineGroupProps): JSX.Element {
   const handlers = { onSongClick, onLiveClick }
 
   return (
-    <section className="timeline-group" aria-label={`${group.yearMonth} のタイムライン`}>
+    <section
+      id={anchorId}
+      className="timeline-group"
+      aria-label={`${group.yearMonth} のタイムライン`}
+    >
       {/* 年月ヘッダー */}
       <TimelineYearMonthHeader yearMonth={group.yearMonth} />
 
