@@ -97,21 +97,6 @@
   color: var(--color-text-secondary);
 }
 
-/* 展開アイコン（▼）展開時に180度回転 */
-.release-unit__toggle-icon {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm, 0.875rem);
-  transition: transform 0.3s ease;
-}
-
-.release-unit__toggle-icon--expanded {
-  transform: rotate(180deg);
-}
-
 /* 展開コンテンツ */
 .release-unit__content {
   display: flex;

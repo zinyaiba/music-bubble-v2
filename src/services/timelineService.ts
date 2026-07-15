@@ -17,6 +17,7 @@ import type {
 import type { FirebaseService } from './firebaseService'
 import type { LiveService } from './liveService'
 import type { TourGroupingService } from './tourGroupingService'
+import { getSongReleaseDate } from '../utils/songReleaseDate'
 
 /**
  * タイムラインサービスクラス
@@ -106,19 +107,17 @@ export class TimelineService {
    * @returns YYYY-MM形式の文字列。年のみ判明の場合は'YYYY-99'（その年の末尾に配置）、
    *          年も不明な場合は'9999-99'（表示対象から除外される）
    */
-  public extractYearMonth(
-    dateInput: string | { year?: number; date?: string }
-  ): string {
+  public extractYearMonth(dateInput: string | { year?: number; date?: string }): string {
     try {
       if (typeof dateInput === 'string') {
         // ISO 8601形式の場合
         const date = new Date(dateInput)
-        
+
         // 無効な日付をチェック
         if (isNaN(date.getTime())) {
           return '9999-99'
         }
-        
+
         const year = date.getFullYear()
         const month = String(date.getMonth() + 1).padStart(2, '0')
         return `${year}-${month}`
@@ -202,37 +201,36 @@ export class TimelineService {
 
     // リリース単位をタイムラインアイテムに変換
     for (const [releaseName, releaseSongs] of releaseUnits) {
-      // リリース単位内の楽曲をリリース日でソート（古い順）
+      // singleNameを持つグループを優先してリリース種別を決定
+      const releaseType = releaseSongs[0].singleName ? 'single' : 'album'
+
+      // リリース種別ごとの発売日でソート（古い順）
       const sortedSongs = [...releaseSongs].sort((a, b) => {
-        const dateA = this.extractYearMonth({ year: a.releaseYear, date: a.releaseDate })
-        const dateB = this.extractYearMonth({ year: b.releaseYear, date: b.releaseDate })
+        const releaseA = getSongReleaseDate(a, releaseType)
+        const releaseB = getSongReleaseDate(b, releaseType)
+        const dateA = this.extractYearMonth(releaseA)
+        const dateB = this.extractYearMonth(releaseB)
         return dateA.localeCompare(dateB)
       })
 
-      // 最初の楽曲の日付を代表日時として使用
+      // 最初の楽曲のリリース別日付を代表日時として使用
       const firstSong = sortedSongs[0]
-      const yearMonth = this.extractYearMonth({
-        year: firstSong.releaseYear,
-        date: firstSong.releaseDate,
-      })
+      const releaseDate = getSongReleaseDate(firstSong, releaseType)
+      const yearMonth = this.extractYearMonth(releaseDate)
 
-      // リリース単位の日付を決定（releaseYear + releaseDate から ISO 8601形式に変換）
+      // リリース別の発売日を ISO 8601形式に変換
       let date: string
-      if (firstSong.releaseYear && firstSong.releaseDate) {
-        const year = firstSong.releaseYear
-        const month = firstSong.releaseDate.substring(0, 2)
-        const day = firstSong.releaseDate.substring(2, 4)
-        date = `${year}-${month}-${day}T00:00:00.000Z`
-      } else if (firstSong.releaseYear) {
+      if (releaseDate.year && releaseDate.date) {
+        const month = releaseDate.date.substring(0, 2)
+        const day = releaseDate.date.substring(2, 4)
+        date = `${releaseDate.year}-${month}-${day}T00:00:00.000Z`
+      } else if (releaseDate.year) {
         // 年のみ判明: その年の末尾に配置
-        date = `${firstSong.releaseYear}-12-31T00:00:00.000Z`
+        date = `${releaseDate.year}-12-31T00:00:00.000Z`
       } else {
         // 日付が完全に不明な場合はフォールバック（後で除外される）
         date = '9999-12-31T00:00:00.000Z'
       }
-
-      // リリース種別を決定
-      const releaseType = firstSong.singleName ? 'single' : 'album'
 
       // リリース単位タイムラインアイテムを作成
       const releaseUnitItem: ReleaseUnitTimelineItem = {
@@ -304,7 +302,7 @@ export class TimelineService {
       if (item.type === 'tour') {
         // ツアーグループの場合
         const tourGroup = item.data
-        
+
         // 最も早い公演日時を代表日時として使用
         const date = tourGroup.firstDate
         const yearMonth = this.extractYearMonth(date)

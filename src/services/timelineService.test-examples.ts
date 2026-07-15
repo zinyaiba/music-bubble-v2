@@ -137,7 +137,10 @@ export function testGroupSongsByRelease() {
 
   // 検証4: アルバム2は存在しない（singleNameが優先されるため）
   const album2 = result.releaseUnits.get('アルバム2')
-  console.assert(album2 === undefined, `Expected 'アルバム2' to be undefined, got ${album2?.length} songs`)
+  console.assert(
+    album2 === undefined,
+    `Expected 'アルバム2' to be undefined, got ${album2?.length} songs`
+  )
   console.log(`✓ アルバム2: 存在しない (singleNameに優先される)`)
 
   // 検証5: 個別楽曲が1曲

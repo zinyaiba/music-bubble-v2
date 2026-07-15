@@ -1,0 +1,26 @@
+.expand-toggle-indicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  min-width: 68px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
+.expand-toggle-indicator--expanded {
+  color: var(--color-primary-dark);
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary-light);
+}
+
+.expand-toggle-indicator__icon {
+  flex-shrink: 0;
+}

@@ -17,7 +17,9 @@ import type { JSX } from 'react'
 import type { ReleaseUnitTimelineItem, MusicServiceEmbed, Song } from '../../types'
 import { MarqueeText } from '../common/MarqueeText'
 import { LazyEmbed } from '../common/LazyEmbed'
+import { ExpandToggleIndicator } from './ExpandToggleIndicator'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
+import { shouldShowEmbedsForRelease } from '../../utils/songReleaseDate'
 import './ReleaseUnit.css'
 
 export interface ReleaseUnitProps {
@@ -71,9 +73,14 @@ function getSongEmbeds(song: Song): MusicServiceEmbed[] {
  * リリース単位内の全楽曲から埋め込みコンテンツを集約する。
  * Requirement 5.3: 表示される埋め込みコンテンツは全楽曲の musicServiceEmbeds を含む。
  */
-function aggregateEmbeds(songs: Song[]): AggregatedEmbed[] {
+function aggregateEmbeds(
+  songs: Song[],
+  releaseType: ReleaseUnitTimelineItem['releaseType']
+): AggregatedEmbed[] {
   const aggregated: AggregatedEmbed[] = []
   songs.forEach((song, songIndex) => {
+    if (!shouldShowEmbedsForRelease(song, releaseType)) return
+
     const embeds = getSongEmbeds(song)
     embeds.forEach((embed, embedIndex) => {
       aggregated.push({
@@ -89,11 +96,7 @@ function aggregateEmbeds(songs: Song[]): AggregatedEmbed[] {
 /**
  * ReleaseUnit コンポーネント
  */
-export function ReleaseUnit({
-  releaseUnit,
-  onToggle,
-  onSongClick,
-}: ReleaseUnitProps): JSX.Element {
+export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState<boolean>(releaseUnit.isExpanded ?? false)
 
   const songCount = releaseUnit.songs.length
@@ -105,7 +108,7 @@ export function ReleaseUnit({
     releaseType: releaseUnit.releaseType,
   })
   const releaseTypeLabel = cardStyle.badge.label
-  const aggregatedEmbeds = aggregateEmbeds(releaseUnit.songs)
+  const aggregatedEmbeds = aggregateEmbeds(releaseUnit.songs, releaseUnit.releaseType)
   const hasEmbeds = aggregatedEmbeds.length > 0
 
   const handleToggle = () => {
@@ -124,10 +127,7 @@ export function ReleaseUnit({
     onSongClick?.(songId)
   }
 
-  const handleSongKeyDown = (
-    event: React.KeyboardEvent<HTMLLIElement>,
-    songId: string
-  ) => {
+  const handleSongKeyDown = (event: React.KeyboardEvent<HTMLLIElement>, songId: string) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       handleSongClick(songId)
@@ -144,7 +144,9 @@ export function ReleaseUnit({
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
-        aria-label={`${releaseUnit.releaseName}（${releaseTypeLabel}、収録曲数${songCount}曲）`}
+        aria-label={`${releaseUnit.releaseName}（${releaseTypeLabel}、収録曲数${songCount}曲）、${
+          isExpanded ? '収録曲を閉じる' : '収録曲を開く'
+        }`}
       >
         <div className="release-unit__header-info">
           {/* Type_Badge: single/album をアイコン + テキストで区別（色以外の判別手段） */}
@@ -161,40 +163,10 @@ export function ReleaseUnit({
           </h3>
           <span className="release-unit__count">収録曲数: {songCount}曲</span>
         </div>
-        <span
-          className={`release-unit__toggle-icon ${
-            isExpanded ? 'release-unit__toggle-icon--expanded' : ''
-          }`}
-          aria-hidden="true"
-        >
-          ▼
-        </span>
+        <ExpandToggleIndicator isExpanded={isExpanded} />
       </div>
 
-      {/* 埋め込みコンテンツ（全楽曲分を集約）: 開かずとも常時表示して華やかに */}
-      {hasEmbeds && (
-        <div className="release-unit__embeds release-unit__embeds--always">
-          <div className="release-unit__embed-list">
-            {aggregatedEmbeds.map((item) => (
-              <div key={item.key} className="release-unit__embed-item">
-                <span className="release-unit__embed-label">
-                  {item.songTitle} - {getEmbedServiceName(item.embed.embed, item.embed.label)}
-                </span>
-                {/* サムネイル先行・タップで iframe 生成（メモリ節約） */}
-                <LazyEmbed
-                  embed={item.embed.embed}
-                  title={`${item.songTitle} - ${getEmbedServiceName(
-                    item.embed.embed,
-                    item.embed.label
-                  )}`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 展開コンテンツ: 収録楽曲リスト */}
+      {/* 展開コンテンツ: 収録楽曲リスト（展開ボタンの直下に表示） */}
       {isExpanded && (
         <div className="release-unit__content">
           <div className="release-unit__songs">
@@ -217,6 +189,29 @@ export function ReleaseUnit({
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      )}
+
+      {/* 埋め込みコンテンツ（全楽曲分を集約）: 開かずとも常時表示して華やかに */}
+      {hasEmbeds && (
+        <div className="release-unit__embeds release-unit__embeds--always">
+          <div className="release-unit__embed-list">
+            {aggregatedEmbeds.map((item) => (
+              <div key={item.key} className="release-unit__embed-item">
+                <span className="release-unit__embed-label">
+                  {item.songTitle} - {getEmbedServiceName(item.embed.embed, item.embed.label)}
+                </span>
+                {/* サムネイル先行・タップで iframe 生成（メモリ節約） */}
+                <LazyEmbed
+                  embed={item.embed.embed}
+                  title={`${item.songTitle} - ${getEmbedServiceName(
+                    item.embed.embed,
+                    item.embed.label
+                  )}`}
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}

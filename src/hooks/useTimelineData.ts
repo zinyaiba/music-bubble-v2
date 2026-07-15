@@ -24,7 +24,7 @@ interface UseTimelineDataResult {
 }
 
 interface UseTimelineDataOptions {
-  /** グループのソート順（'asc' | 'desc'、デフォルト: 'asc'） */
+  /** グループのソート順（'asc' | 'desc'、デフォルト: 'desc'） */
   sortOrder?: 'asc' | 'desc'
 }
 
@@ -40,10 +40,8 @@ const timelineService = TimelineService.getInstance(
  * @param options ソート順などのオプション
  * @returns { data, loading, error, retry }
  */
-export function useTimelineData(
-  options: UseTimelineDataOptions = {}
-): UseTimelineDataResult {
-  const { sortOrder = 'asc' } = options
+export function useTimelineData(options: UseTimelineDataOptions = {}): UseTimelineDataResult {
+  const { sortOrder = 'desc' } = options
 
   const [data, setData] = useState<TimelineYearMonthGroup[] | null>(null)
   const [loading, setLoading] = useState(true)
@@ -68,9 +66,7 @@ export function useTimelineData(
     } catch (err) {
       if (isMounted.current) {
         const message =
-          err instanceof Error
-            ? err.message
-            : 'タイムラインデータの取得に失敗しました'
+          err instanceof Error ? err.message : 'タイムラインデータの取得に失敗しました'
         setError(message)
         setData(null)
       }

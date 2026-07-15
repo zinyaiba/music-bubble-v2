@@ -1,0 +1,23 @@
+.live-embed-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+  margin-top: var(--spacing-xs);
+  cursor: default;
+}
+
+.live-embed-list__item {
+  width: 100%;
+  min-width: 0;
+}
+
+.live-embed-list__item .lazy-embed {
+  max-width: 340px;
+}
+
+@media (max-width: 767px) {
+  .live-embed-list {
+    gap: var(--spacing-xs);
+  }
+}

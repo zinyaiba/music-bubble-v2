@@ -13,6 +13,7 @@ import type { Live } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import { MarqueeText } from '../common/MarqueeText'
+import { LiveEmbedList } from './LiveEmbedList'
 import './LiveTimelineItem.css'
 
 export interface LiveTimelineItemProps {
@@ -83,14 +84,10 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
     >
       {/* ヘッダー（種別バッジ + 補足の場所情報） */}
       <div className="live-timeline-item__header">
-        <span
-          className={`live-timeline-item__type live-timeline-item__type--${subTypeClass}`}
-        >
+        <span className={`live-timeline-item__type live-timeline-item__type--${subTypeClass}`}>
           {liveTypeLabel}
         </span>
-        {locationDetail && (
-          <span className="live-timeline-item__location">{locationDetail}</span>
-        )}
+        {locationDetail && <span className="live-timeline-item__location">{locationDetail}</span>}
       </div>
 
       {/* 公演名 */}
@@ -103,6 +100,9 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
 
       {/* 日時 */}
       <p className="live-timeline-item__datetime">{formattedDateTime}</p>
+
+      {/* 埋め込みコンテンツ（サムネイル先行・タップで iframe 生成） */}
+      <LiveEmbedList live={live} />
     </article>
   )
 }

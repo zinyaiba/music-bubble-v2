@@ -107,23 +107,6 @@
   color: var(--color-text-secondary);
 }
 
-/* 展開アイコン */
-.tour-group-item__icon {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  font-size: var(--font-size-sm, 0.875rem);
-  color: var(--color-primary);
-  transition: transform 0.3s ease;
-}
-
-.tour-group-item__icon--expanded {
-  transform: rotate(180deg);
-}
-
 /* 個別公演リスト（展開時に 0.3s アニメーション） */
 .tour-group-item__performances {
   list-style: none;

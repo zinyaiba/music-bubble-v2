@@ -10,6 +10,7 @@
 
 import { useState } from 'react'
 import type { TourGroup } from '../../types'
+import { ExpandToggleIndicator } from './ExpandToggleIndicator'
 import './TourGroupItem.css'
 
 export interface TourGroupItemProps {
@@ -76,7 +77,6 @@ export function TourGroupItem({ tourGroup, onToggle, onClick }: TourGroupItemPro
     <article
       className="tour-group-item"
       role="article"
-      aria-expanded={isExpanded}
       aria-label={`${tourGroup.tourName} - ${tourGroup.performanceCount}公演`}
     >
       {/* ヘッダー（クリックで展開/折りたたみ） */}
@@ -85,6 +85,8 @@ export function TourGroupItem({ tourGroup, onToggle, onClick }: TourGroupItemPro
         onClick={handleToggle}
         role="button"
         tabIndex={0}
+        aria-expanded={isExpanded}
+        aria-label={`${tourGroup.tourName}、${isExpanded ? '公演一覧を閉じる' : '公演一覧を開く'}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
@@ -106,15 +108,8 @@ export function TourGroupItem({ tourGroup, onToggle, onClick }: TourGroupItemPro
           <p className="tour-group-item__date-range">{dateRange}</p>
         </div>
 
-        {/* 展開アイコン */}
-        <span
-          className={`tour-group-item__icon ${
-            isExpanded ? 'tour-group-item__icon--expanded' : ''
-          }`}
-          aria-hidden="true"
-        >
-          ▼
-        </span>
+        {/* 展開状態と操作 */}
+        <ExpandToggleIndicator isExpanded={isExpanded} />
       </div>
 
       {/* 展開時: 個別公演リスト */}

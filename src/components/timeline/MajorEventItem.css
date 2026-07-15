@@ -36,8 +36,7 @@
   /* 淡いパープルを不透明な --color-surface の上に重ねる。
      最背面が不透明なので、またいでいる中央の軸線が透けない（種別ごとに上書き）。 */
   background:
-    linear-gradient(135deg, var(--color-secondary-alpha) 0%, transparent 100%),
-    var(--color-surface);
+    linear-gradient(135deg, var(--color-secondary-alpha) 0%, transparent 100%), var(--color-surface);
 
   /* 目立たせるためのタイポグラフィ */
   font-size: 1.1rem;
@@ -58,8 +57,7 @@
      紫を強く出さず明るい印象にし、強調はグロー影と太ボーダーで表現する。
      最背面 --color-surface が不透明なので中央軸線が透けない。 */
   background:
-    linear-gradient(135deg, var(--color-secondary-alpha) 0%, transparent 55%),
-    var(--color-surface);
+    linear-gradient(135deg, var(--color-secondary-alpha) 0%, transparent 55%), var(--color-surface);
   /* グロー影で最高強調を表現: Requirement 2.3 */
   box-shadow: var(--shadow-glow), var(--shadow-lg);
 }
@@ -69,11 +67,7 @@
 }
 
 .major-event-item--solo .major-event-item__badge {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary) 0%,
-    var(--color-secondary-dark) 100%
-  );
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
 }
 
 /* ===== ツアー（tour）: 左 Accent_Bar + 段差シャドウで「複数公演のまとまり」を表現 ===== */
@@ -84,8 +78,7 @@
   /* Solo より淡い塗り背景（強調度は Solo ＞ Tour）。
      最背面 --color-surface が不透明なので中央軸線が透けない。 */
   background:
-    linear-gradient(135deg, var(--color-secondary-alpha) 0%, transparent 100%),
-    var(--color-surface);
+    linear-gradient(135deg, var(--color-secondary-alpha) 0%, transparent 100%), var(--color-surface);
   /* 段差シャドウ: 複数公演が積み重なったまとまりを表現: Requirement 2.4 */
   box-shadow:
     var(--spacing-xs) var(--spacing-xs) 0 calc(-1 * var(--border-width-thin))
@@ -100,15 +93,7 @@
 }
 
 .major-event-item--tour .major-event-item__badge {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary) 0%,
-    var(--color-secondary-dark) 100%
-  );
-}
-
-.major-event-item--tour .major-event-item__toggle {
-  color: var(--color-secondary-dark);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
 }
 
 .major-event-item__badge {
@@ -118,11 +103,7 @@
   font-size: 0.85rem;
   font-weight: var(--font-weight-bold);
   color: #ffffff;
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary) 0%,
-    var(--color-secondary-dark) 100%
-  );
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
   border-radius: var(--border-radius-full);
   box-shadow: var(--shadow-sm);
 }
@@ -208,17 +189,6 @@
   /* タイトルがはみ出す場合に marquee が機能するよう幅を制約 */
   flex: 1;
   min-width: 0;
-}
-
-.major-event-item__toggle {
-  flex-shrink: 0;
-  font-size: 0.9rem;
-  color: var(--color-secondary);
-  transition: transform var(--transition-normal);
-}
-
-.major-event-item__toggle--expanded {
-  transform: rotate(180deg);
 }
 
 /* 展開時の公演リスト */
@@ -307,4 +277,32 @@
   .major-event-item__title {
     font-size: 1.1rem;
   }
+}
+
+/* ツアー公演は詳細導線と埋め込み操作を分離する */
+.major-event-item__performance {
+  flex-direction: column;
+  align-items: stretch;
+  cursor: default;
+}
+
+.major-event-item__performance-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+}
+
+.major-event-item__performance-summary:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-secondary);
+  outline-offset: var(--spacing-xs);
+}
+
+/* ライブ系カードでは共通展開表示を Purple_Palette に合わせる */
+.major-event-item .expand-toggle-indicator--expanded {
+  color: var(--color-secondary-dark);
+  background: var(--color-secondary-alpha);
+  border-color: var(--color-secondary-light);
 }

@@ -518,3 +518,15 @@
     padding: var(--spacing-lg);
   }
 }
+
+/* シングル／アルバム固有の発売日 */
+.song-form__release-date-group {
+  margin: calc(-1 * var(--spacing-xs)) 0 var(--spacing-md);
+  padding: var(--spacing-sm);
+  background: var(--color-background-light);
+  border-radius: var(--border-radius-md);
+}
+
+.song-form__release-date-group .song-form__field {
+  margin-bottom: 0;
+}

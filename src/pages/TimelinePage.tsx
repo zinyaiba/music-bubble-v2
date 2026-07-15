@@ -28,8 +28,8 @@ import './TimelinePage.css'
 export function TimelinePage() {
   const navigate = useNavigate()
 
-  // ソート順の状態管理（デフォルト: 古い順）
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  // ソート順の状態管理（デフォルト: 新しい順）
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   // タイムラインデータの取得（ソート順変更時に再取得・再ソート）
   const { data, loading, error, retry } = useTimelineData({ sortOrder })
@@ -57,7 +57,7 @@ export function TimelinePage() {
 
   return (
     <div className="timeline-page">
-      <Header title="タイムライン" showBackButton onBack={() => navigate('/')} />
+      <Header title="ライブ×曲 - 年表" showBackButton onBack={() => navigate('/')} />
 
       <main className="timeline-page__main">
         {/* ソート切り替えコントロール */}
@@ -102,11 +102,7 @@ export function TimelinePage() {
 
         {/* ローディング表示 */}
         {loading && (
-          <LoadingSpinner
-            size="large"
-            message="タイムラインを読み込んでいます..."
-            fullScreen
-          />
+          <LoadingSpinner size="large" message="タイムラインを読み込んでいます..." fullScreen />
         )}
 
         {/* エラー表示 */}

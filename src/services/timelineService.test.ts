@@ -58,7 +58,7 @@ describe('TimelineService', () => {
 
       expect(items).toHaveLength(1)
       expect(items[0].type).toBe('release-unit')
-      
+
       if (items[0].type === 'release-unit') {
         expect(items[0].releaseName).toBe('Single X')
         expect(items[0].releaseType).toBe('single')
@@ -97,7 +97,7 @@ describe('TimelineService', () => {
 
       expect(items).toHaveLength(1)
       expect(items[0].type).toBe('release-unit')
-      
+
       if (items[0].type === 'release-unit') {
         expect(items[0].releaseName).toBe('Album Y')
         expect(items[0].releaseType).toBe('album')
@@ -126,7 +126,7 @@ describe('TimelineService', () => {
 
       expect(items).toHaveLength(1)
       expect(items[0].type).toBe('release-unit')
-      
+
       if (items[0].type === 'release-unit') {
         expect(items[0].releaseName).toBe('Single Z')
         expect(items[0].releaseType).toBe('single')
@@ -150,7 +150,7 @@ describe('TimelineService', () => {
 
       expect(items).toHaveLength(1)
       expect(items[0].type).toBe('song')
-      
+
       if (items[0].type === 'song') {
         expect(items[0].song.id).toBe('6')
         expect(items[0].position).toBe('right')
@@ -185,8 +185,8 @@ describe('TimelineService', () => {
       const items = timelineService.convertSongsToTimelineItems(songs)
 
       expect(items).toHaveLength(2)
-      expect(items.some(item => item.type === 'release-unit')).toBe(true)
-      expect(items.some(item => item.type === 'song')).toBe(true)
+      expect(items.some((item) => item.type === 'release-unit')).toBe(true)
+      expect(items.some((item) => item.type === 'song')).toBe(true)
     })
 
     it('should handle songs with missing date information', () => {
@@ -225,7 +225,7 @@ describe('TimelineService', () => {
 
       expect(items).toHaveLength(1)
       expect(items[0].type).toBe('major-event')
-      
+
       if (items[0].type === 'major-event') {
         expect(items[0].eventType).toBe('solo')
         expect(items[0].position).toBe('center')
@@ -258,7 +258,7 @@ describe('TimelineService', () => {
 
       expect(items).toHaveLength(1)
       expect(items[0].type).toBe('major-event')
-      
+
       if (items[0].type === 'major-event') {
         expect(items[0].eventType).toBe('tour')
         expect(items[0].position).toBe('center')
@@ -293,13 +293,13 @@ describe('TimelineService', () => {
       expect(items).toHaveLength(2)
       expect(items[0].type).toBe('live')
       expect(items[1].type).toBe('live')
-      
+
       if (items[0].type === 'live') {
         expect(items[0].position).toBe('left')
         expect(items[0].live.liveType).toBe('festival')
         expect(items[0].yearMonth).toBe('2023-08')
       }
-      
+
       if (items[1].type === 'live') {
         expect(items[1].position).toBe('left')
         expect(items[1].live.liveType).toBe('event')
@@ -346,24 +346,26 @@ describe('TimelineService', () => {
       const items = timelineService.convertLivesToTimelineItems(lives)
 
       expect(items).toHaveLength(3)
-      
+
       // Tour should be major event
-      const tourItem = items.find(item => item.type === 'major-event' && item.eventType === 'tour')
+      const tourItem = items.find(
+        (item) => item.type === 'major-event' && item.eventType === 'tour'
+      )
       expect(tourItem).toBeDefined()
       if (tourItem?.type === 'major-event') {
         expect(tourItem.position).toBe('center')
       }
-      
+
       // Solo should be major event
-      const soloItem = items.find(item => item.id === 'major-event-solo-solo1')
+      const soloItem = items.find((item) => item.id === 'major-event-solo-solo1')
       expect(soloItem?.type).toBe('major-event')
       if (soloItem?.type === 'major-event') {
         expect(soloItem.eventType).toBe('solo')
         expect(soloItem.position).toBe('center')
       }
-      
+
       // Festival should be regular live item
-      const festItem = items.find(item => item.id === 'live-fest1')
+      const festItem = items.find((item) => item.id === 'live-fest1')
       expect(festItem?.type).toBe('live')
       if (festItem?.type === 'live') {
         expect(festItem.position).toBe('left')
