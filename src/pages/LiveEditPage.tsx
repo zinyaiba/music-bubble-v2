@@ -168,6 +168,13 @@ export function LiveEditPage() {
           order: index + 1,
           isDailySong: item.isDailySong,
         }))
+        const analyticsDetails = {
+          live_type: formData.liveType,
+          setlist_count: setlistWithOrder.length,
+          has_embed: formData.embeds?.some((item) => item.embed.trim() !== '') ?? false,
+          has_detail_link:
+            formData.detailPageUrls?.some((item) => item.url.trim() !== '') ?? false,
+        }
 
         if (isEditMode && liveId) {
           // 更新処理 (要件 7.6)
@@ -189,6 +196,12 @@ export function LiveEditPage() {
               }),
             { maxRetries: 2 }
           )
+
+          trackEvent(AnalyticsEvents.ライブ_保存完了, {
+            mode: 'edit',
+            live_id: liveId,
+            ...analyticsDetails,
+          })
 
           // 成功メッセージを表示 (要件 7.7)
           setSuccessMessage('ライブを更新しました')
@@ -223,6 +236,12 @@ export function LiveEditPage() {
             { maxRetries: 2 }
           )
 
+          trackEvent(AnalyticsEvents.ライブ_保存完了, {
+            mode: isTourAddMode ? 'tour_add' : 'new',
+            live_id: newLiveId,
+            ...analyticsDetails,
+          })
+
           // 成功メッセージを表示 (要件 7.7)
           setSuccessMessage('ライブを登録しました')
 
@@ -242,7 +261,7 @@ export function LiveEditPage() {
         setIsSubmitting(false)
       }
     },
-    [isEditMode, liveId, navigate]
+    [isEditMode, isTourAddMode, liveId, navigate]
   )
 
   // ナビゲーション

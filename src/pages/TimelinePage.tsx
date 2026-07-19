@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTimelineData } from '../hooks/useTimelineData'
+import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { ErrorMessage } from '../components/common/ErrorMessage'
@@ -47,6 +48,10 @@ export function TimelinePage() {
 
   // タイムラインデータの取得（ソート順変更時に再取得・再ソート）
   const { data, loading, error, retry } = useTimelineData({ sortOrder })
+
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.ページ閲覧_年表)
+  }, [])
 
   // 現在の表示順を維持した年ショートカット一覧
   const years = useMemo(
@@ -84,25 +89,32 @@ export function TimelinePage() {
 
   // ソート順の切り替え
   const handleToggleSortOrder = useCallback(() => {
-    setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
-  }, [])
+    const nextSortOrder = sortOrder === 'desc' ? 'asc' : 'desc'
+    trackEvent(AnalyticsEvents.年表_ソート変更, { sort_order: nextSortOrder })
+    setSortOrder(nextSortOrder)
+  }, [sortOrder])
 
   const handleActiveYearChange = useCallback((year: string) => {
     setActiveYear(year)
   }, [])
 
   // 指定した年の先頭へ移動
-  const handleYearJump = useCallback((year: string) => {
-    setActiveYear(year)
-    document.getElementById(`timeline-year-${year}`)?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
-  }, [])
+  const handleYearJump = useCallback(
+    (year: string) => {
+      trackEvent(AnalyticsEvents.年表_年移動, { year, sort_order: sortOrder })
+      setActiveYear(year)
+      document.getElementById(`timeline-year-${year}`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    },
+    [sortOrder]
+  )
 
   // 楽曲クリック時: 遷移元を保持して楽曲詳細ページへ遷移
   const handleSongClick = useCallback(
     (songId: string) => {
+      trackEvent(AnalyticsEvents.曲_詳細表示, { song_id: songId, source: 'timeline' })
       navigate(`/songs/${songId}`, { state: { fromTimeline: true } })
     },
     [navigate]
@@ -111,6 +123,7 @@ export function TimelinePage() {
   // ライブクリック時: 遷移元を保持してライブ詳細ページへ遷移
   const handleLiveClick = useCallback(
     (liveId: string) => {
+      trackEvent(AnalyticsEvents.ライブ_詳細表示, { live_id: liveId, source: 'timeline' })
       navigate(`/lives/${liveId}`, { state: { fromTimeline: true } })
     },
     [navigate]

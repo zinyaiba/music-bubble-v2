@@ -11,7 +11,7 @@
  * - 2.5: ツアーは代表日時、その他は公演日時で降順ソート
  */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Live, LiveType } from '../types'
 import { liveService } from '../services/liveService'
@@ -91,6 +91,7 @@ export function LiveListPage() {
   const initialYearFilter = initialState.yearFilter
   const initialMonthFilter = initialState.monthFilter
   const initialLocationFilter = initialState.locationFilter
+  const previousSortRef = useRef<LiveSortType>(initialSortBy)
 
   // ライブデータの取得
   useEffect(() => {
@@ -156,6 +157,7 @@ export function LiveListPage() {
   // ライブ詳細ページへ遷移（検索状態を保持）
   const handleLiveClick = useCallback(
     (liveId: string) => {
+      trackEvent(AnalyticsEvents.ライブ_詳細表示, { live_id: liveId, source: 'live_list' })
       navigate(`/lives/${liveId}`)
     },
     [navigate]
@@ -164,6 +166,10 @@ export function LiveListPage() {
   // ツアー詳細ページへ遷移（検索状態を保持）
   const handleTourClick = useCallback(
     (tourName: string) => {
+      trackEvent(AnalyticsEvents.ツアー_詳細表示, {
+        tour_name: tourName,
+        source: 'live_list',
+      })
       // ツアー名をURLエンコードして遷移
       const encodedTourName = encodeURIComponent(tourName)
       navigate(`/tours/${encodedTourName}`)
@@ -213,9 +219,10 @@ export function LiveListPage() {
       if (query) {
         trackSearch('ライブ', query)
       }
-      // ソート変更時にトラッキング
-      if (sortBy !== 'newest') {
-        trackEvent(AnalyticsEvents.ページ閲覧_ライブ一覧, { sort_type: sortBy })
+      // ソート変更時のみトラッキング（他フィルタ変更による重複送信を避ける）
+      if (sortBy !== previousSortRef.current) {
+        trackEvent(AnalyticsEvents.ライブ_ソート変更, { sort_type: sortBy })
+        previousSortRef.current = sortBy
       }
     },
     [setSearchParams]
@@ -223,6 +230,7 @@ export function LiveListPage() {
 
   // 新規ライブ追加ページへ遷移
   const handleAddLive = useCallback(() => {
+    trackEvent(AnalyticsEvents.ライブ_新規作成, { source: 'live_list' })
     navigate('/lives/new')
   }, [navigate])
 

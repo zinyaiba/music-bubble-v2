@@ -223,27 +223,48 @@ export function TourDetailPage() {
   }, [currentIndex, tourGroup, getSlideWidth])
 
   // インジケータークリックで該当公演にスクロール
-  const scrollToIndex = useCallback((index: number) => {
-    if (!carouselRef.current) return
-    const container = carouselRef.current
-    const itemWidth = getSlideWidth()
-    container.scrollTo({
-      left: itemWidth * index,
-      behavior: 'smooth'
-    })
-  }, [getSlideWidth])
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      if (!carouselRef.current) return
+      const container = carouselRef.current
+      const itemWidth = getSlideWidth()
+      const performance = tourGroup?.performances[index]
+      if (performance) {
+        trackEvent(AnalyticsEvents.ツアー_公演切替, {
+          tour_name: tourName,
+          live_id: performance.id,
+          performance_index: index,
+          change_method: 'indicator',
+        })
+      }
+      container.scrollTo({
+        left: itemWidth * index,
+        behavior: 'smooth',
+      })
+    },
+    [getSlideWidth, tourGroup, tourName]
+  )
 
   // 楽曲詳細ページへ遷移 - 要件 4.3
   const handleSongClick = useCallback(
     (songId: string) => {
+      trackEvent(AnalyticsEvents.曲_詳細表示, {
+        song_id: songId,
+        tour_name: tourName,
+        source: 'tour_detail',
+      })
       navigate(`/songs/${songId}`)
     },
-    [navigate]
+    [navigate, tourName]
   )
 
   // 編集ページへ遷移 - 要件 5.1, 5.2
   const handleEditClick = useCallback(
     (liveId: string) => {
+      trackEvent(AnalyticsEvents.ライブ_編集開始, {
+        live_id: liveId,
+        source: 'tour_detail',
+      })
       navigate(`/lives/${liveId}/edit`)
     },
     [navigate]
@@ -251,6 +272,10 @@ export function TourDetailPage() {
 
   // 公演地追加ページへ遷移（ツアー名を固定して新規公演を追加）
   const handleAddPerformance = useCallback(() => {
+    trackEvent(AnalyticsEvents.ライブ_新規作成, {
+      source: 'tour_detail',
+      mode: 'tour_add',
+    })
     const params = new URLSearchParams({ tourName })
     navigate(`/lives/new?${params.toString()}`)
   }, [navigate, tourName])
@@ -267,6 +292,10 @@ export function TourDetailPage() {
 
       try {
         await errorService.withRetry(() => liveService.deleteLive(liveId), { maxRetries: 2 })
+        trackEvent(AnalyticsEvents.ライブ_削除, {
+          live_id: liveId,
+          source: 'tour_detail',
+        })
 
         // ツアーグループを更新
         if (tourGroup) {

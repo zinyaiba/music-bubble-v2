@@ -6,7 +6,8 @@
  */
 
 import { logEvent } from 'firebase/analytics'
-import { getAnalyticsInstance } from '../config/firebase'
+import type { Analytics } from 'firebase/analytics'
+import { getAnalyticsInstance, getAnalyticsReady } from '../config/firebase'
 
 /**
  * イベント名の定義（日本語）
@@ -24,6 +25,7 @@ export const AnalyticsEvents = {
   ページ閲覧_ライブ詳細: 'ページ閲覧_ライブ詳細',
   ページ閲覧_ライブ編集: 'ページ閲覧_ライブ編集',
   ページ閲覧_ツアー詳細: 'ページ閲覧_ツアー詳細',
+  ページ閲覧_年表: 'ページ閲覧_年表',
 
   // 曲関連アクション
   曲_検索実行: '曲_検索実行',
@@ -46,13 +48,19 @@ export const AnalyticsEvents = {
 
   // ライブ関連アクション
   ライブ_検索実行: 'ライブ_検索実行',
+  ライブ_ソート変更: 'ライブ_ソート変更',
   ライブ_詳細表示: 'ライブ_詳細表示',
   ライブ_編集開始: 'ライブ_編集開始',
   ライブ_保存完了: 'ライブ_保存完了',
   ライブ_新規作成: 'ライブ_新規作成',
   ライブ_削除: 'ライブ_削除',
+  ライブ_関連リンク遷移: 'ライブ_関連リンク遷移',
   ツアー_詳細表示: 'ツアー_詳細表示',
   ツアー_公演切替: 'ツアー_公演切替',
+
+  // 年表関連アクション
+  年表_ソート変更: '年表_ソート変更',
+  年表_年移動: '年表_年移動',
 
   // バブル関連
   バブル_タップ: 'バブル_タップ',
@@ -70,22 +78,11 @@ export const AnalyticsEvents = {
 
 export type AnalyticsEventName = (typeof AnalyticsEvents)[keyof typeof AnalyticsEvents]
 
-/**
- * カスタムイベントをログに記録
- */
-export function trackEvent(
+function sendEvent(
+  analytics: Analytics,
   eventName: AnalyticsEventName | string,
   params?: Record<string, string | number | boolean>
 ): void {
-  const analytics = getAnalyticsInstance()
-
-  if (!analytics) {
-    if (import.meta.env.DEV) {
-      console.log(`📊 [Analytics Mock] ${eventName}`, params || '')
-    }
-    return
-  }
-
   try {
     logEvent(analytics, eventName, params)
 
@@ -97,6 +94,30 @@ export function trackEvent(
       console.warn('📊 Analytics イベント送信エラー:', error)
     }
   }
+}
+
+/**
+ * カスタムイベントをログに記録。
+ * Analytics初期化中のイベントは、初期化完了後に送信する。
+ */
+export function trackEvent(
+  eventName: AnalyticsEventName | string,
+  params?: Record<string, string | number | boolean>
+): void {
+  const analytics = getAnalyticsInstance()
+
+  if (analytics) {
+    sendEvent(analytics, eventName, params)
+    return
+  }
+
+  void getAnalyticsReady().then((readyAnalytics) => {
+    if (readyAnalytics) {
+      sendEvent(readyAnalytics, eventName, params)
+    } else if (import.meta.env.DEV) {
+      console.log(`📊 [Analytics Mock] ${eventName}`, params || '')
+    }
+  })
 }
 
 /**

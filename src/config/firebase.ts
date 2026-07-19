@@ -52,6 +52,7 @@ let app: FirebaseApp | null = null
 let db: Firestore | null = null
 let auth: Auth | null = null
 let analytics: Analytics | null = null
+let analyticsReady: Promise<Analytics | null> = Promise.resolve(null)
 
 if (isFirebaseConfigured) {
   try {
@@ -60,14 +61,22 @@ if (isFirebaseConfigured) {
     auth = getAuth(app)
 
     // Firebase Analytics初期化（ブラウザ環境でのみ）
-    isSupported().then((supported) => {
-      if (supported && app) {
+    analyticsReady = isSupported()
+      .then((supported) => {
+        if (!supported || !app) return null
+
         analytics = getAnalytics(app)
         if (import.meta.env.DEV) {
           console.log('📊 Firebase Analytics初期化完了')
         }
-      }
-    })
+        return analytics
+      })
+      .catch((error) => {
+        if (import.meta.env.DEV) {
+          console.warn('📊 Firebase Analytics初期化エラー:', error)
+        }
+        return null
+      })
 
     if (import.meta.env.DEV) {
       console.log('🔥 Firebase初期化完了')
@@ -92,6 +101,9 @@ if (isFirebaseConfigured) {
  * 非同期初期化のため、使用時に取得する
  */
 export const getAnalyticsInstance = (): Analytics | null => analytics
+
+/** Analytics初期化の完了を待つ（未対応環境ではnull） */
+export const getAnalyticsReady = (): Promise<Analytics | null> => analyticsReady
 
 export { db, auth, analytics }
 export default app

@@ -198,6 +198,10 @@ export function LiveDetailPage() {
   // 編集ページへ遷移
   const handleEdit = useCallback(() => {
     if (liveId) {
+      trackEvent(AnalyticsEvents.ライブ_編集開始, {
+        live_id: liveId,
+        source: 'live_detail',
+      })
       navigate(`/lives/${liveId}/edit`)
     }
   }, [navigate, liveId])
@@ -219,6 +223,7 @@ export function LiveDetailPage() {
     setIsDeleting(true)
     try {
       await errorService.withRetry(() => liveService.deleteLive(liveId), { maxRetries: 2 })
+      trackEvent(AnalyticsEvents.ライブ_削除, { live_id: liveId, source: 'live_detail' })
 
       // ライブ一覧に戻る
       navigate('/lives')
@@ -233,9 +238,14 @@ export function LiveDetailPage() {
   // 楽曲詳細ページへ遷移
   const handleSongClick = useCallback(
     (songId: string) => {
+      trackEvent(AnalyticsEvents.曲_詳細表示, {
+        song_id: songId,
+        live_id: liveId || '',
+        source: 'live_detail',
+      })
       navigate(`/songs/${songId}`)
     },
-    [navigate]
+    [navigate, liveId]
   )
 
   // ナビゲーション
@@ -442,6 +452,12 @@ export function LiveDetailPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="live-detail-page__link"
+                          onClick={() =>
+                            trackEvent(AnalyticsEvents.ライブ_関連リンク遷移, {
+                              live_id: liveId || '',
+                              link_index: index,
+                            })
+                          }
                         >
                           <span className="live-detail-page__link-icon">
                             <svg
