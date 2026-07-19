@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Live, Song, MusicServiceEmbed } from '../types'
 import { LIVE_TYPE_LABELS } from '../types'
 import { liveService } from '../services/liveService'
@@ -85,6 +85,9 @@ function isIframeTag(content: string | undefined): boolean {
 export function LiveDetailPage() {
   const { liveId } = useParams<{ liveId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
+  const fromTimeline =
+    (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
   const isOnline = useOnlineStatus()
 
   // ライブデータの状態
@@ -157,8 +160,13 @@ export function LiveDetailPage() {
     loadData()
   }, [liveId])
 
-  // 戻るナビゲーション（検索状態を保持）
+  // 戻るナビゲーション（年表からの遷移、または検索状態を保持した一覧へ戻る）
   const handleBack = useCallback(() => {
+    if (fromTimeline) {
+      navigate(-1)
+      return
+    }
+
     // localStorageに保存された検索状態を復元してURLパラメータとして遷移
     try {
       const saved = localStorage.getItem('liveListState')
@@ -185,7 +193,7 @@ export function LiveDetailPage() {
       console.error('Failed to restore live list state:', err)
     }
     navigate('/lives')
-  }, [navigate])
+  }, [navigate, fromTimeline])
 
   // 編集ページへ遷移
   const handleEdit = useCallback(() => {

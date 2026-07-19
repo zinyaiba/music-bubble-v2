@@ -31,6 +31,10 @@ export interface TimelineContainerProps {
   onLiveClick?: (liveId: string) => void
   /** スクロール位置に対応する年が変わった時のコールバック */
   onActiveYearChange?: (year: string) => void
+  /** 初期表示時に復元するスクロール位置 */
+  initialScrollPosition?: number
+  /** 詳細ページへ移動する直前のスクロール位置を保存するコールバック */
+  onSaveScrollPosition?: (scrollTop: number) => void
 }
 
 /** モバイル判定用ブレークポイント（TimelineGroup.css と一致させる） */
@@ -45,6 +49,8 @@ export function TimelineContainer({
   onSongClick,
   onLiveClick,
   onActiveYearChange,
+  initialScrollPosition = 0,
+  onSaveScrollPosition,
 }: TimelineContainerProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
@@ -52,6 +58,14 @@ export function TimelineContainer({
   const [isMobile, setIsMobile] = useState(false)
   const [zigzagPoints, setZigzagPoints] = useState('')
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 })
+
+  // データ描画後に、詳細ページへ移動する直前のスクロール位置を復元
+  useEffect(() => {
+    const container = containerRef.current
+    if (container && initialScrollPosition > 0) {
+      container.scrollTop = initialScrollPosition
+    }
+  }, [initialScrollPosition])
 
   // モバイル判定（メディアクエリ変化を監視）
   useEffect(() => {
@@ -202,6 +216,29 @@ export function TimelineContainer({
     }
   }, [isMobile, measureZigzag, groups])
 
+  // 詳細ページへ移動する直前に、年表の内部スクロール位置を保存する
+  const handleSongItemClick = useCallback(
+    (songId: string) => {
+      const container = containerRef.current
+      if (container && onSaveScrollPosition) {
+        onSaveScrollPosition(container.scrollTop)
+      }
+      onSongClick?.(songId)
+    },
+    [onSaveScrollPosition, onSongClick]
+  )
+
+  const handleLiveItemClick = useCallback(
+    (liveId: string) => {
+      const container = containerRef.current
+      if (container && onSaveScrollPosition) {
+        onSaveScrollPosition(container.scrollTop)
+      }
+      onLiveClick?.(liveId)
+    },
+    [onSaveScrollPosition, onLiveClick]
+  )
+
   // グループが空の場合は何も表示しない
   if (groups.length === 0) {
     return (
@@ -246,8 +283,8 @@ export function TimelineContainer({
               key={group.yearMonth}
               group={group}
               anchorId={yearAnchorId}
-              onSongClick={onSongClick}
-              onLiveClick={onLiveClick}
+              onSongClick={handleSongItemClick}
+              onLiveClick={handleLiveItemClick}
             />
           )
         })}

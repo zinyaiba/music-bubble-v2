@@ -31,6 +31,18 @@ export function TimelinePage() {
   // ソート順の状態管理（デフォルト: 新しい順）
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [activeYear, setActiveYear] = useState<string | null>(null)
+  const [scrollPosition] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('timelineScrollPosition')
+      if (!saved) return 0
+
+      const position = parseInt(saved, 10)
+      return isNaN(position) ? 0 : position
+    } catch (err) {
+      console.error('Failed to restore timeline scroll position:', err)
+      return 0
+    }
+  })
   const yearButtonsRef = useRef<HTMLDivElement>(null)
 
   // タイムラインデータの取得（ソート順変更時に再取得・再ソート）
@@ -45,6 +57,15 @@ export function TimelinePage() {
   // データ更新で選択年が消えた場合は、表示順の先頭年を選択状態として扱う
   const displayedYear =
     activeYear && years.includes(activeYear) ? activeYear : (years[0] ?? null)
+
+  // 詳細ページへ遷移する直前のスクロール位置を保存
+  const handleSaveScrollPosition = useCallback((scrollTop: number) => {
+    try {
+      sessionStorage.setItem('timelineScrollPosition', scrollTop.toString())
+    } catch (err) {
+      console.error('Failed to save timeline scroll position:', err)
+    }
+  }, [])
 
   // 選択中の年が横スクロール領域から外れないように追従させる
   useEffect(() => {
@@ -79,18 +100,18 @@ export function TimelinePage() {
     })
   }, [])
 
-  // 楽曲クリック時: 楽曲詳細ページへ遷移
+  // 楽曲クリック時: 遷移元を保持して楽曲詳細ページへ遷移
   const handleSongClick = useCallback(
     (songId: string) => {
-      navigate(`/songs/${songId}`)
+      navigate(`/songs/${songId}`, { state: { fromTimeline: true } })
     },
     [navigate]
   )
 
-  // ライブクリック時: ライブ詳細ページへ遷移
+  // ライブクリック時: 遷移元を保持してライブ詳細ページへ遷移
   const handleLiveClick = useCallback(
     (liveId: string) => {
-      navigate(`/lives/${liveId}`)
+      navigate(`/lives/${liveId}`, { state: { fromTimeline: true } })
     },
     [navigate]
   )
@@ -185,6 +206,8 @@ export function TimelinePage() {
               onSongClick={handleSongClick}
               onLiveClick={handleLiveClick}
               onActiveYearChange={handleActiveYearChange}
+              initialScrollPosition={scrollPosition}
+              onSaveScrollPosition={handleSaveScrollPosition}
             />
           </div>
         )}

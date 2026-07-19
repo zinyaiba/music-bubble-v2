@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { Song } from '../types'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
@@ -29,6 +29,9 @@ import './SongDetailPage.css'
 export function SongDetailPage() {
   const { songId } = useParams<{ songId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
+  const fromTimeline =
+    (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
   const isOnline = useOnlineStatus()
 
   // 楽曲データの状態
@@ -115,9 +118,8 @@ export function SongDetailPage() {
     loadSong()
   }, [songId])
 
-  // 戻るナビゲーション（検索状態を保持）
-  const handleBack = useCallback(() => {
-    // localStorageに保存された検索状態を復元してURLパラメータとして遷移
+  // 楽曲一覧へ戻る（保存された検索状態を復元）
+  const handleBackToList = useCallback(() => {
     try {
       const saved = localStorage.getItem('songListState')
       if (saved) {
@@ -145,6 +147,15 @@ export function SongDetailPage() {
     }
     navigate('/songs')
   }, [navigate])
+
+  // ページの戻る操作は、年表から来た場合のみ年表へ戻る
+  const handleBack = useCallback(() => {
+    if (fromTimeline) {
+      navigate(-1)
+      return
+    }
+    handleBackToList()
+  }, [navigate, fromTimeline, handleBackToList])
 
   // ひとつ前に戻る（ヒストリーバック）
   const handleGoBack = useCallback(() => {
@@ -292,7 +303,7 @@ export function SongDetailPage() {
               song={song}
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
-              onBack={handleBack}
+              onBack={handleBackToList}
               onGoBack={handleGoBack}
             />
           </div>
