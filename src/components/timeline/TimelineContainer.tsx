@@ -29,6 +29,8 @@ export interface TimelineContainerProps {
   onSongClick?: (songId: string) => void
   /** ライブクリック時のコールバック（各 TimelineGroup へ伝播） */
   onLiveClick?: (liveId: string) => void
+  /** スクロール位置に対応する年が変わった時のコールバック */
+  onActiveYearChange?: (year: string) => void
 }
 
 /** モバイル判定用ブレークポイント（TimelineGroup.css と一致させる） */
@@ -42,8 +44,11 @@ export function TimelineContainer({
   groups,
   onSongClick,
   onLiveClick,
+  onActiveYearChange,
 }: TimelineContainerProps): JSX.Element {
+  const containerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
+  const activeYearRef = useRef<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [zigzagPoints, setZigzagPoints] = useState('')
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 })
@@ -107,13 +112,66 @@ export function TimelineContainer({
     )
   }, [])
 
-  useLayoutEffect(() => {
-    if (!isMobile) {
-      setZigzagPoints('')
-      return
+  // スクロール領域の上部25%にある年を、現在表示中の年として通知する
+  useEffect(() => {
+    const container = containerRef.current
+    const inner = innerRef.current
+    if (!container || !inner || !onActiveYearChange) return
+
+    let rafId = 0
+    const updateActiveYear = () => {
+      const yearAnchors = Array.from(
+        inner.querySelectorAll<HTMLElement>('[id^="timeline-year-"]')
+      )
+      if (yearAnchors.length === 0) return
+
+      const isAtBottom =
+        container.scrollTop + container.clientHeight >= container.scrollHeight - 1
+      let activeAnchor = yearAnchors[0]
+
+      if (isAtBottom) {
+        activeAnchor = yearAnchors[yearAnchors.length - 1]
+      } else {
+        const containerRect = container.getBoundingClientRect()
+        const referenceY = containerRect.top + Math.min(containerRect.height * 0.25, 160)
+
+        for (const anchor of yearAnchors) {
+          if (anchor.getBoundingClientRect().top > referenceY) break
+          activeAnchor = anchor
+        }
+      }
+
+      const activeYear = activeAnchor.id.replace('timeline-year-', '')
+      if (activeYear !== activeYearRef.current) {
+        activeYearRef.current = activeYear
+        onActiveYearChange(activeYear)
+      }
     }
 
-    measureZigzag()
+    const scheduleUpdate = () => {
+      if (rafId) return
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0
+        updateActiveYear()
+      })
+    }
+
+    scheduleUpdate()
+    container.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    const resizeObserver = new ResizeObserver(scheduleUpdate)
+    resizeObserver.observe(inner)
+
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId)
+      container.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      resizeObserver.disconnect()
+    }
+  }, [groups, onActiveYearChange])
+
+  useLayoutEffect(() => {
+    if (!isMobile) return
 
     const inner = innerRef.current
     if (!inner) return
@@ -129,6 +187,8 @@ export function TimelineContainer({
         measureZigzag()
       })
     }
+
+    scheduleMeasure()
 
     // 内容サイズ変化（カード展開・折りたたみ・画面回転など）を監視して再測定
     const resizeObserver = new ResizeObserver(scheduleMeasure)
@@ -152,7 +212,7 @@ export function TimelineContainer({
   }
 
   return (
-    <div className="timeline-container">
+    <div className="timeline-container" ref={containerRef}>
       <div className="timeline-container__inner" ref={innerRef}>
         {/* モバイル用ジグザグ線: 全グループを横断して連続的に結ぶ（カード背面） */}
         {isMobile && zigzagPoints && (

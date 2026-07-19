@@ -12,7 +12,7 @@
  * - 9.1: 既存のデザインシステムと一貫したスタイリングを使用する
  */
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTimelineData } from '../hooks/useTimelineData'
 import { Header } from '../components/common/Header'
@@ -30,6 +30,8 @@ export function TimelinePage() {
 
   // ソート順の状態管理（デフォルト: 新しい順）
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [activeYear, setActiveYear] = useState<string | null>(null)
+  const yearButtonsRef = useRef<HTMLDivElement>(null)
 
   // タイムラインデータの取得（ソート順変更時に再取得・再ソート）
   const { data, loading, error, retry } = useTimelineData({ sortOrder })
@@ -40,13 +42,37 @@ export function TimelinePage() {
     [data]
   )
 
+  // データ更新で選択年が消えた場合は、表示順の先頭年を選択状態として扱う
+  const displayedYear =
+    activeYear && years.includes(activeYear) ? activeYear : (years[0] ?? null)
+
+  // 選択中の年が横スクロール領域から外れないように追従させる
+  useEffect(() => {
+    const container = yearButtonsRef.current
+    if (!container || !displayedYear) return
+
+    const activeButton = Array.from(container.querySelectorAll<HTMLButtonElement>('button')).find(
+      (button) => button.dataset.year === displayedYear
+    )
+    if (!activeButton) return
+
+    const centeredLeft =
+      activeButton.offsetLeft - (container.clientWidth - activeButton.offsetWidth) / 2
+    container.scrollTo({ left: Math.max(0, centeredLeft), behavior: 'smooth' })
+  }, [displayedYear])
+
   // ソート順の切り替え
   const handleToggleSortOrder = useCallback(() => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
   }, [])
 
+  const handleActiveYearChange = useCallback((year: string) => {
+    setActiveYear(year)
+  }, [])
+
   // 指定した年の先頭へ移動
   const handleYearJump = useCallback((year: string) => {
+    setActiveYear(year)
     document.getElementById(`timeline-year-${year}`)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
@@ -79,18 +105,24 @@ export function TimelinePage() {
           {years.length > 0 && (
             <nav className="timeline-page__year-shortcuts" aria-label="年別ショートカット">
               <span className="timeline-page__year-shortcuts-label">年へ移動</span>
-              <div className="timeline-page__year-buttons">
-                {years.map((year) => (
-                  <button
-                    key={year}
-                    type="button"
-                    className="timeline-page__year-button"
-                    onClick={() => handleYearJump(year)}
-                    aria-label={`${year}年へ移動`}
-                  >
-                    {year}
-                  </button>
-                ))}
+              <div className="timeline-page__year-buttons" ref={yearButtonsRef}>
+                {years.map((year) => {
+                  const isActive = displayedYear === year
+
+                  return (
+                    <button
+                      key={year}
+                      type="button"
+                      className={`timeline-page__year-button${isActive ? ' timeline-page__year-button--active' : ''}`}
+                      data-year={year}
+                      onClick={() => handleYearJump(year)}
+                      aria-label={`${year}年へ移動`}
+                      aria-current={isActive ? 'date' : undefined}
+                    >
+                      {year}
+                    </button>
+                  )
+                })}
               </div>
             </nav>
           )}
@@ -152,6 +184,7 @@ export function TimelinePage() {
               groups={data}
               onSongClick={handleSongClick}
               onLiveClick={handleLiveClick}
+              onActiveYearChange={handleActiveYearChange}
             />
           </div>
         )}

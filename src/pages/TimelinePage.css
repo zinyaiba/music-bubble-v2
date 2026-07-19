@@ -74,7 +74,8 @@
   transition: all var(--transition-fast);
 }
 
-.timeline-page__year-button:hover {
+.timeline-page__year-button:hover,
+.timeline-page__year-button--active {
   color: #ffffff;
   background: var(--color-primary);
   border-color: var(--color-primary);
