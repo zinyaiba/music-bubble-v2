@@ -21,7 +21,44 @@
   /* 内容が表示領域を超えても横崩れしないよう抑制する */
   overflow: hidden;
   min-width: 0;
-  transition: box-shadow var(--transition-fast, 0.2s ease);
+  transition:
+    box-shadow var(--transition-fast, 0.2s ease),
+    border-color var(--transition-fast, 0.2s ease),
+    background var(--transition-fast, 0.2s ease);
+}
+
+/* アルバムはシングルより一段高い強調度で表示する。
+   Music_Card の Pink_Palette を維持し、枠・塗り・影・文字サイズで差を付ける。 */
+.release-unit--album {
+  border-width: var(--border-width-thick, 3px);
+  border-color: var(--color-primary);
+  border-left-width: 7px;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-alpha) 0%,
+    var(--color-surface) 58%
+  );
+  box-shadow: var(--shadow-lg);
+}
+
+.release-unit--album .release-unit__type-badge {
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  border: var(--border-width-normal, 2px) solid var(--color-primary);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-bold, 700);
+}
+
+.release-unit--album .release-unit__type-badge-icon {
+  font-size: 1rem;
+}
+
+.release-unit--album .release-unit__name {
+  font-size: 1rem;
+}
+
+.release-unit--album .release-unit__count {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 /* ヘッダー（クリックで展開/折りたたみ） */
@@ -245,6 +282,11 @@
     margin: var(--spacing-sm, 8px) 0;
     /* アクセントバー（Auxiliary_Element）は維持しつつ細める（4px → --spacing-xs） */
     border-left-width: var(--spacing-xs, 4px);
+  }
+
+  .release-unit--album {
+    /* モバイルでもシングルより太いアクセントを維持する */
+    border-left-width: 6px;
   }
 
   .release-unit__header {

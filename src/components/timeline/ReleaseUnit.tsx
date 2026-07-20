@@ -135,7 +135,10 @@ export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitP
   }
 
   return (
-    <article className={`release-unit ${cardStyle.categoryClass}`} role="article">
+    <article
+      className={`release-unit release-unit--${releaseUnit.releaseType} ${cardStyle.categoryClass}`}
+      role="article"
+    >
       {/* ヘッダー（クリックで展開/折りたたみ） */}
       <div
         className="release-unit__header"
