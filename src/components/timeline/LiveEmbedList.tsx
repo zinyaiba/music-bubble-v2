@@ -4,6 +4,8 @@ import './LiveEmbedList.css'
 
 interface LiveEmbedListProps {
   live: Live
+  /** 表示する最大件数。未指定の場合は全件表示 */
+  limit?: number
 }
 
 function getEmbedServiceName(embed: string, label?: string): string {
@@ -15,10 +17,11 @@ function getEmbedServiceName(embed: string, label?: string): string {
   return '動画'
 }
 
-export function LiveEmbedList({ live }: LiveEmbedListProps) {
+export function LiveEmbedList({ live, limit }: LiveEmbedListProps) {
   const embeds = live.embeds?.filter((item) => item.embed.trim() !== '') ?? []
+  const visibleEmbeds = limit === undefined ? embeds : embeds.slice(0, limit)
 
-  if (embeds.length === 0) return null
+  if (visibleEmbeds.length === 0) return null
 
   return (
     <div
@@ -26,7 +29,7 @@ export function LiveEmbedList({ live }: LiveEmbedListProps) {
       onClick={(event) => event.stopPropagation()}
       onKeyDown={(event) => event.stopPropagation()}
     >
-      {embeds.map((item, index) => (
+      {visibleEmbeds.map((item, index) => (
         <div key={`${item.embed}-${index}`} className="live-embed-list__item">
           <LazyEmbed
             embed={item.embed}

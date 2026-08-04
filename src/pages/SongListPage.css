@@ -41,53 +41,83 @@
   overflow: hidden;
 }
 
-/* 新規追加ボタン（FAB） */
-.song-list-page__add-button {
+/* 楽曲関連のフローティングアクション */
+.song-list-page__floating-actions {
   position: fixed;
   right: var(--spacing-lg);
   bottom: calc(var(--navigation-height) + var(--spacing-lg) + var(--safe-area-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  z-index: var(--z-index-sticky);
+}
+
+.song-list-page__add-button,
+.song-list-page__tag-button {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 56px;
   height: 56px;
   padding: 0;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border: none;
   border-radius: var(--border-radius-full);
-  color: white;
   cursor: pointer;
   box-shadow: var(--shadow-lg);
   transition: all var(--transition-fast);
-  z-index: var(--z-index-sticky);
 }
 
-.song-list-page__add-button:hover {
+.song-list-page__add-button {
+  color: white;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: none;
+}
+
+.song-list-page__tag-button {
+  color: var(--color-primary-dark);
+  background: var(--color-card-background);
+  border: var(--border-width-thin) solid var(--color-primary);
+}
+
+.song-list-page__add-button:hover,
+.song-list-page__tag-button:hover {
   transform: scale(1.05);
   box-shadow: var(--shadow-xl);
 }
 
-.song-list-page__add-button:focus {
+.song-list-page__tag-button:hover {
+  color: white;
+  background: var(--color-primary);
+}
+
+.song-list-page__add-button:focus-visible,
+.song-list-page__tag-button:focus-visible {
   outline: none;
   box-shadow:
     var(--shadow-xl),
     0 0 0 4px var(--color-primary-alpha);
 }
 
-.song-list-page__add-button:active {
+.song-list-page__add-button:active,
+.song-list-page__tag-button:active {
   transform: scale(0.95);
 }
 
 /* レスポンシブ対応 */
 @media (max-width: 480px) {
-  .song-list-page__add-button {
+  .song-list-page__floating-actions {
     right: var(--spacing-md);
     bottom: calc(var(--navigation-height) + var(--spacing-md) + var(--safe-area-bottom));
+  }
+
+  .song-list-page__add-button,
+  .song-list-page__tag-button {
     width: 48px;
     height: 48px;
   }
 
-  .song-list-page__add-button svg {
+  .song-list-page__add-button svg,
+  .song-list-page__tag-button svg {
     width: 20px;
     height: 20px;
   }
@@ -101,7 +131,7 @@
     width: 100%;
   }
 
-  .song-list-page__add-button {
+  .song-list-page__floating-actions {
     right: var(--spacing-xl);
     bottom: calc(var(--navigation-height) + var(--spacing-xl));
   }

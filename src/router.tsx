@@ -113,7 +113,7 @@ const router = createBrowserRouter(
           element: <InfoPage />,
         },
         {
-          // 直接URLアクセスのみ（ナビゲーションメニューには表示しない）
+          // 楽曲とライブを横断して閲覧するタイムライン
           // Requirements: 6.1, 6.2, 6.3, 6.4
           path: 'timeline',
           element: <TimelinePage />,

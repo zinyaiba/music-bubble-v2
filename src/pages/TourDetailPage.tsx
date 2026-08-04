@@ -85,6 +85,30 @@ function isIframeTag(content: string | undefined): boolean {
 }
 
 /**
+ * ライブの思い出投稿用の日付をフォーマット（yyyy.m.d）
+ */
+function formatPostDate(dateTime: string): string {
+  const date = new Date(dateTime)
+  if (isNaN(date.getTime())) return dateTime
+
+  return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
+}
+
+/**
+ * ライブの思い出投稿用テキストを生成
+ */
+function generatePostContent(
+  live: Pick<Live, 'id' | 'title' | 'dateTime' | 'venueName'>
+): string {
+  const origin = window.location.origin
+  const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+  const liveUrl = `${origin}${basePath}/lives/${encodeURIComponent(live.id)}`
+  const date = formatPostDate(live.dateTime)
+
+  return `【${live.title}】\n${date} ${live.venueName}\n\n～ここにライブの思い出を記載～\n\n${liveUrl}\n#栗林みな実 #マロバブ #栗の歴史に触れてみて`
+}
+
+/**
  * TourDetailPage コンポーネント
  * ツアー詳細ページ - 公演地別にセトリを横スワイプで表示
  */
@@ -110,6 +134,7 @@ export function TourDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [copiedLiveId, setCopiedLiveId] = useState<string | null>(null)
 
   // 現在表示中の公演インデックス
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -118,9 +143,12 @@ export function TourDetailPage() {
    * 指定インデックスのスライドがiframeを読み込むべきかどうか
    * 現在のスライドとその前後1つのみ読み込む（パフォーマンス最適化）
    */
-  const shouldLoadEmbed = useCallback((slideIndex: number): boolean => {
-    return Math.abs(slideIndex - currentIndex) <= 1
-  }, [currentIndex])
+  const shouldLoadEmbed = useCallback(
+    (slideIndex: number): boolean => {
+      return Math.abs(slideIndex - currentIndex) <= 1
+    },
+    [currentIndex]
+  )
 
   // データ取得
   useEffect(() => {
@@ -193,6 +221,40 @@ export function TourDetailPage() {
 
     loadData()
   }, [tourName])
+
+  // 投稿内容をクリップボードにコピー
+  const handleCopyToClipboard = useCallback(async (performance: Live) => {
+    const postContent = generatePostContent(performance)
+    try {
+      await navigator.clipboard.writeText(postContent)
+      setCopiedLiveId(performance.id)
+      setTimeout(() => setCopiedLiveId(null), 2000)
+    } catch (err) {
+      console.error('クリップボードへのコピーに失敗しました:', err)
+      // フォールバック: テキストエリアを使用
+      const textArea = document.createElement('textarea')
+      textArea.value = postContent
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-9999px'
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+        setCopiedLiveId(performance.id)
+        setTimeout(() => setCopiedLiveId(null), 2000)
+      } catch {
+        console.error('フォールバックコピーにも失敗しました')
+      }
+      document.body.removeChild(textArea)
+    }
+  }, [])
+
+  // Xでライブの思い出を投稿
+  const handleShareToX = useCallback((performance: Live) => {
+    const postContent = generatePostContent(performance)
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postContent)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }, [])
 
   // 戻るナビゲーション - 要件 5.3
   const handleBack = useCallback(() => {
@@ -283,7 +345,9 @@ export function TourDetailPage() {
   // 公演を削除
   const handleDeletePerformance = useCallback(
     async (liveId: string, performanceName: string) => {
-      if (!window.confirm(`「${performanceName}」公演を削除しますか？\nこの操作は取り消せません。`)) {
+      if (
+        !window.confirm(`「${performanceName}」公演を削除しますか？\nこの操作は取り消せません。`)
+      ) {
         return
       }
 
@@ -300,7 +364,7 @@ export function TourDetailPage() {
         // ツアーグループを更新
         if (tourGroup) {
           const updatedPerformances = tourGroup.performances.filter((p) => p.id !== liveId)
-          
+
           // 公演が0になった場合はライブ一覧に戻る
           if (updatedPerformances.length === 0) {
             navigate('/lives')
@@ -464,20 +528,76 @@ export function TourDetailPage() {
               </div>
 
               {/* カルーセルコンテナ */}
-              <div
-                ref={carouselRef}
-                className="tour-detail-page__carousel"
-                onScroll={handleScroll}
-              >
+              <div ref={carouselRef} className="tour-detail-page__carousel" onScroll={handleScroll}>
                 {tourGroup.performances.map((performance, slideIndex) => (
                   <div key={performance.id} className="tour-detail-page__slide">
                     {/* 公演ヘッダー */}
                     <div className="tour-detail-page__performance-header">
                       {performance.tourLocation && (
-                        <span className="tour-detail-page__location">{performance.tourLocation}</span>
+                        <span className="tour-detail-page__location">
+                          {performance.tourLocation}
+                        </span>
                       )}
                       <span className="tour-detail-page__venue">{performance.venueName}</span>
-                      <span className="tour-detail-page__date">{formatDateTime(performance.dateTime)}</span>
+                      <span className="tour-detail-page__date">
+                        {formatDateTime(performance.dateTime)}
+                      </span>
+                    </div>
+
+                    {/* ライブの思い出を投稿 */}
+                    <div className="tour-detail-page__share-section">
+                      <button
+                        type="button"
+                        className="tour-detail-page__share-button tour-detail-page__share-button--x"
+                        onClick={() => handleShareToX(performance)}
+                        aria-label={`${performance.tourLocation || performance.venueName}公演の思い出をXに投稿`}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        ライブの思い出を投稿しよう
+                      </button>
+                      <button
+                        type="button"
+                        className="tour-detail-page__share-button tour-detail-page__share-button--copy"
+                        onClick={() => handleCopyToClipboard(performance)}
+                        aria-label={`${performance.tourLocation || performance.venueName}公演の投稿内容をクリップボードにコピー`}
+                      >
+                        {copiedLiveId === performance.id ? (
+                          <>
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            コピーしました
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            投稿内容をコピー
+                          </>
+                        )}
+                      </button>
                     </div>
 
                     {/* 埋め込みコンテンツ（遅延読み込み：現在のスライドと前後1つのみ） */}
@@ -648,7 +768,12 @@ export function TourDetailPage() {
                       <button
                         type="button"
                         className="tour-detail-page__delete-button"
-                        onClick={() => handleDeletePerformance(performance.id, performance.tourLocation || performance.venueName)}
+                        onClick={() =>
+                          handleDeletePerformance(
+                            performance.id,
+                            performance.tourLocation || performance.venueName
+                          )
+                        }
                         aria-label={`${performance.tourLocation || performance.venueName}公演を削除`}
                         disabled={isDeleting}
                       >

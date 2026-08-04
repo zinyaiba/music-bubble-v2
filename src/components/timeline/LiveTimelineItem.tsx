@@ -9,8 +9,10 @@
  * - 10.1: タイムラインアイテムがクリックされたら詳細ページにナビゲートする
  */
 
+import { useState } from 'react'
 import type { Live } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
+import { formatTimelineDate as formatDateTime } from '../../utils/timelineDate'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import { MarqueeText } from '../common/MarqueeText'
 import { LiveEmbedList } from './LiveEmbedList'
@@ -24,32 +26,15 @@ export interface LiveTimelineItemProps {
 }
 
 /**
- * 日時を表示用にフォーマット（YYYY/M/D）
- */
-function formatDateTime(dateTime: string): string {
-  try {
-    const date = new Date(dateTime)
-    if (isNaN(date.getTime())) {
-      return dateTime
-    }
-
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    const day = date.getDate()
-
-    return `${year}/${month}/${day}`
-  } catch {
-    return dateTime
-  }
-}
-
-/**
  * LiveTimelineItem コンポーネント
  * 個別ライブイベントをタイムラインアイテムとして表示
  */
 export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
   const liveTypeLabel = LIVE_TYPE_LABELS[live.liveType]
   const formattedDateTime = formatDateTime(live.dateTime)
+  const embedCount = live.embeds?.filter((item) => item.embed.trim() !== '').length ?? 0
+  const hasAdditionalEmbeds = embedCount > 1
 
   // Other_Live_Card の視覚設定（カテゴリクラス・サブ種別配色）を解決する。
   // badge.subTypeClass に基づき既存 live-timeline-item__type--* 配色を再利用する。
@@ -102,7 +87,23 @@ export function LiveTimelineItem({ live, onClick }: LiveTimelineItemProps) {
       <p className="live-timeline-item__datetime">{formattedDateTime}</p>
 
       {/* 埋め込みコンテンツ（サムネイル先行・タップで iframe 生成） */}
-      <LiveEmbedList live={live} />
+      <LiveEmbedList live={live} limit={isExpanded ? undefined : 1} />
+      {hasAdditionalEmbeds && (
+        <button
+          type="button"
+          className="live-timeline-item__content-toggle"
+          onClick={(event) => {
+            event.stopPropagation()
+            setIsExpanded((prev) => !prev)
+          }}
+          onKeyDown={(event) => event.stopPropagation()}
+          aria-expanded={isExpanded}
+        >
+          {isExpanded
+            ? '関連コンテンツを1件に戻す'
+            : `関連コンテンツをすべて表示（${embedCount}件）`}
+        </button>
+      )}
     </article>
   )
 }

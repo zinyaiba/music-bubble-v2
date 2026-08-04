@@ -33,7 +33,7 @@
   border-bottom: var(--border-width-thin) solid var(--color-border-light);
   position: sticky;
   top: 0;
-  z-index: var(--z-index-sticky);
+  z-index: calc(var(--z-index-sticky) - 1);
 }
 
 .info-page__tab {
@@ -167,6 +167,15 @@
   color: var(--color-text);
 }
 
+.info-page__howto-text a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.info-page__howto-text a:hover {
+  color: var(--color-primary-dark);
+}
+
 /* お知らせリスト */
 .info-page__announcement-list {
   display: flex;
@@ -263,6 +272,36 @@
 }
 
 /* レスポンシブ対応 */
+@media (max-width: 767px) {
+  .info-page__howto-item {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    column-gap: var(--spacing-md);
+    row-gap: var(--spacing-sm);
+  }
+
+  .info-page__howto-icon {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .info-page__howto-content {
+    display: contents;
+  }
+
+  .info-page__howto-title {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    margin: 0;
+  }
+
+  .info-page__howto-text {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
 @media (min-width: 768px) {
   .info-page__content {
     max-width: 800px;

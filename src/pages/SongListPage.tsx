@@ -254,27 +254,54 @@ export function SongListPage() {
           />
         </div>
 
-        {/* 新規追加ボタン */}
-        <button
-          type="button"
-          className="song-list-page__add-button"
-          onClick={handleAddSong}
-          aria-label="新規楽曲を追加"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {/* 楽曲関連のフローティングアクション */}
+        <div className="song-list-page__floating-actions">
+          <button
+            type="button"
+            className="song-list-page__tag-button"
+            onClick={() => handleNavigate('/tags')}
+            aria-label="タグを開く"
+            title="タグ"
           >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className="song-list-page__add-button"
+            onClick={handleAddSong}
+            aria-label="新規楽曲を追加"
+            title="新規楽曲を追加"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
       </main>
 
       <Navigation currentPath="/songs" onNavigate={handleNavigate} />

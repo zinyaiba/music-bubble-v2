@@ -216,3 +216,25 @@
     aspect-ratio: 16 / 9;
   }
 }
+.song-timeline-item__content-toggle {
+  align-self: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  color: var(--color-primary-dark);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-primary-light);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.song-timeline-item__content-toggle:hover {
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary);
+}
+
+.song-timeline-item__content-toggle:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-primary);
+  outline-offset: var(--spacing-xs);
+}

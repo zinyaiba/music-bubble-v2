@@ -37,7 +37,9 @@ export type ContentFilterValue =
   | 'minami'
   | 'wild3'
   | 'other-artist'
+  | 'owned'
   | 'cover'
+  | 'non-cover'
 
 /** コンテンツフィルタの定義 */
 const CONTENT_FILTERS: { value: ContentFilterValue; label: string }[] = [
@@ -48,7 +50,9 @@ const CONTENT_FILTERS: { value: ContentFilterValue; label: string }[] = [
   { value: 'minami', label: 'Minami' },
   { value: 'wild3', label: 'ワイルド三人娘' },
   { value: 'other-artist', label: 'その他アーティスト' },
+  { value: 'owned', label: '持ち曲' },
   { value: 'cover', label: 'カバー曲' },
+  { value: 'non-cover', label: 'カバー曲以外' },
 ]
 
 /** 楽曲がコンテンツを持っているかチェック */
@@ -89,6 +93,25 @@ function isCover(song: Song): boolean {
   return !!song.originalArtists && song.originalArtists.length > 0
 }
 
+/** 持ち曲として部分一致で判定するアーティスト名 */
+const OWNED_ARTIST_NAME_PARTS = [
+  '栗林みな実',
+  'exige',
+  'SoutherN',
+  'Star☆Pierce',
+  'ワイルド三人娘',
+] as const
+
+/** 持ち曲（対象アーティストの単独名義、かつ原曲アーティスト未登録）かチェック */
+function isOwnedSong(song: Song): boolean {
+  if (!song.artists || song.artists.length !== 1 || isCover(song)) {
+    return false
+  }
+
+  const artist = song.artists[0]
+  return artist === 'Minami' || OWNED_ARTIST_NAME_PARTS.some((name) => artist.includes(name))
+}
+
 /** フィルタを適用 */
 function applyFilter(songs: Song[], filter: ContentFilterValue): Song[] {
   switch (filter) {
@@ -104,8 +127,12 @@ function applyFilter(songs: Song[], filter: ContentFilterValue): Song[] {
       return songs.filter(isWild3)
     case 'other-artist':
       return songs.filter(isOtherArtist)
+    case 'owned':
+      return songs.filter(isOwnedSong)
     case 'cover':
       return songs.filter(isCover)
+    case 'non-cover':
+      return songs.filter((song) => !isCover(song))
     default:
       return songs
   }

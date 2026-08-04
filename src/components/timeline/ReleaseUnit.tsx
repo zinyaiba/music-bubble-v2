@@ -18,6 +18,7 @@ import type { ReleaseUnitTimelineItem, MusicServiceEmbed, Song } from '../../typ
 import { MarqueeText } from '../common/MarqueeText'
 import { LazyEmbed } from '../common/LazyEmbed'
 import { ExpandToggleIndicator } from './ExpandToggleIndicator'
+import { formatReleaseDate } from '../../utils/timelineDate'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import { shouldShowEmbedsForRelease } from '../../utils/songReleaseDate'
 import './ReleaseUnit.css'
@@ -93,6 +94,38 @@ function aggregateEmbeds(
   return aggregated
 }
 
+/** リリース内で最後に更新された、関連コンテンツを持つ楽曲の先頭1件を取得 */
+function getLatestUpdatedReleaseEmbed(
+  songs: Song[],
+  releaseType: ReleaseUnitTimelineItem['releaseType']
+): AggregatedEmbed | undefined {
+  let latest: { item: AggregatedEmbed; updatedTime: number } | undefined
+
+  songs.forEach((song, songIndex) => {
+    if (!shouldShowEmbedsForRelease(song, releaseType)) return
+
+    const firstEmbed = getSongEmbeds(song)[0]
+    if (!firstEmbed) return
+
+    const updatedAt = song.updatedAt ?? song.createdAt
+    const parsedTime = updatedAt ? Date.parse(updatedAt) : Number.NaN
+    const updatedTime = Number.isNaN(parsedTime) ? Number.NEGATIVE_INFINITY : parsedTime
+
+    if (!latest || updatedTime > latest.updatedTime) {
+      latest = {
+        item: {
+          key: `${song.id ?? songIndex}-0`,
+          songTitle: song.title,
+          embed: firstEmbed,
+        },
+        updatedTime,
+      }
+    }
+  })
+
+  return latest?.item
+}
+
 /**
  * ReleaseUnit コンポーネント
  */
@@ -100,6 +133,12 @@ export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitP
   const [isExpanded, setIsExpanded] = useState<boolean>(releaseUnit.isExpanded ?? false)
 
   const songCount = releaseUnit.songs.length
+  const songCountLabel = releaseUnit.releaseType === 'album' ? '収録新曲数' : '収録曲数'
+  const representativeSong = releaseUnit.songs[0]
+  const releaseDisplay = formatReleaseDate(
+    representativeSong?.releaseYear,
+    representativeSong?.releaseDate
+  )
 
   // Music_Card（リリース単位）の視覚設定を解決する。
   // single/album はいずれも同一 Pink_Palette 色相を用い、区別はテキスト + アイコンで行う。
@@ -109,6 +148,8 @@ export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitP
   })
   const releaseTypeLabel = cardStyle.badge.label
   const aggregatedEmbeds = aggregateEmbeds(releaseUnit.songs, releaseUnit.releaseType)
+  const collapsedEmbed = getLatestUpdatedReleaseEmbed(releaseUnit.songs, releaseUnit.releaseType)
+  const visibleEmbeds = isExpanded ? aggregatedEmbeds : collapsedEmbed ? [collapsedEmbed] : []
   const hasEmbeds = aggregatedEmbeds.length > 0
 
   const handleToggle = () => {
@@ -147,7 +188,7 @@ export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitP
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
-        aria-label={`${releaseUnit.releaseName}（${releaseTypeLabel}、収録曲数${songCount}曲）、${
+        aria-label={`${releaseUnit.releaseName}（${releaseTypeLabel}、${songCountLabel}${songCount}曲）、${
           isExpanded ? '収録曲を閉じる' : '収録曲を開く'
         }`}
       >
@@ -164,7 +205,12 @@ export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitP
           <h3 className="release-unit__name">
             <MarqueeText text={releaseUnit.releaseName} />
           </h3>
-          <span className="release-unit__count">収録曲数: {songCount}曲</span>
+          {releaseDisplay && (
+            <span className="release-unit__release-date">発売日: {releaseDisplay}</span>
+          )}
+          <span className="release-unit__count">
+            {songCountLabel}: {songCount}曲
+          </span>
         </div>
         <ExpandToggleIndicator isExpanded={isExpanded} />
       </div>
@@ -200,7 +246,7 @@ export function ReleaseUnit({ releaseUnit, onToggle, onSongClick }: ReleaseUnitP
       {hasEmbeds && (
         <div className="release-unit__embeds release-unit__embeds--always">
           <div className="release-unit__embed-list">
-            {aggregatedEmbeds.map((item) => (
+            {visibleEmbeds.map((item) => (
               <div key={item.key} className="release-unit__embed-item">
                 <span className="release-unit__embed-label">
                   {item.songTitle} - {getEmbedServiceName(item.embed.embed, item.embed.label)}

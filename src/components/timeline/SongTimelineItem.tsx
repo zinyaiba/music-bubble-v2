@@ -8,10 +8,12 @@
  * Requirements: 1.4, 5.1, 10.1
  */
 
+import { useState } from 'react'
 import type { JSX } from 'react'
 import type { Song, MusicServiceEmbed } from '../../types'
 import { MarqueeText } from '../common/MarqueeText'
 import { LazyEmbed } from '../common/LazyEmbed'
+import { formatReleaseDate } from '../../utils/timelineDate'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import './SongTimelineItem.css'
 
@@ -20,27 +22,6 @@ export interface SongTimelineItemProps {
   song: Song
   /** クリック時のコールバック */
   onClick?: (songId: string) => void
-}
-
-/**
- * 発売日を整形して表示
- * DBには releaseYear (数値) と releaseDate (MMDD形式の文字列) で保存されている
- */
-function formatReleaseDate(releaseYear?: number, releaseDate?: string): string | null {
-  // MMDD形式の場合（4桁の数字）
-  if (releaseDate && /^\d{4}$/.test(releaseDate)) {
-    const month = parseInt(releaseDate.substring(0, 2), 10)
-    const day = parseInt(releaseDate.substring(2, 4), 10)
-    if (releaseYear) {
-      return `${releaseYear}年${month}月${day}日`
-    }
-    return `${month}月${day}日`
-  }
-  // 年のみの場合
-  if (releaseYear) {
-    return `${releaseYear}年`
-  }
-  return null
 }
 
 /**
@@ -77,9 +58,12 @@ function getEmbedServiceName(embedContent: string | undefined, label?: string): 
  * 個別楽曲をタイムラインアイテムとして表示
  */
 export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.Element {
+  const [isExpanded, setIsExpanded] = useState(false)
   const releaseDisplay = formatReleaseDate(song.releaseYear, song.releaseDate)
   const embeds = getEmbeds(song)
+  const visibleEmbeds = isExpanded ? embeds : embeds.slice(0, 1)
   const hasEmbeds = embeds.length > 0
+  const hasAdditionalEmbeds = embeds.length > 1
 
   // Music_Card（個別曲）の視覚設定を解決（Pink_Palette / right / 曲バッジ）
   const cardStyle = resolveCardStyle({ kind: 'song' })
@@ -127,25 +111,18 @@ export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.
             <span className="song-timeline-item__release-date">{releaseDisplay}</span>
           )}
           {song.singleName && (
-            <span className="song-timeline-item__release-tag">
-              シングル: {song.singleName}
-            </span>
+            <span className="song-timeline-item__release-tag">シングル: {song.singleName}</span>
           )}
           {song.albumName && (
-            <span className="song-timeline-item__release-tag">
-              アルバム: {song.albumName}
-            </span>
+            <span className="song-timeline-item__release-tag">アルバム: {song.albumName}</span>
           )}
         </div>
       )}
 
       {/* 埋め込みコンテンツ */}
       {hasEmbeds && (
-        <div
-          className="song-timeline-item__embeds"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {embeds.map((item, index) => (
+        <div className="song-timeline-item__embeds" onClick={(e) => e.stopPropagation()}>
+          {visibleEmbeds.map((item, index) => (
             <div key={index} className="song-timeline-item__embed-item">
               {/* サムネイル先行・タップで iframe 生成（メモリ節約） */}
               <LazyEmbed
@@ -155,9 +132,24 @@ export function SongTimelineItem({ song, onClick }: SongTimelineItemProps): JSX.
               />
             </div>
           ))}
+          {hasAdditionalEmbeds && (
+            <button
+              type="button"
+              className="song-timeline-item__content-toggle"
+              onClick={(event) => {
+                event.stopPropagation()
+                setIsExpanded((prev) => !prev)
+              }}
+              onKeyDown={(event) => event.stopPropagation()}
+              aria-expanded={isExpanded}
+            >
+              {isExpanded
+                ? '関連コンテンツを1件に戻す'
+                : `関連コンテンツをすべて表示（${embeds.length}件）`}
+            </button>
+          )}
         </div>
       )}
-
     </article>
   )
 }

@@ -265,6 +265,17 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
     }))
   }, [])
 
+  const handleMoveEmbed = useCallback((index: number, direction: -1 | 1) => {
+    setFormData((prev) => {
+      const targetIndex = index + direction
+      if (targetIndex < 0 || targetIndex >= prev.musicServiceEmbeds.length) return prev
+
+      const embeds = [...prev.musicServiceEmbeds]
+      ;[embeds[index], embeds[targetIndex]] = [embeds[targetIndex], embeds[index]]
+      return { ...prev, musicServiceEmbeds: embeds }
+    })
+  }, [])
+
   /**
    * 埋め込みコンテンツの変更
    */
@@ -709,6 +720,33 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
           <div className="song-form__embeds">
             {formData.musicServiceEmbeds.map((item, index) => (
               <div key={index} className="song-form__embed-item">
+                <div className="song-form__embed-order">
+                  <span className={index === 0 ? 'song-form__embed-priority' : undefined}>
+                    {index === 0 ? '年表の初期表示' : `${index + 1}番目`}
+                  </span>
+                  <div className="song-form__embed-order-buttons">
+                    <button
+                      type="button"
+                      className="song-form__embed-order-button"
+                      onClick={() => handleMoveEmbed(index, -1)}
+                      disabled={isSubmitting || index === 0}
+                      aria-label={`埋め込みコンテンツ${index + 1}を上に移動`}
+                      title="上に移動"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="song-form__embed-order-button"
+                      onClick={() => handleMoveEmbed(index, 1)}
+                      disabled={isSubmitting || index === formData.musicServiceEmbeds.length - 1}
+                      aria-label={`埋め込みコンテンツ${index + 1}を下に移動`}
+                      title="下に移動"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                </div>
                 <div className="song-form__embed-fields">
                   <div className="song-form__field">
                     <input
@@ -779,7 +817,7 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
             </button>
           </div>
           <p className="song-form__hint">
-            Spotify、YouTube等の埋め込みiframeタグを貼り付けてください
+            先頭のコンテンツが年表の初期表示に使われます。Spotify、YouTube等の埋め込みiframeタグを貼り付けてください
           </p>
         </section>
 

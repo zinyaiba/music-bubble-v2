@@ -24,56 +24,170 @@ import type { Announcement } from '../data/announcements'
 import './InfoPage.css'
 
 /**
- * 使い方セクションの型定義
+ * 案内セクションの型定義
  */
-interface HowToSection {
+interface InfoSection {
   id: string
   title: string
   content: string
   icon: string
 }
 
+type InfoTab = 'announcements' | 'introduction' | 'howto'
+
+/**
+ * はじめにセクションデータ
+ */
+const introductionSections: InfoSection[] = [
+  {
+    id: 'introduction-artist',
+    title: '栗林みな実さんについて',
+    content: `
+**公式アカウント**
+- [X：@minamiracle6_6](https://x.com/minamiracle6_6)
+- [YouTube：栗林みな実 Official Channel](https://www.youtube.com/@MinamiKuribayashi0611)`,
+    icon: '🎤',
+  },
+  {
+    id: 'introduction-about',
+    title: 'このサイトについて',
+    content: `「栗林みな実 Marron Bubbles ~Next Season~」は、栗林みな実さんの楽曲・ライブ情報を栗家族のみなさんと一緒に集め、活動の歴史を振り返りながら新しい魅力を発見するための**非公式のファンサイト**です。
+
+ご本人・所属事務所・レコード会社などの公式関係者が運営するサイトではありません。`,
+    icon: '🌰',
+  },
+  {
+    id: 'introduction-song-regulations',
+    title: '登録楽曲のレギュレーション',
+    content: `本サイトでは、次のいずれかに該当する楽曲を登録対象とします。
+
+- 栗林みな実さんご本人が歌唱している楽曲（Minami名義を含む）
+- 栗林みな実さんご本人が作詞・作曲・編曲のいずれかに**関わっている楽曲**
+
+ただし、**カラオケ配信でのみ歌唱した楽曲は登録対象外**とします。`,
+    icon: '📋',
+  },
+  {
+    id: 'introduction-content-policy',
+    title: '関連コンテンツの掲載方針',
+    content: `楽曲・ライブページで登録できる動画・音源の「関連コンテンツ」は、**公式アカウントや公式配信元が公開しているものに限定**します。
+
+非公式アップロード、無断転載、出所を確認できないコンテンツは登録しないでください。掲載内容に問題がある場合は、管理人の判断で修正または削除することがあります。`,
+    icon: '✅',
+  },
+  {
+    id: 'introduction-editing',
+    title: '情報の登録・編集について',
+    content: `本サイトの楽曲・ライブ・タグ情報は、みなさんで登録・編集できます。
+
+- 公式サイトや公式SNSなど、信頼できる情報源を確認して登録してください
+- 個人情報や、公開されていない情報は入力しないでください
+- 掲載情報に誤りや不足がある場合は、修正へのご協力をお願いします
+
+情報の正確性・完全性は保証していません。最新情報は必ず公式サイトや公式SNSでご確認ください。`,
+    icon: '✏️',
+  },
+  {
+    id: 'introduction-contact',
+    title: '管理人・お問い合わせ',
+    content: `管理人: [@kentaro_uechan](https://x.com/kentaro_uechan)
+
+不具合の報告、掲載内容の訂正・削除依頼、サイトへのご意見は、管理人のXアカウントまでご連絡ください。掲載されている作品名・画像・音源などの権利は、それぞれの権利者に帰属します。`,
+    icon: '📮',
+  },
+  {
+    id: 'introduction-contributors',
+    title: 'データ提供・ご協力',
+    content: `本サイトのライブ情報には、栗家族のみなさんから提供・登録いただいたデータを活用しています。ご協力いただいたみなさんに、心より感謝申し上げます。
+
+**データベース提供元**
+- [ましまろさん（@tap_mashimaro）](https://x.com/tap_mashimaro)
+- [栗林みな実ライブ歌唱曲データベース](https://x.com/tap_mashimaro/status/2065056705944469636?s=20)
+
+**登録協力**
+- [＊Miki＊さん（@miki_68）](https://x.com/miki_68)
+
+匿名で登録できる仕組みのため、ここでは管理人が把握している方のみ掲載しています。掲載を希望される協力者の方は、管理人までご連絡ください。`,
+    icon: '🤝',
+  },
+]
+
 /**
  * 使い方セクションデータ
  */
-const howToSections: HowToSection[] = [
+const howToSections: InfoSection[] = [
   {
     id: 'how-to-bubble',
-    title: 'シャボン玉で楽曲を探索',
-    content: `TOPページでは、楽曲・アーティスト・タグがシャボン玉として表示されます。
+    title: 'TOP：シャボン玉から魅力を発見',
+    content: `TOPページでは、楽曲・作詞家・作曲家・編曲家・タグがシャボン玉として表示されます。
 
-- シャボン玉をタップすると詳細情報が表示されます
-- 楽曲のシャボン玉からは詳細ページに移動できます
-- 一時停止ボタンでアニメーションを止められます`,
+- **アーティスト**: 栗林みな実、Minami、ワイルド三人娘、その他から絞り込み
+- **カテゴリ**: 楽曲・作詞・作曲・編曲・タグを複数選択して表示
+- **表示数**: スライダーや＋／−ボタンで1〜15個に変更
+- シャボン玉をタップして詳細や関連楽曲を確認
+- 一時停止ボタンでアニメーションを停止・再開`,
     icon: '🫧',
   },
   {
-    id: 'how-to-filter',
-    title: 'フィルタで絞り込み',
-    content: `TOPページのフィルタ機能で、表示する楽曲を絞り込めます。
-
-- **アーティストフィルタ**: 栗林みな実、Minami、その他から選択
-- **ジャンルフィルタ**: 選択したアーティストの楽曲のジャンルで絞り込み`,
-    icon: '🔍',
-  },
-  {
     id: 'how-to-songs',
-    title: '楽曲を管理',
-    content: `楽曲ページでは、登録されている全ての楽曲を閲覧・検索できます。
+    title: '楽曲：検索・閲覧・登録',
+    content: `楽曲ページでは、登録されている楽曲を一覧で確認できます。
 
-- 検索バーでタイトル、アーティスト名などで検索
-- 楽曲をタップすると詳細ページへ
-- 詳細ページでは埋め込みプレイヤーや外部リンクを表示`,
+- タイトル、アーティスト、作詞、作曲、編曲、タグなどで検索
+- 並び順、表示形式、関連コンテンツの有無、日付で絞り込み
+- 楽曲をタップして、クレジット・リリース情報・公式の関連コンテンツなどを確認
+- 右下の＋ボタンから新しい楽曲を登録
+- 右下のタグ型ボタンからタグページを開く
+- 詳細ページの編集ボタンから情報を更新`,
     icon: '🎵',
   },
   {
-    id: 'how-to-tags',
-    title: 'タグで整理',
-    content: `タグ機能で楽曲を自由に分類できます。
+    id: 'how-to-related-content',
+    title: '関連コンテンツ：公式動画などを登録',
+    content: `楽曲・ライブの登録／編集画面では、YouTubeなどの公式コンテンツを関連情報として登録できます。
 
-- **タグ一覧**: 登録されているタグと楽曲数を確認
-- **タグ登録**: 楽曲にタグを追加・削除
-- **SNS共有**: タグ情報をX（Twitter）で共有`,
+- PC版YouTubeで登録したい動画を開く
+- **共有**ボタンから**埋め込む**を選び、表示されたiframeコードをコピー
+- 楽曲またはライブの登録／編集画面にある「関連コンテンツ」欄へ貼り付けて保存
+- 詳しい取得手順は[YouTubeヘルプ「動画と再生リストを埋め込む」](https://support.google.com/youtube/answer/171780?hl=ja)を参照
+
+登録する動画は、**公式チャンネルや公式配信元が公開しているものに限定**してください。非公式アップロードや無断転載のコンテンツは登録しないでください。`,
+    icon: '🎬',
+  },
+  {
+    id: 'how-to-lives',
+    title: 'ライブ：公演・セットリストを探す',
+    content: `ライブページでは、単独公演・ツアー・フェスなどの情報を確認できます。ツアーは公演ごとにまとまって表示されます。
+
+- キーワード検索、並び順、公演種別、開催年月、開催地などで絞り込み
+- 詳細ページで開催日・会場・セットリスト・公式の関連コンテンツを確認
+- セットリストの楽曲から楽曲詳細へ移動
+- 右下の＋ボタンからライブを登録し、詳細ページから編集`,
+    icon: '🎤',
+  },
+  {
+    id: 'how-to-timeline',
+    title: 'タイムライン：楽曲とライブの歴史をたどる',
+    content: `タイムラインページでは、楽曲のリリースとライブ活動を同じ時系列上で振り返ることができます。
+
+- メインメニューの「タイムライン」から表示
+- 「新しい順」「古い順」を切り替えて時系列を変更
+- 年別ショートカットから見たい年代へすばやく移動
+- 楽曲・ライブのカードをタップして詳細を確認
+- シングル／アルバムやツアーのカードを展開して、収録楽曲や各公演を確認`,
+    icon: '🗓️',
+  },
+  {
+    id: 'how-to-tags',
+    title: '楽曲内のタグ：楽曲をつなげて楽しむ',
+    content: `タグページは、楽曲ページ右下の**タグマークのボタン**から開けます。「タグ一覧」と「タグ登録」の2つのタブに分かれています。
+
+- **タグ一覧**: タグを検索・並び替えし、関連楽曲を確認
+- **タグ登録**: 楽曲を選んでタグを追加・削除
+- タグ詳細からタグ名の変更・削除、Xへの共有が可能
+- タグページの戻るボタンから楽曲一覧へ戻る
+
+作品やテーマ、思い出など、楽曲の新しい楽しみ方が伝わるタグを登録してみてください。`,
     icon: '🏷️',
   },
 ]
@@ -143,7 +257,7 @@ function getAnnouncementTypeLabel(type: Announcement['type']): string {
  */
 export function InfoPage() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'howto' | 'announcements'>('howto')
+  const [activeTab, setActiveTab] = useState<InfoTab>('announcements')
 
   // 既読状態を初期化時に取得
   const [readIds, setReadIds] = useState<string[]>(() => getReadAnnouncementIds())
@@ -192,18 +306,11 @@ export function InfoPage() {
 
   return (
     <div className="info-page">
-      <Header title="お知らせ・使い方" showBackButton onBack={() => navigate('/')} />
+      <Header title="お知らせ・はじめに・使い方" showBackButton onBack={() => navigate('/')} />
 
       <main className="info-page__main">
         {/* タブ切り替え */}
         <div className="info-page__tabs">
-          <button
-            type="button"
-            className={`info-page__tab ${activeTab === 'howto' ? 'info-page__tab--active' : ''}`}
-            onClick={() => setActiveTab('howto')}
-          >
-            使い方
-          </button>
           <button
             type="button"
             className={`info-page__tab ${activeTab === 'announcements' ? 'info-page__tab--active' : ''}`}
@@ -212,7 +319,43 @@ export function InfoPage() {
             お知らせ
             {unreadCount > 0 && <span className="info-page__badge">{unreadCount}</span>}
           </button>
+          <button
+            type="button"
+            className={`info-page__tab ${activeTab === 'introduction' ? 'info-page__tab--active' : ''}`}
+            onClick={() => setActiveTab('introduction')}
+          >
+            はじめに
+          </button>
+          <button
+            type="button"
+            className={`info-page__tab ${activeTab === 'howto' ? 'info-page__tab--active' : ''}`}
+            onClick={() => setActiveTab('howto')}
+          >
+            使い方
+          </button>
         </div>
+
+        {/* はじめにタブ */}
+        {activeTab === 'introduction' && (
+          <div className="info-page__content">
+            <div className="info-page__howto-list">
+              {introductionSections.map((section) => (
+                <article key={section.id} className="info-page__howto-item">
+                  <div className="info-page__howto-icon">{section.icon}</div>
+                  <div className="info-page__howto-content">
+                    <h2 className="info-page__howto-title">{section.title}</h2>
+                    <div
+                      className="info-page__howto-text"
+                      dangerouslySetInnerHTML={{
+                        __html: parseMarkdown(section.content),
+                      }}
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 使い方タブ (Requirements: 9.1) */}
         {activeTab === 'howto' && (

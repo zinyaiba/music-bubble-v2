@@ -15,6 +15,10 @@
 
 import { useState } from 'react'
 import type { MajorEventTimelineItem } from '../../types'
+import {
+  formatTimelineDate as formatDate,
+  formatTimelineDateRange as formatDateRange,
+} from '../../utils/timelineDate'
 import { resolveCardStyle } from '../../utils/timelineCardStyle'
 import { MarqueeText } from '../common/MarqueeText'
 import { ExpandToggleIndicator } from './ExpandToggleIndicator'
@@ -31,33 +35,13 @@ export interface MajorEventItemProps {
 }
 
 /**
- * 日付を表示用にフォーマット（年/月/日）
+ * ツアー公演の公演地と会場名を1行用のテキストに整形
  */
-function formatDate(dateTime: string): string {
-  try {
-    const date = new Date(dateTime)
-    if (isNaN(date.getTime())) {
-      return dateTime
-    }
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    const day = date.getDate()
-    return `${year}/${month}/${day}`
-  } catch {
-    return dateTime
+function formatPerformanceVenue(tourLocation?: string, venueName?: string): string {
+  if (tourLocation && venueName && tourLocation !== venueName) {
+    return `${tourLocation} / ${venueName}`
   }
-}
-
-/**
- * 開催期間を表示用にフォーマット
- */
-function formatDateRange(firstDate: string, lastDate: string): string {
-  const first = formatDate(firstDate)
-  const last = formatDate(lastDate)
-  if (first === last) {
-    return first
-  }
-  return `${first} 〜 ${last}`
+  return tourLocation || venueName || ''
 }
 
 /**
@@ -97,12 +81,24 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
 
   // ツアーの場合は展開可能
   const isExpandable = !isSolo && !!event.tourGroup
+  const soloEmbedCount = event.live?.embeds?.filter((item) => item.embed.trim() !== '').length ?? 0
   const tourPerformances = event.tourGroup?.performances ?? []
+  const tourPerformancesWithEmbeds = tourPerformances.filter((performance) =>
+    performance.embeds?.some((item) => item.embed.trim() !== '')
+  )
+  const getPerformanceUpdatedTime = (performance: (typeof tourPerformances)[number]) => {
+    const updatedAt = performance.updatedAt ?? performance.createdAt
+    const parsedTime = updatedAt ? Date.parse(updatedAt) : Number.NaN
+    return Number.isNaN(parsedTime) ? Number.NEGATIVE_INFINITY : parsedTime
+  }
+  const latestUpdatedTourPerformance = [...tourPerformancesWithEmbeds].sort(
+    (a, b) => getPerformanceUpdatedTime(b) - getPerformanceUpdatedTime(a)
+  )[0]
   const visibleTourPerformances = isExpanded
     ? tourPerformances
-    : tourPerformances.filter((performance) =>
-        performance.embeds?.some((item) => item.embed.trim() !== '')
-      )
+    : latestUpdatedTourPerformance
+      ? [latestUpdatedTourPerformance]
+      : []
 
   return (
     <article
@@ -129,7 +125,19 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
             <p className="major-event-item__venue">{event.live.venueName}</p>
             <p className="major-event-item__date">{formatDate(event.live.dateTime)}</p>
           </div>
-          <LiveEmbedList live={event.live} />
+          <LiveEmbedList live={event.live} limit={isExpanded ? undefined : 1} />
+          {soloEmbedCount > 1 && (
+            <button
+              type="button"
+              className="major-event-item__content-toggle"
+              onClick={handleToggle}
+              aria-expanded={isExpanded}
+            >
+              {isExpanded
+                ? '関連コンテンツを1件に戻す'
+                : `関連コンテンツをすべて表示（${soloEmbedCount}件）`}
+            </button>
+          )}
         </>
       )}
 
@@ -185,10 +193,15 @@ export function MajorEventItem({ event, onToggle, onClick }: MajorEventItemProps
                       {formatDate(performance.dateTime)}
                     </span>
                     <span className="major-event-item__performance-venue">
-                      {performance.tourLocation || performance.venueName}
+                      <MarqueeText
+                        text={formatPerformanceVenue(
+                          performance.tourLocation,
+                          performance.venueName
+                        )}
+                      />
                     </span>
                   </div>
-                  <LiveEmbedList live={performance} />
+                  <LiveEmbedList live={performance} limit={isExpanded ? undefined : 1} />
                 </li>
               ))}
             </ul>

@@ -33,11 +33,7 @@
   border-width: var(--border-width-thick, 3px);
   border-color: var(--color-primary);
   border-left-width: 7px;
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-alpha) 0%,
-    var(--color-surface) 58%
-  );
+  background: linear-gradient(135deg, var(--color-primary-alpha) 0%, var(--color-surface) 58%);
   box-shadow: var(--shadow-lg);
 }
 
@@ -129,9 +125,14 @@
   min-width: 0;
 }
 
+.release-unit__release-date,
 .release-unit__count {
   font-size: var(--font-size-xs, 0.75rem);
   color: var(--color-text-secondary);
+}
+
+.release-unit__release-date {
+  font-weight: var(--font-weight-medium, 500);
 }
 
 /* 展開コンテンツ */

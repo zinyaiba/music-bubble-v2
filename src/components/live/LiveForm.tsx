@@ -207,9 +207,9 @@ export function LiveForm({
   const initialFormData = useMemo(
     (): InternalFormData => ({
       // ツアー追加モードの場合はライブ種別を'tour'に固定
-      liveType: tourAddMode ? 'tour' : (live?.liveType || ('tour' as LiveType)),
+      liveType: tourAddMode ? 'tour' : live?.liveType || ('tour' as LiveType),
       // ツアー追加モードの場合は公演名を固定
-      title: tourAddMode && fixedTourName ? fixedTourName : (live?.title || ''),
+      title: tourAddMode && fixedTourName ? fixedTourName : live?.title || '',
       venueName: live?.venueName || '',
       year: getYearFromDateTime(live?.dateTime),
       month: getMonthFromDateTime(live?.dateTime),
@@ -218,7 +218,8 @@ export function LiveForm({
       otherCategory: live?.otherCategory || '',
       setlist: liveSetlistToFormData(live),
       embeds: live?.embeds?.filter((item) => item.embed && item.embed.trim() !== '') || [],
-      detailPageUrls: live?.detailPageUrls?.filter((item) => item.url && item.url.trim() !== '') || [],
+      detailPageUrls:
+        live?.detailPageUrls?.filter((item) => item.url && item.url.trim() !== '') || [],
     }),
     [live, tourAddMode, fixedTourName]
   )
@@ -281,18 +282,21 @@ export function LiveForm({
   /**
    * 別の公演からセトリをコピー
    */
-  const handleCopySetlist = useCallback((performanceId: string) => {
-    if (!performanceId) return
-    const sourcePerformance = tourPerformances.find((p) => p.id === performanceId)
-    if (!sourcePerformance || !sourcePerformance.setlist) return
+  const handleCopySetlist = useCallback(
+    (performanceId: string) => {
+      if (!performanceId) return
+      const sourcePerformance = tourPerformances.find((p) => p.id === performanceId)
+      if (!sourcePerformance || !sourcePerformance.setlist) return
 
-    const copiedSetlist: SetlistItemFormData[] = sourcePerformance.setlist.map((item) => ({
-      songId: item.songId,
-      songTitle: item.songTitle,
-      isDailySong: item.isDailySong,
-    }))
-    setFormData((prev) => ({ ...prev, setlist: copiedSetlist }))
-  }, [tourPerformances])
+      const copiedSetlist: SetlistItemFormData[] = sourcePerformance.setlist.map((item) => ({
+        songId: item.songId,
+        songTitle: item.songTitle,
+        isDailySong: item.isDailySong,
+      }))
+      setFormData((prev) => ({ ...prev, setlist: copiedSetlist }))
+    },
+    [tourPerformances]
+  )
 
   /**
    * 埋め込みコンテンツの追加
@@ -314,6 +318,17 @@ export function LiveForm({
     }))
   }, [])
 
+  const handleMoveEmbed = useCallback((index: number, direction: -1 | 1) => {
+    setFormData((prev) => {
+      const targetIndex = index + direction
+      if (targetIndex < 0 || targetIndex >= prev.embeds.length) return prev
+
+      const embeds = [...prev.embeds]
+      ;[embeds[index], embeds[targetIndex]] = [embeds[targetIndex], embeds[index]]
+      return { ...prev, embeds }
+    })
+  }, [])
+
   /**
    * 埋め込みコンテンツの変更
    */
@@ -321,9 +336,7 @@ export function LiveForm({
     (index: number, field: 'embed' | 'label', value: string) => {
       setFormData((prev) => ({
         ...prev,
-        embeds: prev.embeds.map((item, i) =>
-          i === index ? { ...item, [field]: value } : item
-        ),
+        embeds: prev.embeds.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
       }))
     },
     []
@@ -446,27 +459,29 @@ export function LiveForm({
 
     // 有効な埋め込みコンテンツのみ
     const validEmbeds = formData.embeds.filter((item) => item.embed && item.embed.trim())
-    submitData.embeds = validEmbeds.length > 0
-      ? validEmbeds.map((item) => {
-          const embed = (item.embed || '').trim()
-          const label = item.label?.trim()
-          // ラベルが空の場合は埋め込み内容から自動判定
-          const autoLabel = label || getServiceNameFromEmbed(embed)
-          return {
-            embed,
-            label: autoLabel,
-          }
-        })
-      : []
+    submitData.embeds =
+      validEmbeds.length > 0
+        ? validEmbeds.map((item) => {
+            const embed = (item.embed || '').trim()
+            const label = item.label?.trim()
+            // ラベルが空の場合は埋め込み内容から自動判定
+            const autoLabel = label || getServiceNameFromEmbed(embed)
+            return {
+              embed,
+              label: autoLabel,
+            }
+          })
+        : []
 
     // 有効な関連リンクのみ
     const validDetailUrls = formData.detailPageUrls.filter((item) => item.url && item.url.trim())
-    submitData.detailPageUrls = validDetailUrls.length > 0
-      ? validDetailUrls.map((item) => ({
-          url: item.url.trim(),
-          label: item.label?.trim() || undefined,
-        }))
-      : []
+    submitData.detailPageUrls =
+      validDetailUrls.length > 0
+        ? validDetailUrls.map((item) => ({
+            url: item.url.trim(),
+            label: item.label?.trim() || undefined,
+          }))
+        : []
 
     onSubmit(submitData)
   }
@@ -487,9 +502,7 @@ export function LiveForm({
         <h2 className="live-form__title">
           {tourAddMode ? '公演地を追加' : isEditMode ? 'ライブを編集' : '新規ライブを登録'}
         </h2>
-        {tourAddMode && fixedTourName && (
-          <p className="live-form__tour-name">{fixedTourName}</p>
-        )}
+        {tourAddMode && fixedTourName && <p className="live-form__tour-name">{fixedTourName}</p>}
       </div>
 
       <div className="live-form__content">
@@ -523,7 +536,9 @@ export function LiveForm({
                 {isEditMode && live?.liveType === 'tour' && (
                   <p className="live-form__hint">ツアーのカテゴリは変更できません</p>
                 )}
-                {shouldShowError('liveType') && <p className="live-form__error">{errors.liveType}</p>}
+                {shouldShowError('liveType') && (
+                  <p className="live-form__error">{errors.liveType}</p>
+                )}
               </div>
 
               {/* ライブ種別名の自由入力（その他・海外の場合のみ表示） */}
@@ -724,7 +739,9 @@ export function LiveForm({
                   ))}
                 </select>
               </div>
-              <p className="live-form__hint">選択した公演のセトリが反映されます（現在のセトリは上書きされます）</p>
+              <p className="live-form__hint">
+                選択した公演のセトリが反映されます（現在のセトリは上書きされます）
+              </p>
             </div>
           )}
 
@@ -743,6 +760,33 @@ export function LiveForm({
           <div className="live-form__embeds">
             {formData.embeds.map((item, index) => (
               <div key={index} className="live-form__embed-item">
+                <div className="live-form__embed-order">
+                  <span className={index === 0 ? 'live-form__embed-priority' : undefined}>
+                    {index === 0 ? '年表の初期表示' : `${index + 1}番目`}
+                  </span>
+                  <div className="live-form__embed-order-buttons">
+                    <button
+                      type="button"
+                      className="live-form__embed-order-button"
+                      onClick={() => handleMoveEmbed(index, -1)}
+                      disabled={isLoading || index === 0}
+                      aria-label={`埋め込みコンテンツ${index + 1}を上に移動`}
+                      title="上に移動"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="live-form__embed-order-button"
+                      onClick={() => handleMoveEmbed(index, 1)}
+                      disabled={isLoading || index === formData.embeds.length - 1}
+                      aria-label={`埋め込みコンテンツ${index + 1}を下に移動`}
+                      title="下に移動"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                </div>
                 <div className="live-form__embed-fields">
                   <div className="live-form__field">
                     <input
@@ -813,7 +857,7 @@ export function LiveForm({
             </button>
           </div>
           <p className="live-form__hint">
-            YouTube等の埋め込みiframeタグを貼り付けてください
+            先頭のコンテンツが年表の初期表示に使われます。YouTube等の埋め込みiframeタグを貼り付けてください
           </p>
         </section>
 
@@ -894,9 +938,7 @@ export function LiveForm({
               関連リンクを追加
             </button>
           </div>
-          <p className="live-form__hint">
-            公式サイトやチケット情報など、関連するURLを追加できます
-          </p>
+          <p className="live-form__hint">公式サイトやチケット情報など、関連するURLを追加できます</p>
         </section>
       </div>
 

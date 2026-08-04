@@ -10,6 +10,10 @@
 
 import { useState } from 'react'
 import type { TourGroup } from '../../types'
+import {
+  formatTimelineDate as formatDate,
+  formatTimelineDateRange as formatDateRange,
+} from '../../utils/timelineDate'
 import { ExpandToggleIndicator } from './ExpandToggleIndicator'
 import './TourGroupItem.css'
 
@@ -20,40 +24,6 @@ export interface TourGroupItemProps {
   onToggle?: () => void
   /** クリック時のコールバック */
   onClick?: (tourName: string) => void
-}
-
-/**
- * 日付を表示用にフォーマット（年/月/日）
- */
-function formatDate(dateTime: string): string {
-  try {
-    const date = new Date(dateTime)
-    if (isNaN(date.getTime())) {
-      return dateTime
-    }
-
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    const day = date.getDate()
-
-    return `${year}/${month}/${day}`
-  } catch {
-    return dateTime
-  }
-}
-
-/**
- * 開催期間を表示用にフォーマット
- */
-function formatDateRange(firstDate: string, lastDate: string): string {
-  const first = formatDate(firstDate)
-  const last = formatDate(lastDate)
-
-  if (first === last) {
-    return first
-  }
-
-  return `${first} 〜 ${last}`
 }
 
 /**

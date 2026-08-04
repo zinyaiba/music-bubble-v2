@@ -24,7 +24,7 @@ interface UseTimelineDataResult {
 }
 
 interface UseTimelineDataOptions {
-  /** グループのソート順（'asc' | 'desc'、デフォルト: 'desc'） */
+  /** タイムラインのソート順（'asc' | 'desc'、デフォルト: 'desc'） */
   sortOrder?: 'asc' | 'desc'
 }
 

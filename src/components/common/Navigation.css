@@ -34,6 +34,40 @@
   justify-content: center;
 }
 
+/* 楽曲・タイムライン・ライブは相互に関連するコンテンツとして共通枠で示す */
+.navigation-item--related {
+  align-items: center;
+  height: calc(100% - var(--spacing-sm));
+  background-color: var(--color-surface);
+  border-top: var(--border-width-thin) solid var(--color-border);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+}
+
+.navigation-item--related-start {
+  border-left: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md) 0 0 var(--border-radius-md);
+}
+
+.navigation-item--related-end {
+  border-right: var(--border-width-thin) solid var(--color-border);
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+}
+
+/* 狭い画面でも各項目が均等に収まるようにする */
+@media (max-width: 767px) {
+  .navigation-list .navigation-link {
+    width: 100%;
+    min-width: 0;
+    padding-right: 2px;
+    padding-left: 2px;
+  }
+
+  .navigation-item--timeline .navigation-label {
+    font-size: clamp(0.55rem, 2.6vw, var(--font-size-xs));
+    letter-spacing: -0.04em;
+  }
+}
+
 .navigation-link {
   display: flex;
   flex-direction: column;

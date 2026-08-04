@@ -53,7 +53,7 @@ const defaultNavItems: NavItem[] = [
   },
   {
     path: '/songs',
-    label: '楽曲',
+    label: '楽曲･タグ',
     icon: (
       <svg
         width="24"
@@ -68,6 +68,30 @@ const defaultNavItems: NavItem[] = [
         <path d="M9 18V5l12-2v13" />
         <circle cx="6" cy="18" r="3" />
         <circle cx="18" cy="16" r="3" />
+      </svg>
+    ),
+  },
+  {
+    path: '/timeline',
+    label: 'タイムライン',
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="6" y1="4" x2="6" y2="20" />
+        <circle cx="6" cy="5" r="2" />
+        <circle cx="6" cy="12" r="2" />
+        <circle cx="6" cy="19" r="2" />
+        <line x1="10" y1="5" x2="20" y2="5" />
+        <line x1="10" y1="12" x2="17" y2="12" />
+        <line x1="10" y1="19" x2="20" y2="19" />
       </svg>
     ),
   },
@@ -88,25 +112,6 @@ const defaultNavItems: NavItem[] = [
         {/* チケットアイコン */}
         <path d="M2 9a3 3 0 0 1 3 3 3 3 0 0 1-3 3v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a3 3 0 0 1-3-3 3 3 0 0 1 3-3V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v4z" />
         <line x1="9" y1="3" x2="9" y2="21" strokeDasharray="2 2" />
-      </svg>
-    ),
-  },
-  {
-    path: '/tags',
-    label: 'タグ',
-    icon: (
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-        <line x1="7" y1="7" x2="7.01" y2="7" />
       </svg>
     ),
   },
@@ -189,26 +194,37 @@ export function Navigation({ currentPath, items = defaultNavItems, onNavigate }:
   return (
     <nav className="navigation" role="navigation" aria-label="メインナビゲーション">
       <ul className="navigation-list">
-        {itemsWithBadge.map((item) => (
-          <li key={item.path} className="navigation-item">
-            <button
-              type="button"
-              className={`navigation-link ${isActive(item.path) ? 'active' : ''}`}
-              onClick={() => handleClick(item.path)}
-              aria-current={isActive(item.path) ? 'page' : undefined}
-            >
-              <span className="navigation-icon">
-                {item.icon}
-                {item.badge && item.badge > 0 && (
-                  <span className="navigation-badge" aria-label={`${item.badge}件の未読`}>
-                    {item.badge > 9 ? '9+' : item.badge}
-                  </span>
-                )}
-              </span>
-              <span className="navigation-label">{item.label}</span>
-            </button>
-          </li>
-        ))}
+        {itemsWithBadge.map((item) => {
+          const relatedClass =
+            item.path === '/songs'
+              ? ' navigation-item--related navigation-item--related-start'
+              : item.path === '/timeline'
+                ? ' navigation-item--related navigation-item--timeline'
+                : item.path === '/lives'
+                  ? ' navigation-item--related navigation-item--related-end'
+                  : ''
+
+          return (
+            <li key={item.path} className={`navigation-item${relatedClass}`}>
+              <button
+                type="button"
+                className={`navigation-link ${isActive(item.path) ? 'active' : ''}`}
+                onClick={() => handleClick(item.path)}
+                aria-current={isActive(item.path) ? 'page' : undefined}
+              >
+                <span className="navigation-icon">
+                  {item.icon}
+                  {item.badge && item.badge > 0 && (
+                    <span className="navigation-badge" aria-label={`${item.badge}件の未読`}>
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
+                </span>
+                <span className="navigation-label">{item.label}</span>
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )

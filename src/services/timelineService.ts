@@ -64,7 +64,7 @@ export class TimelineService {
    * - 全楽曲と全ライブを取得
    * - タイムラインアイテムに変換して統合
    * - 年月グループ化して返す
-   * @param sortOrder グループのソート順（'asc' | 'desc'、デフォルト: 'desc'）
+   * @param sortOrder タイムラインのソート順（'asc' | 'desc'、デフォルト: 'desc'）
    * @returns 年月グループの配列（時系列順）
    * @throws データ取得に失敗した場合、意味のあるエラーをスロー
    */
@@ -358,12 +358,39 @@ export class TimelineService {
   }
 
   /**
+   * ライブ系タイムラインアイテムの代表更新日時を取得
+   * updatedAt → createdAt → 公演日時の順で使用する。
+   */
+  private getLiveUpdatedTimestamp(item: TimelineItem): number | null {
+    let lives: Live[]
+
+    if (item.type === 'live') {
+      lives = [item.live]
+    } else if (item.type === 'tour-group') {
+      lives = item.tourGroup.performances
+    } else if (item.type === 'major-event') {
+      lives = item.live ? [item.live] : (item.tourGroup?.performances ?? [])
+    } else {
+      return null
+    }
+
+    if (lives.length === 0) {
+      return null
+    }
+
+    return Math.max(
+      ...lives.map((live) => {
+        const timestamp = Date.parse(live.updatedAt ?? live.createdAt ?? live.dateTime)
+        return Number.isNaN(timestamp) ? 0 : timestamp
+      })
+    )
+  }
+
+  /**
    * タイムラインアイテムを年月でグループ化
-   * - `yearMonth`でグループ化
-   * - グループ内アイテムは`date`の昇順でソート
-   * - グループ自体は`yearMonth`の指定順（昇順/降順）でソート
+   * - グループ内アイテムとグループ自体を指定された時系列順でソート
    * @param items タイムラインアイテムの配列
-   * @param sortOrder グループのソート順（'asc' | 'desc'、デフォルト: 'desc'）
+   * @param sortOrder タイムラインのソート順（'asc' | 'desc'、デフォルト: 'desc'）
    * @returns 年月グループの配列
    */
   public groupByYearMonth(
@@ -384,11 +411,26 @@ export class TimelineService {
       groupMap.get(yearMonth)!.push(item)
     }
 
-    // グループ内アイテムをdateの昇順でソート
+    // グループ内アイテムも指定された時系列順でソート
     const groups: TimelineYearMonthGroup[] = Array.from(groupMap.entries()).map(
       ([yearMonth, groupItems]) => ({
         yearMonth,
-        items: groupItems.sort((a, b) => a.date.localeCompare(b.date)),
+        items: groupItems.sort((a, b) => {
+          const direction = sortOrder === 'desc' ? -1 : 1
+          const dateComparison = a.date.localeCompare(b.date)
+          if (dateComparison !== 0) {
+            return direction * dateComparison
+          }
+
+          // 同一日時のライブ同士は代表更新日時を第2ソートキーにする
+          const updatedA = this.getLiveUpdatedTimestamp(a)
+          const updatedB = this.getLiveUpdatedTimestamp(b)
+          if (updatedA !== null && updatedB !== null && updatedA !== updatedB) {
+            return direction * (updatedA - updatedB)
+          }
+
+          return 0
+        }),
       })
     )
 

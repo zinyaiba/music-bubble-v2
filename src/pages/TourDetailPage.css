@@ -617,3 +617,63 @@
     height: 20px;
   }
 }
+
+/* ライブの思い出投稿ボタン */
+.tour-detail-page__share-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.tour-detail-page__share-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: var(--font-size-xs);
+  line-height: 1.2;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tour-detail-page__share-button svg {
+  flex-shrink: 0;
+}
+
+.tour-detail-page__share-button--copy {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.tour-detail-page__share-button--copy:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+
+.tour-detail-page__share-button--x {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.tour-detail-page__share-button--x:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.tour-detail-page__share-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}

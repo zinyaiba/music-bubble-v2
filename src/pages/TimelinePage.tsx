@@ -2,8 +2,8 @@
  * TimelinePage コンポーネント
  * タイムラインページのルートコンポーネント
  *
- * 楽曲とライブパフォーマンスを時系列で可視化するページ。
- * 直接URL（/timeline）でのみアクセス可能で、ナビゲーションメニューには表示されない。
+ * 楽曲とライブパフォーマンスを時系列で可視化し、
+ * メインナビゲーションからアクセスできるページ。
  *
  * Requirements:
  * - 1.1: 中央軸を持つスクロール可能な縦方向のタイムラインを表示する
@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTimelineData } from '../hooks/useTimelineData'
 import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
+import { Navigation } from '../components/common/Navigation'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
 import { ErrorMessage } from '../components/common/ErrorMessage'
 import { TimelineContainer } from '../components/timeline/TimelineContainer'
@@ -131,7 +132,7 @@ export function TimelinePage() {
 
   return (
     <div className="timeline-page">
-      <Header title="ライブ×曲 - 年表" showBackButton onBack={() => navigate('/')} />
+      <Header title="ライブ×曲　タイムライン" showBackButton onBack={() => navigate('/')} />
 
       <main className="timeline-page__main">
         {/* ソート切り替えコントロール */}
@@ -225,6 +226,8 @@ export function TimelinePage() {
           </div>
         )}
       </main>
+
+      <Navigation currentPath="/timeline" onNavigate={(path) => navigate(path)} />
     </div>
   )
 }

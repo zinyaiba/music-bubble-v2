@@ -253,6 +253,8 @@
 }
 
 .major-event-item__performance-venue {
+  flex: 1;
+  min-width: 0;
   color: var(--color-text-primary, var(--color-text));
 }
 
@@ -305,4 +307,27 @@
   color: var(--color-secondary-dark);
   background: var(--color-secondary-alpha);
   border-color: var(--color-secondary-light);
+}
+.major-event-item__content-toggle {
+  align-self: center;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  color: var(--color-secondary-dark);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-secondary-light);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.major-event-item__content-toggle:hover {
+  background: var(--color-secondary-alpha);
+  border-color: var(--color-secondary);
+}
+
+.major-event-item__content-toggle:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-secondary);
+  outline-offset: var(--spacing-xs);
 }

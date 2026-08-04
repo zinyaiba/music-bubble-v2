@@ -387,7 +387,7 @@ export function TagPage() {
   if (isLoading && songs.length === 0) {
     return (
       <div className="tag-page">
-        <Header title="タグ" showBackButton onBack={() => navigate('/')} />
+        <Header title="タグ" showBackButton onBack={() => navigate('/songs')} />
         <main className="tag-page__main">
           <LoadingSpinner size="large" message="データを読み込んでいます..." fullScreen />
         </main>
@@ -490,7 +490,7 @@ export function TagPage() {
   // メインのタブ表示
   return (
     <div className="tag-page">
-      <Header title="タグ" showBackButton onBack={() => navigate('/')} />
+      <Header title="タグ" showBackButton onBack={() => navigate('/songs')} />
 
       <main className="tag-page__main">
         {/* タブ切り替え */}

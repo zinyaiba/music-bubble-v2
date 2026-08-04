@@ -79,6 +79,30 @@ function isIframeTag(content: string | undefined): boolean {
 }
 
 /**
+ * ライブの思い出投稿用の日付をフォーマット（yyyy.m.d）
+ */
+function formatPostDate(dateTime: string): string {
+  const date = new Date(dateTime)
+  if (isNaN(date.getTime())) return dateTime
+
+  return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
+}
+
+/**
+ * ライブの思い出投稿用テキストを生成
+ */
+function generatePostContent(
+  live: Pick<Live, 'id' | 'title' | 'dateTime' | 'venueName'>
+): string {
+  const origin = window.location.origin
+  const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+  const liveUrl = `${origin}${basePath}/lives/${encodeURIComponent(live.id)}`
+  const date = formatPostDate(live.dateTime)
+
+  return `【${live.title}】\n${date} ${live.venueName}\n\n～ここにライブの思い出を記載～\n\n${liveUrl}\n#栗林みな実 #マロバブ #栗の歴史に触れてみて`
+}
+
+/**
  * LiveDetailPage コンポーネント
  * ライブ詳細ページ - 編集・削除ボタン付き
  */
@@ -86,8 +110,7 @@ export function LiveDetailPage() {
   const { liveId } = useParams<{ liveId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const fromTimeline =
-    (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
+  const fromTimeline = (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
   const isOnline = useOnlineStatus()
 
   // ライブデータの状態
@@ -96,6 +119,7 @@ export function LiveDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [copySuccess, setCopySuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // ライブデータと楽曲データを取得
@@ -160,6 +184,44 @@ export function LiveDetailPage() {
     loadData()
   }, [liveId])
 
+  // 投稿内容をクリップボードにコピー
+  const handleCopyToClipboard = useCallback(async () => {
+    if (!live) return
+
+    const postContent = generatePostContent(live)
+    try {
+      await navigator.clipboard.writeText(postContent)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (err) {
+      console.error('クリップボードへのコピーに失敗しました:', err)
+      // フォールバック: テキストエリアを使用
+      const textArea = document.createElement('textarea')
+      textArea.value = postContent
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-9999px'
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 2000)
+      } catch {
+        console.error('フォールバックコピーにも失敗しました')
+      }
+      document.body.removeChild(textArea)
+    }
+  }, [live])
+
+  // Xでライブの思い出を投稿
+  const handleShareToX = useCallback(() => {
+    if (!live) return
+
+    const postContent = generatePostContent(live)
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postContent)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }, [live])
+
   // 戻るナビゲーション（年表からの遷移、または検索状態を保持した一覧へ戻る）
   const handleBack = useCallback(() => {
     if (fromTimeline) {
@@ -180,8 +242,7 @@ export function LiveDetailPage() {
         if (state.liveTypeFilter && state.liveTypeFilter !== 'all')
           params.set('type', state.liveTypeFilter)
         if (state.yearFilter && state.yearFilter !== 'all') params.set('year', state.yearFilter)
-        if (state.monthFilter && state.monthFilter !== 'all')
-          params.set('month', state.monthFilter)
+        if (state.monthFilter && state.monthFilter !== 'all') params.set('month', state.monthFilter)
         if (state.locationFilter && state.locationFilter !== 'all')
           params.set('location', state.locationFilter)
 
@@ -374,6 +435,62 @@ export function LiveDetailPage() {
                       <span className="live-detail-page__info-value">{live.otherCategory}</span>
                     </div>
                   )}
+              </div>
+
+              {/* ライブの思い出を投稿 */}
+              <div className="live-detail-page__share-section">
+                <button
+                  type="button"
+                  className="live-detail-page__share-button live-detail-page__share-button--x"
+                  onClick={handleShareToX}
+                  aria-label="ライブの思い出をXに投稿"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                  ライブの思い出を投稿しよう
+                </button>
+                <button
+                  type="button"
+                  className="live-detail-page__share-button live-detail-page__share-button--copy"
+                  onClick={handleCopyToClipboard}
+                  aria-label="投稿内容をクリップボードにコピー"
+                >
+                  {copySuccess ? (
+                    <>
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      コピーしました
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                      投稿内容をコピー
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* 埋め込みコンテンツセクション（上部に配置） */}
