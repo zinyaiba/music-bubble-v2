@@ -422,6 +422,9 @@ export function SongForm({ song, onSubmit, onCancel, isSubmitting = false }: Son
     songData.singleName = formData.singleName.trim() || undefined
     songData.albumName = formData.albumName.trim() || undefined
 
+    // 旧形式のフィールドは更新時に明示的に削除し、空配列からの復活を防ぐ
+    songData.musicServiceEmbed = undefined
+
     // 有効な埋め込みコンテンツのみ（空の場合も明示的に空配列を設定）
     const validEmbeds = formData.musicServiceEmbeds.filter(
       (item) => item.embed && item.embed.trim()

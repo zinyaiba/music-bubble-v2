@@ -13,7 +13,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTimelineData } from '../hooks/useTimelineData'
 import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
 import { Header } from '../components/common/Header'
@@ -29,13 +29,14 @@ import './TimelinePage.css'
  */
 export function TimelinePage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  // ソート順の状態管理（デフォルト: 新しい順）
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  // URLにソート順を保持し、詳細ページから戻ったときも同じ表示順を復元する
+  const sortOrder: 'asc' | 'desc' = searchParams.get('sort') === 'asc' ? 'asc' : 'desc'
   const [activeYear, setActiveYear] = useState<string | null>(null)
-  const [scrollPosition] = useState(() => {
+  const [scrollPosition, setScrollPosition] = useState(() => {
     try {
-      const saved = sessionStorage.getItem('timelineScrollPosition')
+      const saved = sessionStorage.getItem(`timelineScrollPosition:${sortOrder}`)
       if (!saved) return 0
 
       const position = parseInt(saved, 10)
@@ -61,17 +62,19 @@ export function TimelinePage() {
   )
 
   // データ更新で選択年が消えた場合は、表示順の先頭年を選択状態として扱う
-  const displayedYear =
-    activeYear && years.includes(activeYear) ? activeYear : (years[0] ?? null)
+  const displayedYear = activeYear && years.includes(activeYear) ? activeYear : (years[0] ?? null)
 
-  // 詳細ページへ遷移する直前のスクロール位置を保存
-  const handleSaveScrollPosition = useCallback((scrollTop: number) => {
-    try {
-      sessionStorage.setItem('timelineScrollPosition', scrollTop.toString())
-    } catch (err) {
-      console.error('Failed to save timeline scroll position:', err)
-    }
-  }, [])
+  // 詳細ページへ遷移する直前のスクロール位置を、ソート順ごとに保存
+  const handleSaveScrollPosition = useCallback(
+    (scrollTop: number) => {
+      try {
+        sessionStorage.setItem(`timelineScrollPosition:${sortOrder}`, scrollTop.toString())
+      } catch (err) {
+        console.error('Failed to save timeline scroll position:', err)
+      }
+    },
+    [sortOrder]
+  )
 
   // 選択中の年が横スクロール領域から外れないように追従させる
   useEffect(() => {
@@ -92,8 +95,23 @@ export function TimelinePage() {
   const handleToggleSortOrder = useCallback(() => {
     const nextSortOrder = sortOrder === 'desc' ? 'asc' : 'desc'
     trackEvent(AnalyticsEvents.年表_ソート変更, { sort_order: nextSortOrder })
-    setSortOrder(nextSortOrder)
-  }, [sortOrder])
+
+    // 並び順を反転したときは先頭から表示し、以前の並び順の位置を流用しない
+    setScrollPosition(0)
+    setActiveYear(null)
+    setSearchParams(
+      (currentParams) => {
+        const nextParams = new URLSearchParams(currentParams)
+        if (nextSortOrder === 'asc') {
+          nextParams.set('sort', 'asc')
+        } else {
+          nextParams.delete('sort')
+        }
+        return nextParams
+      },
+      { replace: true }
+    )
+  }, [setSearchParams, sortOrder])
 
   const handleActiveYearChange = useCallback((year: string) => {
     setActiveYear(year)
