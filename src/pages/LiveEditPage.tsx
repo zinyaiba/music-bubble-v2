@@ -188,7 +188,7 @@ export function LiveEditPage() {
                 otherCategory:
                   formData.liveType === 'other' || formData.liveType === 'overseas'
                     ? formData.otherCategory
-                    : undefined,
+                    : '',
                 setlist: setlistWithOrder,
                 embeds: formData.embeds,
                 detailPageUrls: formData.detailPageUrls,

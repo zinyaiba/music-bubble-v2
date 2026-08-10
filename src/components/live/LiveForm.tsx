@@ -389,11 +389,6 @@ export function LiveForm({
       newErrors.title = '公演名を入力してください'
     }
 
-    // その他・海外カテゴリの場合、ライブ種別名は必須
-    if (usesCategoryInput(formData.liveType) && !formData.otherCategory.trim()) {
-      newErrors.otherCategory = 'ライブ種別名を入力してください'
-    }
-
     // 会場名は任意（バリデーションなし）
 
     // 年は必須
@@ -444,8 +439,8 @@ export function LiveForm({
       setlist: formData.setlist,
     }
 
-    // その他・海外カテゴリの場合のみライブ種別名を含める
-    if (usesCategoryInput(formData.liveType) && formData.otherCategory?.trim()) {
+    // その他・海外カテゴリの場合のみライブ種別名を含める（空欄も許可）
+    if (usesCategoryInput(formData.liveType)) {
       submitData.otherCategory = formData.otherCategory.trim()
     }
 
@@ -539,7 +534,7 @@ export function LiveForm({
                   className={`live-form__field ${shouldShowError('otherCategory') ? 'live-form__field--error' : ''}`}
                 >
                   <label htmlFor="otherCategory" className="live-form__label">
-                    ライブ種別名 <span className="live-form__required">*</span>
+                    ライブ種別名（任意）
                   </label>
                   <input
                     type="text"
@@ -555,7 +550,7 @@ export function LiveForm({
                     autoComplete="off"
                   />
                   <p className="live-form__hint">
-                    一覧で表示する名称を入力してください。カテゴリは「
+                    必要に応じて一覧で表示する名称を入力してください。カテゴリは「
                     {LIVE_TYPE_LABELS[formData.liveType]}」として分類されます
                   </p>
                   {shouldShowError('otherCategory') && (

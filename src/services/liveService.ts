@@ -234,9 +234,9 @@ export class LiveService {
       // その他・海外カテゴリの場合のみライブ種別名を追加
       if (
         (liveData.liveType === 'other' || liveData.liveType === 'overseas') &&
-        liveData.otherCategory
+        liveData.otherCategory?.trim()
       ) {
-        docData.otherCategory = liveData.otherCategory
+        docData.otherCategory = liveData.otherCategory.trim()
       }
 
       // 埋め込みコンテンツを追加
@@ -299,7 +299,8 @@ export class LiveService {
         updateData.tourLocation = tourLocation || deleteField()
       }
       if (liveData.otherCategory !== undefined) {
-        updateData.otherCategory = liveData.otherCategory
+        const otherCategory = liveData.otherCategory.trim()
+        updateData.otherCategory = otherCategory || deleteField()
       }
       if (liveData.embeds !== undefined) {
         updateData.embeds = liveData.embeds
