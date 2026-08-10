@@ -243,10 +243,6 @@ export function LiveForm({
         const value = e.target.value
         setFormData((prev) => {
           const newData = { ...prev, [field]: value }
-          // ライブ種別がtour以外に変更された場合、公演地をクリア
-          if (field === 'liveType' && value !== 'tour') {
-            newData.tourLocation = ''
-          }
           // ライブ種別名の自由入力を使わないカテゴリに変更された場合、カテゴリ名をクリア
           if (field === 'liveType' && !usesCategoryInput(value as LiveType)) {
             newData.otherCategory = ''
@@ -444,12 +440,8 @@ export function LiveForm({
       title: formData.title.trim(),
       venueName: formData.venueName.trim(),
       dateTime: formatDateTimeForSubmit(formData.year, formData.month, formData.day),
+      tourLocation: formData.tourLocation.trim(),
       setlist: formData.setlist,
-    }
-
-    // ツアーの場合のみ公演地を含める
-    if (formData.liveType === 'tour' && formData.tourLocation?.trim()) {
-      submitData.tourLocation = formData.tourLocation.trim()
     }
 
     // その他・海外カテゴリの場合のみライブ種別名を含める
@@ -597,26 +589,24 @@ export function LiveForm({
             </div>
           )}
 
-          {/* 公演地（ツアーの場合のみ表示、ツアー追加モードでは常に表示） */}
-          {(formData.liveType === 'tour' || tourAddMode) && (
-            <div className="live-form__field">
-              <label htmlFor="tourLocation" className="live-form__label">
-                公演地
-              </label>
-              <input
-                type="text"
-                id="tourLocation"
-                className="live-form__input"
-                value={formData.tourLocation || ''}
-                onChange={handleChange('tourLocation')}
-                onBlur={handleBlur('tourLocation')}
-                placeholder="例: 東京、大阪、名古屋"
-                disabled={isLoading}
-                autoComplete="off"
-              />
-              <p className="live-form__hint">ツアー公演の開催地を入力してください</p>
-            </div>
-          )}
+          {/* 公演地 */}
+          <div className="live-form__field">
+            <label htmlFor="tourLocation" className="live-form__label">
+              公演地
+            </label>
+            <input
+              type="text"
+              id="tourLocation"
+              className="live-form__input"
+              value={formData.tourLocation || ''}
+              onChange={handleChange('tourLocation')}
+              onBlur={handleBlur('tourLocation')}
+              placeholder="例: 東京、大阪、名古屋"
+              disabled={isLoading}
+              autoComplete="off"
+            />
+            <p className="live-form__hint">ライブの開催地を入力してください</p>
+          </div>
 
           {/* 会場名 */}
           <div className="live-form__field">

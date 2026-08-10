@@ -44,7 +44,7 @@ function matchesQueryInArray(
  * - 公演名
  * - 会場名
  * - セトリの楽曲名
- * - 公演地（ツアーの場合）
+ * - 公演地
  * - ライブ種別名（カテゴリ表示名 / その他・海外の自由入力名）
  */
 export function matchesSearchQuery(
@@ -71,7 +71,7 @@ export function matchesSearchQuery(
     return true
   }
 
-  // 公演地での検索（ツアーの場合）
+  // 公演地での検索
   if (live.tourLocation && matchesQuery(live.tourLocation, trimmedQuery, caseSensitive)) {
     return true
   }
@@ -105,11 +105,7 @@ export function matchesSearchQuery(
 /**
  * ライブリストを検索クエリでフィルタリング
  */
-export function searchLives(
-  lives: Live[],
-  query: string,
-  options: LiveSearchOptions = {}
-): Live[] {
+export function searchLives(lives: Live[], query: string, options: LiveSearchOptions = {}): Live[] {
   return lives.filter((live) => matchesSearchQuery(live, query, options))
 }
 

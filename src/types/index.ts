@@ -157,7 +157,7 @@ export interface Live {
   venueName: string
   /** 日時（ISO 8601形式） */
   dateTime: string
-  /** 公演地（ツアーの場合のみ） */
+  /** 公演地 */
   tourLocation?: string
   /** カテゴリの自由入力内容（liveType='other'または'overseas'の場合のみ） */
   otherCategory?: string

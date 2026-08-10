@@ -17,6 +17,7 @@ import {
   onSnapshot,
   Timestamp,
   serverTimestamp,
+  deleteField,
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import type { Live, CreateLiveData, UpdateLiveData } from '../types'
@@ -88,7 +89,7 @@ export class LiveService {
       updatedAt: data.updatedAt ? this.convertTimestampToString(data.updatedAt) : undefined,
     }
 
-    // ツアーの場合のみ公演地を追加
+    // 公演地を追加
     if (data.tourLocation) {
       live.tourLocation = data.tourLocation
     }
@@ -225,9 +226,9 @@ export class LiveService {
         updatedAt: serverTimestamp(),
       }
 
-      // ツアーの場合のみ公演地を追加
-      if (liveData.liveType === 'tour' && liveData.tourLocation) {
-        docData.tourLocation = liveData.tourLocation
+      // 公演地を追加
+      if (liveData.tourLocation?.trim()) {
+        docData.tourLocation = liveData.tourLocation.trim()
       }
 
       // その他・海外カテゴリの場合のみライブ種別名を追加
@@ -294,7 +295,8 @@ export class LiveService {
         updateData.setlist = this.sanitizeSetlistForFirestore(liveData.setlist)
       }
       if (liveData.tourLocation !== undefined) {
-        updateData.tourLocation = liveData.tourLocation
+        const tourLocation = liveData.tourLocation.trim()
+        updateData.tourLocation = tourLocation || deleteField()
       }
       if (liveData.otherCategory !== undefined) {
         updateData.otherCategory = liveData.otherCategory

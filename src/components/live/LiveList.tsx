@@ -93,11 +93,11 @@ function getMonth(dateTime: string): number {
   }
 }
 
-/** 公演地のリストを取得（ツアーのみ） */
-function getTourLocations(lives: Live[]): string[] {
+/** 公演地のリストを取得 */
+function getLocations(lives: Live[]): string[] {
   const locations = new Set<string>()
   lives.forEach((live) => {
-    if (live.liveType === 'tour' && live.tourLocation) {
+    if (live.tourLocation) {
       locations.add(live.tourLocation)
     }
   })
@@ -232,14 +232,14 @@ export function LiveList({
 
   // 公演地のリスト
   const availableLocations = useMemo(() => {
-    return getTourLocations(filteredLivesAfterMonth)
+    return getLocations(filteredLivesAfterMonth)
   }, [filteredLivesAfterMonth])
 
   // 公演地ごとのライブ数を計算
   const locationCounts = useMemo(() => {
     const counts = new Map<string, number>()
     filteredLivesAfterMonth.forEach((live) => {
-      if (live.liveType === 'tour' && live.tourLocation) {
+      if (live.tourLocation) {
         counts.set(live.tourLocation, (counts.get(live.tourLocation) || 0) + 1)
       }
     })
@@ -257,7 +257,16 @@ export function LiveList({
       monthFilter,
       locationFilter
     )
-  }, [query, sortBy, contentFilter, liveTypeFilter, yearFilter, monthFilter, locationFilter, onSearchStateChange])
+  }, [
+    query,
+    sortBy,
+    contentFilter,
+    liveTypeFilter,
+    yearFilter,
+    monthFilter,
+    locationFilter,
+    onSearchStateChange,
+  ])
 
   // 検索・フィルタ結果をメモ化（ソートはツアーグループ化時に実施）
   const filteredLives = useMemo(() => {
@@ -279,9 +288,7 @@ export function LiveList({
 
     // 公演地フィルタを適用
     if (locationFilter !== 'all') {
-      filtered = filtered.filter(
-        (live) => live.liveType === 'tour' && live.tourLocation === locationFilter
-      )
+      filtered = filtered.filter((live) => live.tourLocation === locationFilter)
     }
 
     return filtered
@@ -438,9 +445,7 @@ export function LiveList({
             )}
           </div>
           <div className="live-list__search-meta">
-            <span className="live-list__search-count">
-              {filteredLivesCount}公演
-            </span>
+            <span className="live-list__search-count">{filteredLivesCount}公演</span>
           </div>
         </div>
 
@@ -596,7 +601,10 @@ export function LiveList({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" />
+                  <polygon
+                    points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+                    stroke="currentColor"
+                  />
                   <line x1="18" y1="6" x2="6" y2="18" stroke="#e74c3c" />
                   <line x1="6" y1="6" x2="18" y2="18" stroke="#e74c3c" />
                 </svg>

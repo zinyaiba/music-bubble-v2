@@ -172,8 +172,7 @@ export function LiveEditPage() {
           live_type: formData.liveType,
           setlist_count: setlistWithOrder.length,
           has_embed: formData.embeds?.some((item) => item.embed.trim() !== '') ?? false,
-          has_detail_link:
-            formData.detailPageUrls?.some((item) => item.url.trim() !== '') ?? false,
+          has_detail_link: formData.detailPageUrls?.some((item) => item.url.trim() !== '') ?? false,
         }
 
         if (isEditMode && liveId) {
@@ -185,7 +184,7 @@ export function LiveEditPage() {
                 title: formData.title,
                 venueName: formData.venueName,
                 dateTime: formData.dateTime,
-                tourLocation: formData.liveType === 'tour' ? formData.tourLocation : undefined,
+                tourLocation: formData.tourLocation,
                 otherCategory:
                   formData.liveType === 'other' || formData.liveType === 'overseas'
                     ? formData.otherCategory
@@ -224,7 +223,7 @@ export function LiveEditPage() {
                 title: formData.title,
                 venueName: formData.venueName,
                 dateTime: formData.dateTime,
-                tourLocation: formData.liveType === 'tour' ? formData.tourLocation : undefined,
+                tourLocation: formData.tourLocation,
                 otherCategory:
                   formData.liveType === 'other' || formData.liveType === 'overseas'
                     ? formData.otherCategory
@@ -274,14 +273,14 @@ export function LiveEditPage() {
 
   // ローディング中
   if (isLoading) {
-    const headerTitle = isEditMode ? 'ライブを編集' : isTourAddMode ? '公演地を追加' : '新規ライブを登録'
+    const headerTitle = isEditMode
+      ? 'ライブを編集'
+      : isTourAddMode
+        ? '公演地を追加'
+        : '新規ライブを登録'
     return (
       <div className="live-edit-page">
-        <Header
-          title={headerTitle}
-          showBackButton
-          onBack={handleBack}
-        />
+        <Header title={headerTitle} showBackButton onBack={handleBack} />
         <main className="live-edit-page__main">
           <LoadingSpinner
             size="large"
@@ -321,15 +320,15 @@ export function LiveEditPage() {
     )
   }
 
-  const headerTitle = isEditMode ? 'ライブを編集' : isTourAddMode ? '公演地を追加' : '新規ライブを登録'
+  const headerTitle = isEditMode
+    ? 'ライブを編集'
+    : isTourAddMode
+      ? '公演地を追加'
+      : '新規ライブを登録'
 
   return (
     <div className="live-edit-page">
-      <Header
-        title={headerTitle}
-        showBackButton
-        onBack={handleBack}
-      />
+      <Header title={headerTitle} showBackButton onBack={handleBack} />
 
       <main className="live-edit-page__main">
         {/* 成功メッセージ (要件 7.7) */}

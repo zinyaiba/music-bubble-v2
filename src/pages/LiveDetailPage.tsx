@@ -4,7 +4,7 @@
  *
  * Requirements:
  * - 5.1: セトリを含むすべてのライブ情報を表示
- * - 5.4: ツアーの場合は公演地を表示
+ * - 5.4: 公演地を表示
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -91,9 +91,7 @@ function formatPostDate(dateTime: string): string {
 /**
  * ライブの思い出投稿用テキストを生成
  */
-function generatePostContent(
-  live: Pick<Live, 'id' | 'title' | 'dateTime' | 'venueName'>
-): string {
+function generatePostContent(live: Pick<Live, 'id' | 'title' | 'dateTime' | 'venueName'>): string {
   const origin = window.location.origin
   const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
   const liveUrl = `${origin}${basePath}/lives/${encodeURIComponent(live.id)}`
@@ -419,8 +417,8 @@ export function LiveDetailPage() {
                   </span>
                 </div>
 
-                {/* ツアーの場合は公演地を表示 (要件 5.4) */}
-                {live.liveType === 'tour' && live.tourLocation && (
+                {/* 公演地 */}
+                {live.tourLocation && (
                   <div className="live-detail-page__info-row">
                     <span className="live-detail-page__info-label">公演地</span>
                     <span className="live-detail-page__info-value">{live.tourLocation}</span>
