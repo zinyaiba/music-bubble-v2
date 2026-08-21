@@ -1,0 +1,232 @@
+.karaoke-song-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+.karaoke-song-detail__information-card {
+  overflow: hidden;
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.karaoke-song-detail__header {
+  padding: var(--spacing-lg);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.karaoke-song-detail__title-label,
+.karaoke-song-detail__information-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.karaoke-song-detail__title-label {
+  margin: 0 0 var(--spacing-xs);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.karaoke-song-detail__title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.karaoke-song-detail__information-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.karaoke-song-detail__information-item {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  gap: var(--spacing-md);
+  align-items: start;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.karaoke-song-detail__information-item + .karaoke-song-detail__information-item {
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.karaoke-song-detail__information-label {
+  line-height: var(--line-height-relaxed);
+}
+
+.karaoke-song-detail__information-value {
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  overflow-wrap: anywhere;
+}
+
+.karaoke-song-detail__episodes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: karaoke-episode;
+}
+
+.karaoke-song-detail__episode {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: baseline;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+  counter-increment: karaoke-episode;
+}
+
+.karaoke-song-detail__episode::before {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  content: counter(karaoke-episode) '.';
+}
+.karaoke-song-detail__episodes--unregistered .karaoke-song-detail__episode {
+  padding: 0;
+  background: transparent;
+}
+
+.karaoke-song-detail__episodes--unregistered .karaoke-song-detail__episode::before {
+  content: none;
+}
+
+.karaoke-song-detail__notes {
+  white-space: pre-wrap;
+}
+
+.karaoke-song-detail__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.karaoke-song-detail__back-button,
+.karaoke-song-detail__edit-button,
+.karaoke-song-detail__delete-button {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  min-height: 44px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.karaoke-song-detail__back-button {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+}
+
+.karaoke-song-detail__back-button:hover {
+  background: var(--color-surface-hover);
+}
+
+.karaoke-song-detail__edit-button {
+  color: var(--color-surface);
+  background: var(--color-primary);
+  border: var(--border-width-thin) solid var(--color-primary);
+}
+
+.karaoke-song-detail__edit-button:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+.karaoke-song-detail__delete-button {
+  flex: 0 0 auto;
+  align-self: center;
+  min-height: auto;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-error);
+  font-size: var(--font-size-xs);
+  background: transparent;
+  border: var(--border-width-thin) solid var(--color-error);
+}
+
+.karaoke-song-detail__delete-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.karaoke-song-detail__delete-button:hover {
+  color: var(--color-surface);
+  background: var(--color-error);
+}
+
+.karaoke-song-detail__back-button:active,
+.karaoke-song-detail__edit-button:active,
+.karaoke-song-detail__delete-button:active {
+  transform: translateY(1px);
+}
+
+.karaoke-song-detail__back-button:focus-visible,
+.karaoke-song-detail__edit-button:focus-visible,
+.karaoke-song-detail__delete-button:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-primary-dark);
+  outline-offset: var(--spacing-xs);
+}
+
+@media (max-width: 480px) {
+  .karaoke-song-detail {
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+  }
+
+  .karaoke-song-detail__header,
+  .karaoke-song-detail__information-item {
+    padding: var(--spacing-md);
+  }
+
+  .karaoke-song-detail__information-item {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  .karaoke-song-detail__actions {
+    flex-direction: column;
+  }
+
+  .karaoke-song-detail__delete-button {
+    align-self: flex-start;
+  }
+}
+
+@media (min-width: 768px) {
+  .karaoke-song-detail {
+    max-width: 900px;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-lg);
+  }
+
+  .karaoke-song-detail__title {
+    font-size: var(--font-size-2xl);
+  }
+}

@@ -57,6 +57,11 @@ export {
   type AnalyticsEventName,
 } from './analyticsService'
 export { LiveService, liveService } from './liveService'
+export {
+  KaraokeSongService,
+  karaokeSongService,
+  classifyKaraokeRepositoryError,
+} from './karaokeSongService'
 export { TourGroupingService, tourGroupingService } from './tourGroupingService'
 export { LiveSearchService, liveSearchService } from './liveSearchService'
 export { TimelineService } from './timelineService'

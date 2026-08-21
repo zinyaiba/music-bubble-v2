@@ -1,0 +1,263 @@
+.karaoke-song-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+  min-height: 0;
+}
+.karaoke-song-list__search {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-background);
+  border-bottom: var(--border-width-thin) solid var(--color-border);
+}
+.karaoke-song-list__search-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+.karaoke-song-list__search-input-wrapper {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+.karaoke-song-list__search-icon {
+  position: absolute;
+  left: var(--spacing-md);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+.karaoke-song-list__search-input {
+  width: 100%;
+  padding: var(--spacing-sm) calc(var(--spacing-md) + 28px);
+  color: #1a1a2e;
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  background: #fff5f8;
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+.karaoke-song-list__search-input::placeholder {
+  color: var(--color-text-disabled);
+}
+.karaoke-song-list__search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+.karaoke-song-list__search-clear {
+  position: absolute;
+  right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-full);
+}
+.karaoke-song-list__search-clear:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+}
+.karaoke-song-list__search-clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+.karaoke-song-list__count {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+.karaoke-song-list__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.karaoke-song-list__control-group {
+  display: flex;
+  flex: 1 1 220px;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+.karaoke-song-list__filter-group {
+  flex-basis: 190px;
+}
+.karaoke-song-list__control-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+.karaoke-song-list__sort-select,
+.karaoke-song-list__filter-select {
+  min-width: 0;
+  padding: 4px var(--spacing-xs);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  background: var(--color-background-secondary);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+.karaoke-song-list__sort-select {
+  flex: 1;
+}
+.karaoke-song-list__filter-select {
+  flex: 1;
+  max-width: 110px;
+}
+.karaoke-song-list__sort-select:focus,
+.karaoke-song-list__filter-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+.karaoke-song-list__spacer {
+  flex: 1;
+  min-width: 4px;
+}
+.karaoke-song-list__clear-filters-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+.karaoke-song-list__clear-filters-button:hover {
+  color: var(--color-primary);
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+.karaoke-song-list__clear-filters-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+.karaoke-song-list__items {
+  flex: 1;
+  min-height: 0;
+  padding: 0 var(--spacing-md) var(--spacing-lg);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.karaoke-song-list__results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+.karaoke-song-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  min-height: 100%;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+.karaoke-song-list__clear {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-primary-alpha);
+  border: var(--border-width-thin) solid var(--color-primary-light);
+  border-radius: var(--border-radius-md);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.karaoke-song-list__clear:hover {
+  color: var(--color-text);
+  background: var(--color-primary-light);
+}
+.karaoke-song-list__clear:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-primary);
+  outline-offset: var(--spacing-xs);
+  box-shadow: var(--shadow-sm);
+}
+@media (min-width: 768px) {
+  .karaoke-song-list {
+    max-width: 800px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+@media (max-width: 480px) {
+  .karaoke-song-list__search {
+    gap: 4px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  .karaoke-song-list__search-row {
+    gap: var(--spacing-xs);
+  }
+  .karaoke-song-list__search-input {
+    padding: 6px 28px 6px 32px;
+    font-size: 16px;
+  }
+  .karaoke-song-list__search-icon {
+    left: 8px;
+    width: 16px;
+    height: 16px;
+  }
+  .karaoke-song-list__count {
+    font-size: 10px;
+  }
+  .karaoke-song-list__control-group {
+    flex: 1 1 130px;
+  }
+  .karaoke-song-list__filter-group {
+    flex-basis: 150px;
+  }
+  .karaoke-song-list__control-icon {
+    width: 12px;
+    height: 12px;
+  }
+  .karaoke-song-list__sort-select,
+  .karaoke-song-list__filter-select {
+    padding: 3px 2px;
+    font-size: 10px;
+  }
+  .karaoke-song-list__filter-select {
+    min-width: 52px;
+    max-width: 76px;
+  }
+  .karaoke-song-list__clear-filters-button {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+  }
+  .karaoke-song-list__clear-filters-button svg {
+    width: 12px;
+    height: 12px;
+  }
+  .karaoke-song-list__items {
+    padding-right: var(--spacing-sm);
+    padding-left: var(--spacing-sm);
+  }
+}

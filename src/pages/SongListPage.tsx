@@ -95,26 +95,22 @@ export function SongListPage() {
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
-  const [scrollPosition, setScrollPosition] = useState<number>(0)
+  const [scrollPosition] = useState<number>(() => {
+    try {
+      const saved = sessionStorage.getItem('songListScrollPosition')
+      if (!saved) return 0
+
+      const position = Number.parseInt(saved, 10)
+      return Number.isNaN(position) ? 0 : position
+    } catch (err) {
+      console.error('Failed to restore scroll position:', err)
+      return 0
+    }
+  })
 
   // ページ閲覧トラッキング
   useEffect(() => {
     trackEvent(AnalyticsEvents.ページ閲覧_曲一覧)
-  }, [])
-
-  // スクロール位置を復元（マウント時）
-  useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem('songListScrollPosition')
-      if (saved) {
-        const position = parseInt(saved, 10)
-        if (!isNaN(position)) {
-          setScrollPosition(position)
-        }
-      }
-    } catch (err) {
-      console.error('Failed to restore scroll position:', err)
-    }
   }, [])
 
   // スクロール位置を保存
@@ -256,6 +252,31 @@ export function SongListPage() {
 
         {/* 楽曲関連のフローティングアクション */}
         <div className="song-list-page__floating-actions">
+          <button
+            type="button"
+            className="song-list-page__karaoke-button"
+            onClick={() => handleNavigate('/karaoke-songs')}
+            aria-label="カラオケ歌唱一覧を開く"
+            title="カラオケ歌唱一覧を開く"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+              <line x1="8" y1="22" x2="16" y2="22" />
+            </svg>
+          </button>
+
           <button
             type="button"
             className="song-list-page__tag-button"

@@ -15,6 +15,9 @@ import { TopPage } from './pages/TopPage'
 import { SongListPage } from './pages/SongListPage'
 import { SongDetailPage } from './pages/SongDetailPage'
 import { SongEditPage } from './pages/SongEditPage'
+import { KaraokeListPage } from './pages/KaraokeListPage'
+import { KaraokeCreatePage } from './pages/KaraokeCreatePage'
+import { KaraokeDetailPage } from './pages/KaraokeDetailPage'
 import { LiveListPage } from './pages/LiveListPage'
 import { LiveDetailPage } from './pages/LiveDetailPage'
 import { LiveEditPage } from './pages/LiveEditPage'
@@ -83,6 +86,22 @@ const router = createBrowserRouter(
         {
           path: 'songs/:songId/edit',
           element: <SongEditPage />,
+        },
+        {
+          path: 'karaoke-songs',
+          element: <KaraokeListPage />,
+        },
+        {
+          path: 'karaoke-songs/new',
+          element: <KaraokeCreatePage />,
+        },
+        {
+          path: 'karaoke-songs/:karaokeSongId',
+          element: <KaraokeDetailPage />,
+        },
+        {
+          path: 'karaoke-songs/:karaokeSongId/edit',
+          element: <KaraokeCreatePage />,
         },
         {
           path: 'lives',

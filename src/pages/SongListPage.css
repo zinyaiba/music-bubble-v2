@@ -44,17 +44,18 @@
 /* 楽曲関連のフローティングアクション */
 .song-list-page__floating-actions {
   position: fixed;
-  right: var(--spacing-lg);
+  right: calc(var(--spacing-lg) + var(--safe-area-right));
   bottom: calc(var(--navigation-height) + var(--spacing-lg) + var(--safe-area-bottom));
+  z-index: var(--z-index-sticky);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
-  z-index: var(--z-index-sticky);
 }
 
 .song-list-page__add-button,
-.song-list-page__tag-button {
+.song-list-page__tag-button,
+.song-list-page__karaoke-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,8 +63,8 @@
   height: 56px;
   padding: 0;
   border-radius: var(--border-radius-full);
-  cursor: pointer;
   box-shadow: var(--shadow-lg);
+  cursor: pointer;
   transition: all var(--transition-fast);
 }
 
@@ -73,25 +74,29 @@
   border: none;
 }
 
-.song-list-page__tag-button {
+.song-list-page__tag-button,
+.song-list-page__karaoke-button {
   color: var(--color-primary-dark);
   background: var(--color-card-background);
   border: var(--border-width-thin) solid var(--color-primary);
 }
 
 .song-list-page__add-button:hover,
-.song-list-page__tag-button:hover {
-  transform: scale(1.05);
+.song-list-page__tag-button:hover,
+.song-list-page__karaoke-button:hover {
   box-shadow: var(--shadow-xl);
+  transform: scale(1.05);
 }
 
-.song-list-page__tag-button:hover {
+.song-list-page__tag-button:hover,
+.song-list-page__karaoke-button:hover {
   color: white;
   background: var(--color-primary);
 }
 
 .song-list-page__add-button:focus-visible,
-.song-list-page__tag-button:focus-visible {
+.song-list-page__tag-button:focus-visible,
+.song-list-page__karaoke-button:focus-visible {
   outline: none;
   box-shadow:
     var(--shadow-xl),
@@ -99,25 +104,28 @@
 }
 
 .song-list-page__add-button:active,
-.song-list-page__tag-button:active {
+.song-list-page__tag-button:active,
+.song-list-page__karaoke-button:active {
   transform: scale(0.95);
 }
 
 /* レスポンシブ対応 */
 @media (max-width: 480px) {
   .song-list-page__floating-actions {
-    right: var(--spacing-md);
+    right: calc(var(--spacing-md) + var(--safe-area-right));
     bottom: calc(var(--navigation-height) + var(--spacing-md) + var(--safe-area-bottom));
   }
 
   .song-list-page__add-button,
-  .song-list-page__tag-button {
+  .song-list-page__tag-button,
+  .song-list-page__karaoke-button {
     width: 48px;
     height: 48px;
   }
 
   .song-list-page__add-button svg,
-  .song-list-page__tag-button svg {
+  .song-list-page__tag-button svg,
+  .song-list-page__karaoke-button svg {
     width: 20px;
     height: 20px;
   }
@@ -126,13 +134,13 @@
 /* タブレット以上 */
 @media (min-width: 768px) {
   .song-list-page__content {
+    width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    width: 100%;
   }
 
   .song-list-page__floating-actions {
-    right: var(--spacing-xl);
-    bottom: calc(var(--navigation-height) + var(--spacing-xl));
+    right: calc(var(--spacing-xl) + var(--safe-area-right));
+    bottom: calc(var(--navigation-height) + var(--spacing-xl) + var(--safe-area-bottom));
   }
 }

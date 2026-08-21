@@ -1,0 +1,369 @@
+.karaoke-song-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+.karaoke-song-form__header {
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.karaoke-song-form__title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}
+
+.karaoke-song-form__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+}
+
+.karaoke-song-form__section {
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.karaoke-song-form__section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.karaoke-song-form__section-title {
+  margin: 0 0 var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.karaoke-song-form__section-heading .karaoke-song-form__section-title {
+  margin-bottom: 0;
+}
+
+.karaoke-song-form__optional {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.karaoke-song-form__field {
+  margin-bottom: var(--spacing-md);
+}
+
+.karaoke-song-form__field:last-child {
+  margin-bottom: 0;
+}
+
+.karaoke-song-form__label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.karaoke-song-form__required {
+  margin-left: var(--spacing-xs);
+  color: var(--color-error);
+}
+
+.karaoke-song-form__input,
+.karaoke-song-form__textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  background: var(--color-background);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.karaoke-song-form__textarea {
+  min-height: calc(var(--spacing-3xl) * 2);
+  line-height: var(--line-height-relaxed);
+  resize: vertical;
+}
+
+.karaoke-song-form__input::placeholder,
+.karaoke-song-form__textarea::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.karaoke-song-form__input:disabled,
+.karaoke-song-form__textarea:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  background: var(--color-background-light);
+}
+
+.karaoke-song-form__field--error .karaoke-song-form__input {
+  background: var(--color-surface);
+  border-color: var(--color-error);
+}
+
+.karaoke-song-form__hint,
+.karaoke-song-form__empty-episodes {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+.karaoke-song-form__error {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-error);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.karaoke-song-form__error::before {
+  content: '⚠';
+}
+
+.karaoke-song-form__episodes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.karaoke-song-form__empty-episodes {
+  margin: 0;
+  padding: var(--spacing-md);
+  text-align: center;
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+}
+
+.karaoke-song-form__episode {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+}
+
+.karaoke-song-form__episode-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.karaoke-song-form__episode-remove {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--spacing-xl) + var(--spacing-sm));
+  height: calc(var(--spacing-xl) + var(--spacing-sm));
+  padding: 0;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius-md);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.karaoke-song-form__episode-remove:hover:not(:disabled) {
+  color: var(--color-error);
+  background: var(--color-error-light);
+}
+
+.karaoke-song-form__episode-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  background: transparent;
+  border: var(--border-width-normal) dashed var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.karaoke-song-form__episode-add:hover:not(:disabled) {
+  color: var(--color-primary-dark);
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary);
+}
+
+.karaoke-song-form__episode-add:disabled,
+.karaoke-song-form__episode-remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.karaoke-song-form__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.karaoke-song-form__cancel-button,
+.karaoke-song-form__submit-button {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border-radius: var(--border-radius-md);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.karaoke-song-form__cancel-button {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border);
+}
+
+.karaoke-song-form__cancel-button:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.karaoke-song-form__submit-button {
+  color: var(--color-surface);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: var(--border-width-thin) solid transparent;
+}
+
+.karaoke-song-form__submit-button:hover:not(:disabled) {
+  box-shadow: var(--shadow-md);
+  transform: translateY(calc(-1 * var(--border-width-thin)));
+}
+
+.karaoke-song-form__cancel-button:disabled,
+.karaoke-song-form__submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.karaoke-song-form__input:focus-visible,
+.karaoke-song-form__textarea:focus-visible,
+.karaoke-song-form__episode-add:focus-visible,
+.karaoke-song-form__episode-remove:focus-visible,
+.karaoke-song-form__cancel-button:focus-visible,
+.karaoke-song-form__submit-button:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-text);
+  outline-offset: var(--border-width-normal);
+}
+
+.karaoke-song-form__input:focus-visible,
+.karaoke-song-form__textarea:focus-visible {
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 var(--border-width-thick) var(--color-primary-alpha);
+}
+
+.karaoke-song-form__spinner {
+  width: var(--spacing-md);
+  height: var(--spacing-md);
+  border: var(--border-width-normal) solid var(--color-primary-light);
+  border-top-color: var(--color-surface);
+  border-radius: var(--border-radius-full);
+  animation: karaoke-song-form-spin 0.8s linear infinite;
+}
+
+@keyframes karaoke-song-form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .karaoke-song-form__header,
+  .karaoke-song-form__content,
+  .karaoke-song-form__section,
+  .karaoke-song-form__actions {
+    padding: var(--spacing-sm);
+  }
+
+  .karaoke-song-form__title {
+    font-size: var(--font-size-lg);
+  }
+
+  .karaoke-song-form__content {
+    gap: var(--spacing-md);
+  }
+
+  .karaoke-song-form__episode {
+    align-items: center;
+  }
+
+  .karaoke-song-form__actions {
+    flex-direction: column;
+  }
+
+  .karaoke-song-form__cancel-button,
+  .karaoke-song-form__submit-button {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .karaoke-song-form__content,
+  .karaoke-song-form__actions {
+    padding: var(--spacing-lg);
+  }
+
+  .karaoke-song-form__content {
+    gap: var(--spacing-xl);
+  }
+
+  .karaoke-song-form__section {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .karaoke-song-form *,
+  .karaoke-song-form *::before,
+  .karaoke-song-form *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

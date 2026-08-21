@@ -1,0 +1,109 @@
+.karaoke-song-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-md);
+  color: var(--color-text);
+  text-align: left;
+  background: var(--color-surface);
+  border: var(--border-width-thin) solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+.karaoke-song-card:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.karaoke-song-card:active {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+}
+.karaoke-song-card:focus-visible {
+  outline: var(--border-width-normal) solid var(--color-primary);
+  outline-offset: var(--spacing-xs);
+}
+.karaoke-song-card__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+.karaoke-song-card__title {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.karaoke-song-card__metadata {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+.karaoke-song-card__meta-item {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 3px;
+  align-items: center;
+  min-width: 0;
+  padding: 2px 6px;
+  background: transparent;
+  border-radius: var(--border-radius-sm);
+}
+.karaoke-song-card__meta-item--artist {
+  flex: 1;
+  flex-shrink: 1;
+}
+.karaoke-song-card__meta-item--episodes {
+  flex-shrink: 1;
+  max-width: 42%;
+}
+.karaoke-song-card__meta-label {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+}
+.karaoke-song-card__meta-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.karaoke-song-card__arrow {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+.karaoke-song-card:hover .karaoke-song-card__arrow {
+  color: var(--color-primary);
+  transform: translateX(var(--spacing-xs));
+}
+@media (max-width: 480px) {
+  .karaoke-song-card {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  .karaoke-song-card__title {
+    font-size: var(--font-size-sm);
+  }
+  .karaoke-song-card__metadata {
+    font-size: var(--font-size-xs);
+  }
+}

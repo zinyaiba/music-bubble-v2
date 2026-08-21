@@ -18,6 +18,9 @@ export const AnalyticsEvents = {
   ページ閲覧_曲一覧: 'ページ閲覧_曲一覧',
   ページ閲覧_曲詳細: 'ページ閲覧_曲詳細',
   ページ閲覧_曲編集: 'ページ閲覧_曲編集',
+  ページ閲覧_カラオケ一覧: 'ページ閲覧_カラオケ一覧',
+  ページ閲覧_カラオケ詳細: 'ページ閲覧_カラオケ詳細',
+  ページ閲覧_カラオケ編集: 'ページ閲覧_カラオケ編集',
   ページ閲覧_タグ一覧: 'ページ閲覧_タグ一覧',
   ページ閲覧_タグ登録: 'ページ閲覧_タグ登録',
   ページ閲覧_お知らせ: 'ページ閲覧_お知らせ',
@@ -36,6 +39,16 @@ export const AnalyticsEvents = {
   曲_保存完了: '曲_保存完了',
   曲_新規作成: '曲_新規作成',
   曲_Spotify再生: '曲_Spotify再生',
+
+  // カラオケ関連アクション
+  カラオケ_検索実行: 'カラオケ_検索実行',
+  カラオケ_ソート変更: 'カラオケ_ソート変更',
+  カラオケ_フィルター適用: 'カラオケ_フィルター適用',
+  カラオケ_詳細表示: 'カラオケ_詳細表示',
+  カラオケ_編集開始: 'カラオケ_編集開始',
+  カラオケ_保存完了: 'カラオケ_保存完了',
+  カラオケ_新規作成: 'カラオケ_新規作成',
+  カラオケ_削除: 'カラオケ_削除',
 
   // タグ関連アクション
   タグ_検索実行: 'タグ_検索実行',
@@ -136,7 +149,10 @@ export function trackPageView(
 /**
  * 検索アクションをトラッキング
  */
-export function trackSearch(searchType: '曲' | 'タグ' | 'ライブ', searchTerm: string): void {
+export function trackSearch(
+  searchType: '曲' | 'タグ' | 'ライブ' | 'カラオケ',
+  searchTerm: string
+): void {
   let eventName: AnalyticsEventName
   switch (searchType) {
     case '曲':
@@ -147,6 +163,9 @@ export function trackSearch(searchType: '曲' | 'タグ' | 'ライブ', searchTe
       break
     case 'ライブ':
       eventName = AnalyticsEvents.ライブ_検索実行
+      break
+    case 'カラオケ':
+      eventName = AnalyticsEvents.カラオケ_検索実行
       break
   }
   trackEvent(eventName, {

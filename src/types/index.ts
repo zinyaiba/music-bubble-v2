@@ -322,6 +322,18 @@ export type TimelineItem =
   | TourGroupTimelineItem
   | MajorEventTimelineItem
 
+// カラオケ歌唱データ（既存コンテンツのユニオンとは独立）
+export type {
+  KaraokeSong,
+  KaraokeSongDraft,
+  CreateKaraokeSongInput,
+  KaraokeValidationErrors,
+  KaraokeSortType,
+  KaraokeListState,
+  KaraokeSongRepository,
+  KaraokeRepositoryError,
+} from './karaoke'
+
 /**
  * 年月グループ
  */
