@@ -19,6 +19,7 @@
 import type { JSX } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { TimelineYearMonthGroup } from '../../types'
+import { TimelineCurrentMarker } from './TimelineCurrentMarker'
 import { TimelineGroup } from './TimelineGroup'
 import './TimelineContainer.css'
 
@@ -134,13 +135,10 @@ export function TimelineContainer({
 
     let rafId = 0
     const updateActiveYear = () => {
-      const yearAnchors = Array.from(
-        inner.querySelectorAll<HTMLElement>('[id^="timeline-year-"]')
-      )
+      const yearAnchors = Array.from(inner.querySelectorAll<HTMLElement>('[id^="timeline-year-"]'))
       if (yearAnchors.length === 0) return
 
-      const isAtBottom =
-        container.scrollTop + container.clientHeight >= container.scrollHeight - 1
+      const isAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 1
       let activeAnchor = yearAnchors[0]
 
       if (isAtBottom) {
@@ -251,6 +249,8 @@ export function TimelineContainer({
   return (
     <div className="timeline-container" ref={containerRef}>
       <div className="timeline-container__inner" ref={innerRef}>
+        <TimelineCurrentMarker groups={groups} isMobile={isMobile} />
+
         {/* モバイル用ジグザグ線: 全グループを横断して連続的に結ぶ（カード背面） */}
         {isMobile && zigzagPoints && (
           <svg

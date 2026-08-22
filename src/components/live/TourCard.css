@@ -174,3 +174,31 @@
     padding: 1px 4px;
   }
 }
+
+/* ツアー開催期間の状態 */
+.tour-card__status {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 2px 8px;
+  border: 1px solid #ffb74d;
+  border-radius: var(--border-radius-full);
+  background: #fff8e1;
+  color: #e65100;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.tour-card__status--ongoing {
+  border-color: #81c784;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+@media (max-width: 480px) {
+  .tour-card__status {
+    padding: 1px 6px;
+    font-size: 10px;
+  }
+}

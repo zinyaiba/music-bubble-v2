@@ -99,6 +99,7 @@ export function TimelineGroup({
             <div
               key={item.id}
               className={`timeline-group__row timeline-group__row--${item.position}`}
+              data-timeline-date={item.date}
             >
               <div className="timeline-group__cell timeline-group__cell--left">
                 {item.position === 'left' && renderTimelineItem(item, handlers)}

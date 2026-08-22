@@ -8,6 +8,7 @@
 
 import type { Live } from '../../types'
 import { LIVE_TYPE_LABELS } from '../../types'
+import { getRemainingDaysFromDateTime } from '../../utils/dateCountdown'
 import { MarqueeText } from '../common/MarqueeText'
 import './LiveCard.css'
 
@@ -45,6 +46,7 @@ function formatDateTime(dateTime: string): string {
 export function LiveCard({ live, onClick }: LiveCardProps) {
   const liveTypeLabel = LIVE_TYPE_LABELS[live.liveType]
   const formattedDateTime = formatDateTime(live.dateTime)
+  const remainingDays = getRemainingDaysFromDateTime(live.dateTime)
   const hasSetlist = live.setlist && live.setlist.length > 0
 
   return (
@@ -70,6 +72,9 @@ export function LiveCard({ live, onClick }: LiveCardProps) {
           {live.tourLocation && <span className="live-card__location">{live.tourLocation}</span>}
           {(live.liveType === 'other' || live.liveType === 'overseas') && live.otherCategory && (
             <span className="live-card__location">{live.otherCategory}</span>
+          )}
+          {remainingDays !== null && (
+            <span className="live-card__countdown">残り{remainingDays}日</span>
           )}
         </div>
 

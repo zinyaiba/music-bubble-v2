@@ -9,6 +9,7 @@
  */
 
 import type { TourGroup } from '../../types'
+import { getDateRangeStatus } from '../../utils/dateCountdown'
 import './TourCard.css'
 
 export interface TourCardProps {
@@ -81,6 +82,15 @@ export function TourCard({ tourGroup, onClick }: TourCardProps) {
   const dateRange = formatDateRange(tourGroup.firstDate, tourGroup.lastDate)
   const locationPreview = getLocationPreview(tourGroup)
   const remainingCount = tourGroup.performanceCount - locationPreview.length
+  const periodStatus = getDateRangeStatus(tourGroup.firstDate, tourGroup.lastDate)
+  const statusLabel =
+    periodStatus?.kind === 'upcoming'
+      ? `開催まで残り${periodStatus.remainingDays}日`
+      : periodStatus?.remainingDays === 0
+        ? '本日最終日'
+        : periodStatus
+          ? `開催中・終了まで残り${periodStatus.remainingDays}日`
+          : null
 
   return (
     <article
@@ -94,13 +104,21 @@ export function TourCard({ tourGroup, onClick }: TourCardProps) {
           onClick(tourGroup)
         }
       }}
-      aria-label={`${tourGroup.tourName} - ${tourGroup.performanceCount}公演`}
+      aria-label={`${tourGroup.tourName} - ${tourGroup.performanceCount}公演${statusLabel ? ` - ${statusLabel}` : ''}`}
     >
       <div className="tour-card__content">
-        {/* ヘッダー（種別バッジ + 公演数） */}
+        {/* ヘッダー（種別バッジ + 公演数 + 開催状態） */}
         <div className="tour-card__header">
           <span className="tour-card__type">ツアー</span>
           <span className="tour-card__count">{tourGroup.performanceCount}公演</span>
+          {statusLabel && periodStatus && (
+            <span
+              className={`tour-card__status tour-card__status--${periodStatus.kind}`}
+              aria-hidden="true"
+            >
+              {statusLabel}
+            </span>
+          )}
         </div>
 
         {/* ツアー名 */}

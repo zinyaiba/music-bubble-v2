@@ -81,3 +81,50 @@
     padding: 16px;
   }
 }
+
+/* 現在日を示すタイムライン上の点滅マーカー */
+.timeline-container__current-marker {
+  --current-marker-color: #e53935;
+
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-radius: var(--border-radius-full);
+  background: var(--current-marker-color);
+  box-sizing: border-box;
+  box-shadow:
+    0 0 0 2px var(--current-marker-color),
+    0 3px 10px rgba(198, 40, 40, 0.5);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.timeline-container__current-marker::after {
+  position: absolute;
+  inset: -10px;
+  border: 3px solid var(--current-marker-color);
+  border-radius: inherit;
+  content: '';
+  animation: timeline-current-marker-pulse 1.4s ease-out infinite;
+}
+
+@keyframes timeline-current-marker-pulse {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.55);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-container__current-marker::after {
+    animation: none;
+    opacity: 0;
+  }
+}

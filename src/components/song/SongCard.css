@@ -366,3 +366,36 @@
     min-height: 48px;
   }
 }
+
+/* 未来の発売日までの残り日数 */
+.song-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.song-card__title-row .song-card__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-card__countdown {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: 1px solid #ffb74d;
+  border-radius: var(--border-radius-full);
+  background: #fff8e1;
+  color: #e65100;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .song-card__countdown {
+    padding: 1px 6px;
+    font-size: 10px;
+  }
+}
