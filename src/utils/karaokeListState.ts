@@ -1,4 +1,4 @@
-import type { KaraokeListState, KaraokeSortType } from '../types'
+import type { KaraokeDisplayMode, KaraokeListState, KaraokeSortType } from '../types'
 import { DEFAULT_KARAOKE_SORT, isKaraokeSortType } from './karaokeSorting'
 
 export const KARAOKE_LIST_STATE_STORAGE_KEY = 'karaokeSongListState'
@@ -6,12 +6,17 @@ export const KARAOKE_LIST_STATE_STORAGE_KEY = 'karaokeSongListState'
 const defaultListState = (): KaraokeListState => ({
   query: '',
   sortBy: DEFAULT_KARAOKE_SORT,
+  displayMode: 'all',
   episodeFilter: null,
   releaseYearFilter: null,
   scrollTop: 0,
 })
 
 type ListStateStorage = Pick<Storage, 'getItem' | 'setItem'>
+
+export function isKaraokeDisplayMode(value: unknown): value is KaraokeDisplayMode {
+  return value === 'all' || value === 'compact'
+}
 
 function isOptionalPositiveNumber(value: unknown): boolean {
   return (
@@ -38,6 +43,7 @@ function isStoredListState(value: unknown): value is Record<string, unknown> {
   return (
     typeof state.query === 'string' &&
     (state.sortBy === undefined || isKaraokeSortType(state.sortBy)) &&
+    (state.displayMode === undefined || isKaraokeDisplayMode(state.displayMode)) &&
     isOptionalPositiveNumber(state.episodeFilter) &&
     isOptionalReleaseYear(state.releaseYearFilter) &&
     typeof state.scrollTop === 'number' &&
@@ -50,6 +56,7 @@ function normalizeListState(state: Record<string, unknown>): KaraokeListState {
   return {
     query: state.query as string,
     sortBy: isKaraokeSortType(state.sortBy) ? state.sortBy : DEFAULT_KARAOKE_SORT,
+    displayMode: isKaraokeDisplayMode(state.displayMode) ? state.displayMode : 'all',
     episodeFilter: typeof state.episodeFilter === 'number' ? state.episodeFilter : null,
     releaseYearFilter: typeof state.releaseYearFilter === 'number' ? state.releaseYearFilter : null,
     scrollTop: state.scrollTop as number,
@@ -105,11 +112,13 @@ export function buildKaraokeListUrl(
   query: string,
   sortBy: KaraokeSortType = DEFAULT_KARAOKE_SORT,
   episodeFilter: number | null = null,
-  releaseYearFilter: number | null = null
+  releaseYearFilter: number | null = null,
+  displayMode: KaraokeDisplayMode = 'all'
 ): string {
   const params = new URLSearchParams({ q: query })
   if (sortBy !== DEFAULT_KARAOKE_SORT) params.set('sort', sortBy)
   if (episodeFilter !== null) params.set('episode', String(episodeFilter))
   if (releaseYearFilter !== null) params.set('year', String(releaseYearFilter))
+  if (displayMode !== 'all') params.set('display', displayMode)
   return `/karaoke-songs?${params.toString()}`
 }

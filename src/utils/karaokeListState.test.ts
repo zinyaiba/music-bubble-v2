@@ -12,6 +12,7 @@ import {
 const DEFAULT_STATE: KaraokeListState = {
   query: '',
   sortBy: 'streaming-newest',
+  displayMode: 'all',
   episodeFilter: null,
   releaseYearFilter: null,
   scrollTop: 0,
@@ -22,6 +23,7 @@ describe('karaoke list state serialization', () => {
     const state = {
       query: '  日本語 & rock  ',
       sortBy: 'release-oldest' as const,
+      displayMode: 'compact' as const,
       episodeFilter: 10,
       releaseYearFilter: 2024,
       scrollTop: 123.5,
@@ -52,6 +54,7 @@ describe('karaoke list state serialization', () => {
         serializeListState({
           query: 'rock',
           sortBy: 'updated',
+          displayMode: 'all',
           episodeFilter: null,
           releaseYearFilter: null,
           scrollTop,
@@ -71,6 +74,7 @@ describe('karaoke list state session store', () => {
     const state = {
       query: 'Minami',
       sortBy: 'release-newest' as const,
+      displayMode: 'compact' as const,
       episodeFilter: 3,
       releaseYearFilter: 2004,
       scrollTop: 480,

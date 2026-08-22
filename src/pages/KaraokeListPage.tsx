@@ -5,8 +5,12 @@ import { ErrorMessage, Header, LoadingSpinner, Navigation } from '../components/
 import { KaraokeSongList } from '../components/karaoke'
 import { useKaraokeSongs } from '../hooks'
 import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
-import type { KaraokeListState, KaraokeSortType } from '../types'
-import { loadKaraokeListState, saveKaraokeListState } from '../utils/karaokeListState'
+import type { KaraokeDisplayMode, KaraokeListState, KaraokeSortType } from '../types'
+import {
+  isKaraokeDisplayMode,
+  loadKaraokeListState,
+  saveKaraokeListState,
+} from '../utils/karaokeListState'
 import { DEFAULT_KARAOKE_SORT, isKaraokeSortType } from '../utils/karaokeSorting'
 import './KaraokeListPage.css'
 
@@ -33,6 +37,8 @@ export function KaraokeListPage() {
   const query = searchParams.get('q') ?? ''
   const requestedSort = searchParams.get('sort')
   const sortBy = isKaraokeSortType(requestedSort) ? requestedSort : DEFAULT_KARAOKE_SORT
+  const requestedDisplayMode = searchParams.get('display')
+  const displayMode = isKaraokeDisplayMode(requestedDisplayMode) ? requestedDisplayMode : 'all'
   const episodeFilter = parseEpisodeFilter(searchParams.get('episode'))
   const releaseYearFilter = parseReleaseYearFilter(searchParams.get('year'))
   const { karaokeSongs, isLoading, error, isOffline, retry } = useKaraokeSongs()
@@ -42,11 +48,13 @@ export function KaraokeListPage() {
   const listStateRef = useRef<KaraokeListState>({
     query,
     sortBy,
+    displayMode,
     episodeFilter,
     releaseYearFilter,
     scrollTop:
       initialListState.query === query &&
       initialListState.sortBy === sortBy &&
+      initialListState.displayMode === displayMode &&
       initialListState.episodeFilter === episodeFilter &&
       initialListState.releaseYearFilter === releaseYearFilter
         ? initialListState.scrollTop
@@ -62,15 +70,23 @@ export function KaraokeListPage() {
     if (
       current.query === query &&
       current.sortBy === sortBy &&
+      current.displayMode === displayMode &&
       current.episodeFilter === episodeFilter &&
       current.releaseYearFilter === releaseYearFilter
     )
       return
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0
-    const nextState = { query, sortBy, episodeFilter, releaseYearFilter, scrollTop: 0 }
+    const nextState = {
+      query,
+      sortBy,
+      displayMode,
+      episodeFilter,
+      releaseYearFilter,
+      scrollTop: 0,
+    }
     listStateRef.current = nextState
     saveKaraokeListState(nextState)
-  }, [episodeFilter, query, releaseYearFilter, sortBy])
+  }, [displayMode, episodeFilter, query, releaseYearFilter, sortBy])
 
   useEffect(() => {
     if (isLoading || error || !scrollContainerRef.current) return
@@ -118,6 +134,7 @@ export function KaraokeListPage() {
         listStateRef.current = {
           query,
           sortBy,
+          displayMode,
           episodeFilter,
           releaseYearFilter,
           scrollTop: restoredScrollTop,
@@ -131,20 +148,31 @@ export function KaraokeListPage() {
       window.cancelAnimationFrame(restoreFrameId)
       if (settleFrameId !== null) window.cancelAnimationFrame(settleFrameId)
     }
-  }, [error, episodeFilter, isLoading, karaokeSongs.length, query, releaseYearFilter, sortBy])
+  }, [
+    displayMode,
+    episodeFilter,
+    error,
+    isLoading,
+    karaokeSongs.length,
+    query,
+    releaseYearFilter,
+    sortBy,
+  ])
 
   const updateUrl = useCallback(
     (
       nextQuery: string,
       nextSort: KaraokeSortType,
       nextEpisode: number | null,
-      nextReleaseYear: number | null
+      nextReleaseYear: number | null,
+      nextDisplayMode: KaraokeDisplayMode
     ) => {
       const params = new URLSearchParams()
       if (nextQuery) params.set('q', nextQuery)
       if (nextSort !== DEFAULT_KARAOKE_SORT) params.set('sort', nextSort)
       if (nextEpisode !== null) params.set('episode', String(nextEpisode))
       if (nextReleaseYear !== null) params.set('year', String(nextReleaseYear))
+      if (nextDisplayMode !== 'all') params.set('display', nextDisplayMode)
       setSearchParams(params, { replace: true })
     },
     [setSearchParams]
@@ -156,16 +184,17 @@ export function KaraokeListPage() {
       const nextState = {
         query: nextQuery,
         sortBy,
+        displayMode,
         episodeFilter,
         releaseYearFilter,
         scrollTop: 0,
       }
       listStateRef.current = nextState
       saveKaraokeListState(nextState)
-      updateUrl(nextQuery, sortBy, episodeFilter, releaseYearFilter)
+      updateUrl(nextQuery, sortBy, episodeFilter, releaseYearFilter, displayMode)
       if (nextQuery) trackSearch('カラオケ', nextQuery)
     },
-    [episodeFilter, releaseYearFilter, sortBy, updateUrl]
+    [displayMode, episodeFilter, releaseYearFilter, sortBy, updateUrl]
   )
 
   const handleSortChange = useCallback(
@@ -174,16 +203,34 @@ export function KaraokeListPage() {
       const nextState = {
         query,
         sortBy: nextSort,
+        displayMode,
         episodeFilter,
         releaseYearFilter,
         scrollTop: 0,
       }
       listStateRef.current = nextState
       saveKaraokeListState(nextState)
-      updateUrl(query, nextSort, episodeFilter, releaseYearFilter)
+      updateUrl(query, nextSort, episodeFilter, releaseYearFilter, displayMode)
       trackEvent(AnalyticsEvents.カラオケ_ソート変更, { sort_type: nextSort })
     },
-    [episodeFilter, query, releaseYearFilter, updateUrl]
+    [displayMode, episodeFilter, query, releaseYearFilter, updateUrl]
+  )
+
+  const handleDisplayModeChange = useCallback(
+    (nextDisplayMode: KaraokeDisplayMode) => {
+      const nextState = {
+        query,
+        sortBy,
+        displayMode: nextDisplayMode,
+        episodeFilter,
+        releaseYearFilter,
+        scrollTop: listStateRef.current.scrollTop,
+      }
+      listStateRef.current = nextState
+      saveKaraokeListState(nextState)
+      updateUrl(query, sortBy, episodeFilter, releaseYearFilter, nextDisplayMode)
+    },
+    [episodeFilter, query, releaseYearFilter, sortBy, updateUrl]
   )
 
   const handleEpisodeFilterChange = useCallback(
@@ -191,58 +238,67 @@ export function KaraokeListPage() {
       const nextState = {
         query,
         sortBy,
+        displayMode,
         episodeFilter: nextEpisode,
         releaseYearFilter,
         scrollTop: 0,
       }
       listStateRef.current = nextState
       saveKaraokeListState(nextState)
-      updateUrl(query, sortBy, nextEpisode, releaseYearFilter)
+      updateUrl(query, sortBy, nextEpisode, releaseYearFilter, displayMode)
       trackEvent(AnalyticsEvents.カラオケ_フィルター適用, {
         filter_type: '配信回',
         filter_value: nextEpisode ?? 'すべて',
       })
     },
-    [query, releaseYearFilter, sortBy, updateUrl]
+    [displayMode, query, releaseYearFilter, sortBy, updateUrl]
   )
 
   const handleReleaseYearFilterChange = useCallback(
     (nextYear: number | null) => {
-      const nextState = { query, sortBy, episodeFilter, releaseYearFilter: nextYear, scrollTop: 0 }
+      const nextState = {
+        query,
+        sortBy,
+        displayMode,
+        episodeFilter,
+        releaseYearFilter: nextYear,
+        scrollTop: 0,
+      }
       listStateRef.current = nextState
       saveKaraokeListState(nextState)
-      updateUrl(query, sortBy, episodeFilter, nextYear)
+      updateUrl(query, sortBy, episodeFilter, nextYear, displayMode)
       trackEvent(AnalyticsEvents.カラオケ_フィルター適用, {
         filter_type: '発売年',
         filter_value: nextYear ?? 'すべて',
       })
     },
-    [episodeFilter, query, sortBy, updateUrl]
+    [displayMode, episodeFilter, query, sortBy, updateUrl]
   )
 
   const handleClearAll = useCallback(() => {
     const nextState = {
       query: '',
       sortBy: DEFAULT_KARAOKE_SORT,
+      displayMode: 'all' as const,
       episodeFilter: null,
       releaseYearFilter: null,
       scrollTop: 0,
     }
     listStateRef.current = nextState
     saveKaraokeListState(nextState)
-    updateUrl('', DEFAULT_KARAOKE_SORT, null, null)
+    updateUrl('', DEFAULT_KARAOKE_SORT, null, null, 'all')
   }, [updateUrl])
 
   const handleSongClick = useCallback(
     (songId: string) => {
       const scrollTop = scrollContainerRef.current?.scrollTop ?? listStateRef.current.scrollTop
-      const state = { query, sortBy, episodeFilter, releaseYearFilter, scrollTop }
+      const state = { query, sortBy, displayMode, episodeFilter, releaseYearFilter, scrollTop }
       listStateRef.current = state
       saveKaraokeListState(state)
       trackEvent(AnalyticsEvents.カラオケ_詳細表示, { karaoke_song_id: songId })
       navigate(`${KARAOKE_LIST_PATH}/${encodeURIComponent(songId)}`)
     },
-    [episodeFilter, navigate, query, releaseYearFilter, sortBy]
+    [displayMode, episodeFilter, navigate, query, releaseYearFilter, sortBy]
   )
 
   const handleNavigate = useCallback((path: string) => navigate(path), [navigate])
@@ -276,10 +332,12 @@ export function KaraokeListPage() {
               songs={karaokeSongs}
               query={query}
               sortBy={sortBy}
+              displayMode={displayMode}
               episodeFilter={episodeFilter}
               releaseYearFilter={releaseYearFilter}
               onQueryChange={handleQueryChange}
               onSortChange={handleSortChange}
+              onDisplayModeChange={handleDisplayModeChange}
               onEpisodeFilterChange={handleEpisodeFilterChange}
               onReleaseYearFilterChange={handleReleaseYearFilterChange}
               onClearAll={handleClearAll}

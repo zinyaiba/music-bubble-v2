@@ -30,8 +30,8 @@ function toDraft(song: KaraokeSong): KaraokeSongDraft {
 }
 
 function getKaraokeListUrl(): string {
-  const { query, sortBy, episodeFilter, releaseYearFilter } = loadKaraokeListState()
-  return buildKaraokeListUrl(query, sortBy, episodeFilter, releaseYearFilter)
+  const { query, sortBy, episodeFilter, releaseYearFilter, displayMode } = loadKaraokeListState()
+  return buildKaraokeListUrl(query, sortBy, episodeFilter, releaseYearFilter, displayMode)
 }
 
 /** カラオケ歌唱曲の新規登録と編集を管理するページ。 */

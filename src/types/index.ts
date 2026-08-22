@@ -328,6 +328,7 @@ export type {
   KaraokeSongDraft,
   CreateKaraokeSongInput,
   KaraokeValidationErrors,
+  KaraokeDisplayMode,
   KaraokeSortType,
   KaraokeListState,
   KaraokeSongRepository,

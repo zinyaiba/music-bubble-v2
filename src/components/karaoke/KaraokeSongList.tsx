@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ChangeEvent, type CompositionEvent, type Ref } from 'react'
-import type { KaraokeSong, KaraokeSortType } from '../../types'
+import type { KaraokeDisplayMode, KaraokeSong, KaraokeSortType } from '../../types'
 import {
   filterKaraokeSongs,
   getKaraokeEpisodeOptions,
@@ -10,14 +10,24 @@ import { DEFAULT_KARAOKE_SORT } from '../../utils/karaokeSorting'
 import { KaraokeSongCard } from './KaraokeSongCard'
 import './KaraokeSongList.css'
 
+const KARAOKE_DISPLAY_MODES: Record<
+  KaraokeDisplayMode,
+  { icon: string; label: string; next: KaraokeDisplayMode }
+> = {
+  all: { icon: 'ALL', label: 'すべて表示', next: 'compact' },
+  compact: { icon: '☰', label: '曲名のみ', next: 'all' },
+}
+
 export interface KaraokeSongListProps {
   songs: KaraokeSong[]
   query: string
   sortBy?: KaraokeSortType
+  displayMode?: KaraokeDisplayMode
   episodeFilter?: number | null
   releaseYearFilter?: number | null
   onQueryChange: (query: string) => void
   onSortChange?: (sortBy: KaraokeSortType) => void
+  onDisplayModeChange?: (displayMode: KaraokeDisplayMode) => void
   onEpisodeFilterChange?: (episode: number | null) => void
   onReleaseYearFilterChange?: (year: number | null) => void
   onClearAll?: () => void
@@ -29,10 +39,12 @@ export function KaraokeSongList({
   songs,
   query,
   sortBy = DEFAULT_KARAOKE_SORT,
+  displayMode = 'all',
   episodeFilter = null,
   releaseYearFilter = null,
   onQueryChange,
   onSortChange,
+  onDisplayModeChange,
   onEpisodeFilterChange,
   onReleaseYearFilterChange,
   onClearAll,
@@ -59,9 +71,11 @@ export function KaraokeSongList({
     })
     return counts
   }, [songs, inputQuery, episodeFilter])
+  const currentDisplayMode = KARAOKE_DISPLAY_MODES[displayMode]
   const hasActiveConditions =
     inputQuery !== '' ||
     sortBy !== DEFAULT_KARAOKE_SORT ||
+    displayMode !== 'all' ||
     episodeFilter !== null ||
     releaseYearFilter !== null
 
@@ -82,6 +96,10 @@ export function KaraokeSongList({
     onQueryChange('')
   }
 
+  const handleCycleDisplayMode = () => {
+    onDisplayModeChange?.(currentDisplayMode.next)
+  }
+
   const handleClear = () => {
     setInputQuery('')
     if (onClearAll) {
@@ -89,6 +107,7 @@ export function KaraokeSongList({
     } else {
       onQueryChange('')
       onSortChange?.(DEFAULT_KARAOKE_SORT)
+      onDisplayModeChange?.('all')
       onEpisodeFilterChange?.(null)
       onReleaseYearFilterChange?.(null)
     }
@@ -270,6 +289,15 @@ export function KaraokeSongList({
               </svg>
             </button>
           )}
+          <button
+            type="button"
+            className="karaoke-song-list__view-toggle"
+            onClick={handleCycleDisplayMode}
+            aria-label={`表示モード: ${currentDisplayMode.label}`}
+            title={currentDisplayMode.label}
+          >
+            {currentDisplayMode.icon}
+          </button>
         </div>
       </div>
 
@@ -294,7 +322,11 @@ export function KaraokeSongList({
           <ul className="karaoke-song-list__results">
             {projection.songs.map((song) => (
               <li key={song.id}>
-                <KaraokeSongCard song={song} onClick={() => onSongClick(song.id)} />
+                <KaraokeSongCard
+                  song={song}
+                  displayMode={displayMode}
+                  onClick={() => onSongClick(song.id)}
+                />
               </li>
             ))}
           </ul>

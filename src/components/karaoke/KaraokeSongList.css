@@ -261,3 +261,38 @@
     padding-left: var(--spacing-sm);
   }
 }
+.karaoke-song-list__view-toggle {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-background-secondary);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+.karaoke-song-list__view-toggle:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary-light);
+}
+.karaoke-song-list__view-toggle:active {
+  color: var(--color-primary);
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary);
+}
+.karaoke-song-list__view-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+}
+@media (min-width: 481px) {
+  .karaoke-song-list__view-toggle {
+    min-width: 36px;
+    height: 36px;
+  }
+}

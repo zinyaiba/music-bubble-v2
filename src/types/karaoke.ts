@@ -25,6 +25,8 @@ export interface KaraokeValidationErrors {
   streamingEpisodes?: Record<number, string>
 }
 
+export type KaraokeDisplayMode = 'all' | 'compact'
+
 export type KaraokeSortType =
   | 'streaming-oldest'
   | 'streaming-newest'
@@ -35,6 +37,7 @@ export type KaraokeSortType =
 export interface KaraokeListState {
   query: string
   sortBy: KaraokeSortType
+  displayMode: KaraokeDisplayMode
   episodeFilter: number | null
   releaseYearFilter: number | null
   scrollTop: number

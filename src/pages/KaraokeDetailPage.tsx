@@ -23,8 +23,8 @@ const OFFLINE_DELETE_MESSAGE =
   '削除するにはインターネット接続が必要です。接続を確認して再試行してください'
 
 function getKaraokeListUrl(): string {
-  const { query, sortBy, episodeFilter, releaseYearFilter } = loadKaraokeListState()
-  return buildKaraokeListUrl(query, sortBy, episodeFilter, releaseYearFilter)
+  const { query, sortBy, episodeFilter, releaseYearFilter, displayMode } = loadKaraokeListState()
+  return buildKaraokeListUrl(query, sortBy, episodeFilter, releaseYearFilter, displayMode)
 }
 
 /** カラオケ歌唱曲の単一件取得と削除フローを管理する詳細ページ。 */
