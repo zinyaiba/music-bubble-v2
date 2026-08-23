@@ -168,6 +168,7 @@ function liveSetlistToFormData(live?: Live): SetlistItemFormData[] {
   return live.setlist.map((item) => ({
     songId: item.songId,
     songTitle: item.songTitle,
+    note: item.note,
     isDailySong: item.isDailySong,
   }))
 }
@@ -287,6 +288,7 @@ export function LiveForm({
       const copiedSetlist: SetlistItemFormData[] = sourcePerformance.setlist.map((item) => ({
         songId: item.songId,
         songTitle: item.songTitle,
+        note: item.note,
         isDailySong: item.isDailySong,
       }))
       setFormData((prev) => ({ ...prev, setlist: copiedSetlist }))

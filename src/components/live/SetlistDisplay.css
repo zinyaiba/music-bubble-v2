@@ -182,3 +182,34 @@
     padding: var(--spacing-xs);
   }
 }
+
+/* 楽曲名と備考 */
+.setlist-display__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.setlist-display__main-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.setlist-display__note {
+  margin: var(--spacing-2xs) 0 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .setlist-display__main-row {
+    gap: var(--spacing-xs);
+  }
+
+  .setlist-display__note {
+    font-size: var(--font-size-2xs, 10px);
+  }
+}

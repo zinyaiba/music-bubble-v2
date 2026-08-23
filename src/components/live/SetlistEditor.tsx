@@ -21,6 +21,8 @@ export interface SetlistItemFormData {
   songId?: string
   /** 楽曲名 */
   songTitle: string
+  /** 備考（コラボ情報など） */
+  note?: string
   /** 日替わり曲フラグ */
   isDailySong: boolean
 }
@@ -64,22 +66,22 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
 
     const normalizedInput = inputValue.toLowerCase().trim()
     const filtered = songs.filter((song) => song.title.toLowerCase().includes(normalizedInput))
-    
+
     // 前方一致を優先してソート
     const sorted = filtered.sort((a, b) => {
       const aTitle = a.title.toLowerCase()
       const bTitle = b.title.toLowerCase()
       const aStartsWith = aTitle.startsWith(normalizedInput)
       const bStartsWith = bTitle.startsWith(normalizedInput)
-      
+
       // 前方一致が優先
       if (aStartsWith && !bStartsWith) return -1
       if (!aStartsWith && bStartsWith) return 1
-      
+
       // 両方とも前方一致、または両方とも部分一致の場合はタイトルの長さでソート（短い方が優先）
       return aTitle.length - bTitle.length
     })
-    
+
     return sorted.slice(0, 10)
   }, [songs, inputValue])
 
@@ -91,22 +93,22 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
 
     const normalizedInput = editValue.toLowerCase().trim()
     const filtered = songs.filter((song) => song.title.toLowerCase().includes(normalizedInput))
-    
+
     // 前方一致を優先してソート
     const sorted = filtered.sort((a, b) => {
       const aTitle = a.title.toLowerCase()
       const bTitle = b.title.toLowerCase()
       const aStartsWith = aTitle.startsWith(normalizedInput)
       const bStartsWith = bTitle.startsWith(normalizedInput)
-      
+
       // 前方一致が優先
       if (aStartsWith && !bStartsWith) return -1
       if (!aStartsWith && bStartsWith) return 1
-      
+
       // 両方とも前方一致、または両方とも部分一致の場合はタイトルの長さでソート（短い方が優先）
       return aTitle.length - bTitle.length
     })
-    
+
     return sorted.slice(0, 10)
   }, [songs, editValue])
 
@@ -192,17 +194,20 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
   /**
    * 編集モードを開始
    */
-  const handleStartEdit = useCallback((index: number) => {
-    setEditingIndex(index)
-    setEditValue(items[index].songTitle)
-    setEditHighlightedIndex(-1)
-    setIsEditFocused(true)
-    // 次のレンダリング後にフォーカス
-    setTimeout(() => {
-      editInputRef.current?.focus()
-      editInputRef.current?.select()
-    }, 0)
-  }, [items])
+  const handleStartEdit = useCallback(
+    (index: number) => {
+      setEditingIndex(index)
+      setEditValue(items[index].songTitle)
+      setEditHighlightedIndex(-1)
+      setIsEditFocused(true)
+      // 次のレンダリング後にフォーカス
+      setTimeout(() => {
+        editInputRef.current?.focus()
+        editInputRef.current?.select()
+      }, 0)
+    },
+    [items]
+  )
 
   /**
    * 編集をキャンセル
@@ -229,9 +234,7 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
     )
 
     const newItems = items.map((item, i) =>
-      i === editingIndex
-        ? { ...item, songTitle: trimmedValue, songId: matchingSong?.id }
-        : item
+      i === editingIndex ? { ...item, songTitle: trimmedValue, songId: matchingSong?.id } : item
     )
     onChange(newItems)
     handleCancelEdit()
@@ -284,39 +287,43 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
   /**
    * 編集ブラーハンドラ
    */
-  const handleEditBlur = useCallback((e: React.FocusEvent) => {
-    // サジェストリスト内のクリックの場合はフォーカスを維持
-    if (editSuggestionsRef.current?.contains(e.relatedTarget as Node)) {
-      return
-    }
-    // 少し遅延させて確定（ボタンクリックを許可）
-    setTimeout(() => {
-      if (editingIndex >= 0) {
-        handleConfirmEdit()
+  const handleEditBlur = useCallback(
+    (e: React.FocusEvent) => {
+      // サジェストリスト内のクリックの場合はフォーカスを維持
+      if (editSuggestionsRef.current?.contains(e.relatedTarget as Node)) {
+        return
       }
-    }, 150)
-  }, [editingIndex, handleConfirmEdit])
+      // 少し遅延させて確定（ボタンクリックを許可）
+      setTimeout(() => {
+        if (editingIndex >= 0) {
+          handleConfirmEdit()
+        }
+      }, 150)
+    },
+    [editingIndex, handleConfirmEdit]
+  )
 
   /**
    * 編集サジェストクリックハンドラ
    * サジェストから選択した場合は直接その値で確定する
    */
-  const handleEditSuggestionClick = useCallback((song: Song) => {
-    if (editingIndex < 0) return
+  const handleEditSuggestionClick = useCallback(
+    (song: Song) => {
+      if (editingIndex < 0) return
 
-    const newItems = items.map((item, i) =>
-      i === editingIndex
-        ? { ...item, songTitle: song.title, songId: song.id }
-        : item
-    )
-    onChange(newItems)
-    
-    // 編集モードを終了
-    setEditingIndex(-1)
-    setEditValue('')
-    setEditHighlightedIndex(-1)
-    setIsEditFocused(false)
-  }, [editingIndex, items, onChange])
+      const newItems = items.map((item, i) =>
+        i === editingIndex ? { ...item, songTitle: song.title, songId: song.id } : item
+      )
+      onChange(newItems)
+
+      // 編集モードを終了
+      setEditingIndex(-1)
+      setEditValue('')
+      setEditHighlightedIndex(-1)
+      setIsEditFocused(false)
+    },
+    [editingIndex, items, onChange]
+  )
 
   /**
    * 入力変更ハンドラ
@@ -471,9 +478,9 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
 
         {/* サジェストリスト */}
         {showSuggestions && (
-          <div 
-            ref={suggestionsRef} 
-            className="setlist-editor__suggestions" 
+          <div
+            ref={suggestionsRef}
+            className="setlist-editor__suggestions"
             role="listbox"
             onTouchStart={handleSuggestionsTouchStart}
             onTouchMove={handleSuggestionsTouchMove}
@@ -496,7 +503,9 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
           </div>
         )}
 
-        <p className="setlist-editor__hint">サジェストから選択、またはEnterで入力確定後「追加」ボタンを押してください</p>
+        <p className="setlist-editor__hint">
+          サジェストから選択、またはEnterで入力確定後「追加」ボタンを押してください
+        </p>
       </div>
 
       {/* セトリ一覧 */}
@@ -527,25 +536,33 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
                         autoComplete="off"
                       />
                       {/* 編集用サジェストリスト */}
-                      {isEditFocused && editValue.trim().length > 0 && editSuggestions.length > 0 && (
-                        <div ref={editSuggestionsRef} className="setlist-editor__edit-suggestions" role="listbox">
-                          {editSuggestions.map((song, sIndex) => (
-                            <button
-                              key={song.id}
-                              type="button"
-                              className={`setlist-editor__suggestion ${sIndex === editHighlightedIndex ? 'setlist-editor__suggestion--highlighted' : ''}`}
-                              onClick={() => handleEditSuggestionClick(song)}
-                              onMouseDown={handleSuggestionPointerDown}
-                              onTouchStart={handleSuggestionPointerDown}
-                              onMouseEnter={() => setEditHighlightedIndex(sIndex)}
-                              role="option"
-                              aria-selected={sIndex === editHighlightedIndex}
-                            >
-                              <span className="setlist-editor__suggestion-title">{song.title}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                      {isEditFocused &&
+                        editValue.trim().length > 0 &&
+                        editSuggestions.length > 0 && (
+                          <div
+                            ref={editSuggestionsRef}
+                            className="setlist-editor__edit-suggestions"
+                            role="listbox"
+                          >
+                            {editSuggestions.map((song, sIndex) => (
+                              <button
+                                key={song.id}
+                                type="button"
+                                className={`setlist-editor__suggestion ${sIndex === editHighlightedIndex ? 'setlist-editor__suggestion--highlighted' : ''}`}
+                                onClick={() => handleEditSuggestionClick(song)}
+                                onMouseDown={handleSuggestionPointerDown}
+                                onTouchStart={handleSuggestionPointerDown}
+                                onMouseEnter={() => setEditHighlightedIndex(sIndex)}
+                                role="option"
+                                aria-selected={sIndex === editHighlightedIndex}
+                              >
+                                <span className="setlist-editor__suggestion-title">
+                                  {song.title}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   ) : (
                     // 表示モード
@@ -559,6 +576,22 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
                       {item.songTitle}
                     </button>
                   )}
+                  <input
+                    type="text"
+                    className="setlist-editor__note-input"
+                    value={item.note ?? ''}
+                    onChange={(e) => {
+                      const note = e.target.value
+                      onChange(
+                        items.map((currentItem, itemIndex) =>
+                          itemIndex === index ? { ...currentItem, note } : currentItem
+                        )
+                      )
+                    }}
+                    placeholder="備考（例：with XXとコラボ）"
+                    disabled={disabled}
+                    aria-label={`${item.songTitle}の備考`}
+                  />
                 </div>
 
                 {/* アクションボタン */}

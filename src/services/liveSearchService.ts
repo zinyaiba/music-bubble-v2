@@ -43,7 +43,7 @@ function matchesQueryInArray(
  * 検索対象:
  * - 公演名
  * - 会場名
- * - セトリの楽曲名
+ * - セトリの楽曲名・備考
  * - 公演地
  * - ライブ種別名（カテゴリ表示名 / その他・海外の自由入力名）
  */
@@ -87,11 +87,11 @@ export function matchesSearchQuery(
     return true
   }
 
-  // セトリの楽曲名での検索
+  // セトリの楽曲名・備考での検索
   if (
     live.setlist &&
     matchesQueryInArray(
-      live.setlist.map((item) => item.songTitle),
+      live.setlist.flatMap((item) => [item.songTitle, item.note ?? '']),
       trimmedQuery,
       caseSensitive
     )

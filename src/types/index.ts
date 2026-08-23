@@ -136,6 +136,8 @@ export interface SetlistItem {
   songId?: string
   /** 楽曲名（フリー入力または既存楽曲から取得） */
   songTitle: string
+  /** 備考（コラボ情報など） */
+  note?: string
   /** 演奏順序（1から開始） */
   order: number
   /** 日替わり曲フラグ */

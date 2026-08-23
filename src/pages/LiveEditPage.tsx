@@ -165,6 +165,7 @@ export function LiveEditPage() {
         const setlistWithOrder: SetlistItem[] = formData.setlist.map((item, index) => ({
           songId: item.songId,
           songTitle: item.songTitle,
+          note: item.note?.trim() || undefined,
           order: index + 1,
           isDailySong: item.isDailySong,
         }))

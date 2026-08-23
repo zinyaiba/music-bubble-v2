@@ -66,43 +66,49 @@ export function SetlistDisplay({ items, songs, onSongClick }: SetlistDisplayProp
               {/* 演奏順番号 */}
               <span className="setlist-display__order">{orderNumber}</span>
 
-              {/* 楽曲名 */}
-              {isClickable ? (
-                <button
-                  type="button"
-                  className="setlist-display__song-button"
-                  onClick={() => onSongClick(item.songId!)}
-                  aria-label={`${displayTitle}の詳細を表示`}
-                >
-                  <span className="setlist-display__song-title">{displayTitle}</span>
-                  <svg
-                    className="setlist-display__link-icon"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              ) : (
-                <span className="setlist-display__song-title">{displayTitle}</span>
-              )}
+              {/* 楽曲情報 */}
+              <div className="setlist-display__content">
+                <div className="setlist-display__main-row">
+                  {isClickable ? (
+                    <button
+                      type="button"
+                      className="setlist-display__song-button"
+                      onClick={() => onSongClick(item.songId!)}
+                      aria-label={`${displayTitle}の詳細を表示`}
+                    >
+                      <span className="setlist-display__song-title">{displayTitle}</span>
+                      <svg
+                        className="setlist-display__link-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <span className="setlist-display__song-title">{displayTitle}</span>
+                  )}
 
-              {/* 日替わり曲バッジ */}
-              {item.isDailySong && (
-                <span
-                  className="setlist-display__daily-badge"
-                  title="日替わり曲"
-                  aria-label="日替わり曲"
-                >
-                  日替
-                </span>
-              )}
+                  {/* 日替わり曲バッジ */}
+                  {item.isDailySong && (
+                    <span
+                      className="setlist-display__daily-badge"
+                      title="日替わり曲"
+                      aria-label="日替わり曲"
+                    >
+                      日替
+                    </span>
+                  )}
+                </div>
+
+                {item.note?.trim() && <p className="setlist-display__note">{item.note.trim()}</p>}
+              </div>
             </li>
           )
         })}

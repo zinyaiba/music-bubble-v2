@@ -199,9 +199,12 @@ export class LiveService {
         order: item.order,
         isDailySong: item.isDailySong,
       }
-      // songIdが存在する場合のみ追加（undefinedを除去）
+      // songId・備考は値が存在する場合のみ追加（undefinedや空文字を除去）
       if (item.songId) {
         sanitizedItem.songId = item.songId
+      }
+      if (item.note?.trim()) {
+        sanitizedItem.note = item.note.trim()
       }
       return sanitizedItem
     })
