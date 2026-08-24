@@ -171,8 +171,13 @@
 
 /* ホーム画面から起動したスマホでは、背景ごとメニューを上げて押しやすくする */
 @media (display-mode: standalone) and (max-width: 767px) {
+  :root {
+    /* ナビ直上の戻るボタンなども同じ12px分だけ上へ追従させる */
+    --navigation-height: 76px;
+  }
+
   .navigation {
-    height: calc(var(--navigation-height) + var(--safe-area-bottom) + 12px);
+    height: calc(var(--navigation-height) + var(--safe-area-bottom));
     padding-bottom: calc(var(--safe-area-bottom) + 12px);
   }
 }
