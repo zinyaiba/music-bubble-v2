@@ -168,3 +168,10 @@
     font-size: var(--font-size-sm);
   }
 }
+
+/* ホーム画面から起動したスマホでは、メニューを少し上げて押しやすくする */
+@media (display-mode: standalone) and (max-width: 767px) {
+  .navigation-list {
+    transform: translateY(-4px);
+  }
+}
