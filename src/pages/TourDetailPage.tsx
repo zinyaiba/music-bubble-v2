@@ -97,9 +97,7 @@ function formatPostDate(dateTime: string): string {
 /**
  * ライブの思い出投稿用テキストを生成
  */
-function generatePostContent(
-  live: Pick<Live, 'id' | 'title' | 'dateTime' | 'venueName'>
-): string {
+function generatePostContent(live: Pick<Live, 'id' | 'title' | 'dateTime' | 'venueName'>): string {
   const origin = window.location.origin
   const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
   const liveUrl = `${origin}${basePath}/lives/${encodeURIComponent(live.id)}`
@@ -719,6 +717,14 @@ export function TourDetailPage() {
                         onSongClick={handleSongClick}
                       />
                     </div>
+
+                    {/* メモ */}
+                    {performance.memo && (
+                      <section className="tour-detail-page__memo">
+                        <h3 className="tour-detail-page__memo-title">メモ</h3>
+                        <p className="tour-detail-page__memo-content">{performance.memo}</p>
+                      </section>
+                    )}
 
                     {/* アクションボタン */}
                     <div className="tour-detail-page__actions">

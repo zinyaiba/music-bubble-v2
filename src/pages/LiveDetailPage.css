@@ -167,6 +167,28 @@
   color: var(--color-primary);
 }
 
+/* メモセクション */
+.live-detail-page__memo {
+  padding: var(--spacing-lg);
+  border-top: var(--border-width-thin) solid var(--color-border-light);
+}
+
+.live-detail-page__memo-title {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.live-detail-page__memo-content {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* アクションボタン */
 .live-detail-page__actions {
   display: flex;
@@ -375,7 +397,8 @@
     font-size: var(--font-size-xs);
   }
 
-  .live-detail-page__setlist {
+  .live-detail-page__setlist,
+  .live-detail-page__memo {
     padding: var(--spacing-md);
   }
 

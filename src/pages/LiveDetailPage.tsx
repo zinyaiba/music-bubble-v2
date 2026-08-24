@@ -623,6 +623,14 @@ export function LiveDetailPage() {
                 <SetlistDisplay items={live.setlist} songs={songs} onSongClick={handleSongClick} />
               </div>
 
+              {/* メモセクション */}
+              {live.memo && (
+                <section className="live-detail-page__memo">
+                  <h2 className="live-detail-page__memo-title">メモ</h2>
+                  <p className="live-detail-page__memo-content">{live.memo}</p>
+                </section>
+              )}
+
               {/* アクションボタン */}
               <div className="live-detail-page__actions">
                 <button

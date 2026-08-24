@@ -191,6 +191,7 @@ export function LiveEditPage() {
                     ? formData.otherCategory
                     : '',
                 setlist: setlistWithOrder,
+                memo: formData.memo,
                 embeds: formData.embeds,
                 detailPageUrls: formData.detailPageUrls,
               }),
@@ -230,6 +231,7 @@ export function LiveEditPage() {
                     ? formData.otherCategory
                     : undefined,
                 setlist: setlistWithOrder,
+                memo: formData.memo,
                 embeds: formData.embeds,
                 detailPageUrls: formData.detailPageUrls,
               }),

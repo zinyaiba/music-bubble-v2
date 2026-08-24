@@ -99,6 +99,11 @@ export class LiveService {
       live.otherCategory = data.otherCategory
     }
 
+    // メモを追加
+    if (typeof data.memo === 'string' && data.memo.trim()) {
+      live.memo = data.memo
+    }
+
     // 埋め込みコンテンツを追加
     if (data.embeds && data.embeds.length > 0) {
       live.embeds = data.embeds
@@ -242,6 +247,11 @@ export class LiveService {
         docData.otherCategory = liveData.otherCategory.trim()
       }
 
+      // メモを追加
+      if (liveData.memo?.trim()) {
+        docData.memo = liveData.memo.trim()
+      }
+
       // 埋め込みコンテンツを追加
       if (liveData.embeds && liveData.embeds.length > 0) {
         docData.embeds = liveData.embeds
@@ -304,6 +314,10 @@ export class LiveService {
       if (liveData.otherCategory !== undefined) {
         const otherCategory = liveData.otherCategory.trim()
         updateData.otherCategory = otherCategory || deleteField()
+      }
+      if (liveData.memo !== undefined) {
+        const memo = liveData.memo.trim()
+        updateData.memo = memo || deleteField()
       }
       if (liveData.embeds !== undefined) {
         updateData.embeds = liveData.embeds

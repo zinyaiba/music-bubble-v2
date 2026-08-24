@@ -26,6 +26,7 @@ export interface LiveFormData {
   tourLocation?: string
   otherCategory?: string
   setlist: SetlistItemFormData[]
+  memo?: string
   embeds?: MusicServiceEmbed[]
   detailPageUrls?: DetailPageUrl[]
 }
@@ -43,6 +44,7 @@ interface InternalFormData {
   tourLocation: string
   otherCategory: string
   setlist: SetlistItemFormData[]
+  memo: string
   embeds: MusicServiceEmbed[]
   detailPageUrls: DetailPageUrl[]
 }
@@ -218,6 +220,7 @@ export function LiveForm({
       tourLocation: live?.tourLocation || '',
       otherCategory: live?.otherCategory || '',
       setlist: liveSetlistToFormData(live),
+      memo: live?.memo || '',
       embeds: live?.embeds?.filter((item) => item.embed && item.embed.trim() !== '') || [],
       detailPageUrls:
         live?.detailPageUrls?.filter((item) => item.url && item.url.trim() !== '') || [],
@@ -240,7 +243,7 @@ export function LiveForm({
    */
   const handleChange = useCallback(
     (field: keyof InternalFormData) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const value = e.target.value
         setFormData((prev) => {
           const newData = { ...prev, [field]: value }
@@ -439,6 +442,7 @@ export function LiveForm({
       dateTime: formatDateTimeForSubmit(formData.year, formData.month, formData.day),
       tourLocation: formData.tourLocation.trim(),
       setlist: formData.setlist,
+      memo: formData.memo.trim(),
     }
 
     // その他・海外カテゴリの場合のみライブ種別名を含める（空欄も許可）
@@ -738,6 +742,26 @@ export function LiveForm({
             onChange={handleSetlistChange}
             disabled={isLoading}
           />
+        </section>
+
+        {/* メモセクション */}
+        <section className="live-form__section">
+          <h3 className="live-form__section-title">メモ</h3>
+          <div className="live-form__field">
+            <label htmlFor="memo" className="live-form__label">
+              メモ（任意）
+            </label>
+            <textarea
+              id="memo"
+              className="live-form__textarea live-form__textarea--memo"
+              value={formData.memo}
+              onChange={handleChange('memo')}
+              placeholder="ライブに関するメモを入力"
+              disabled={isLoading}
+              rows={5}
+            />
+            <p className="live-form__hint">入力内容はライブ一覧の検索対象になります</p>
+          </div>
         </section>
 
         {/* 埋め込みコンテンツセクション */}

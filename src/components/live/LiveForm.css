@@ -169,6 +169,38 @@
   color: var(--color-text-disabled);
 }
 
+.live-form__textarea--memo {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: max(16px, var(--font-size-md));
+  font-family: var(--font-family);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  resize: vertical;
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.live-form__textarea--memo:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
+}
+
+.live-form__textarea--memo:disabled {
+  background: var(--color-background-light);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.live-form__textarea--memo::placeholder {
+  color: var(--color-text-disabled);
+}
+
 /* セレクトボックス */
 .live-form__select {
   appearance: none;

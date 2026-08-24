@@ -1,0 +1,21 @@
+{
+  "name": "マロバブ",
+  "short_name": "マロバブ",
+  "start_url": "/music-bubble-v2/",
+  "scope": "/music-bubble-v2/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/music-bubble-v2/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/music-bubble-v2/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -44,6 +44,7 @@ function matchesQueryInArray(
  * - 公演名
  * - 会場名
  * - セトリの楽曲名・備考
+ * - メモ
  * - 公演地
  * - ライブ種別名（カテゴリ表示名 / その他・海外の自由入力名）
  */
@@ -84,6 +85,11 @@ export function matchesSearchQuery(
 
   // ライブ種別名での検索（その他・海外カテゴリの自由入力名）
   if (live.otherCategory && matchesQuery(live.otherCategory, trimmedQuery, caseSensitive)) {
+    return true
+  }
+
+  // メモでの検索
+  if (live.memo && matchesQuery(live.memo, trimmedQuery, caseSensitive)) {
     return true
   }
 

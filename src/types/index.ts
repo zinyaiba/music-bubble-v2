@@ -165,6 +165,8 @@ export interface Live {
   otherCategory?: string
   /** セトリ */
   setlist: SetlistItem[]
+  /** メモ */
+  memo?: string
   /** 埋め込みコンテンツ */
   embeds?: MusicServiceEmbed[]
   /** 関連リンク */
@@ -186,6 +188,7 @@ export interface CreateLiveData {
   tourLocation?: string
   otherCategory?: string
   setlist: SetlistItem[]
+  memo?: string
   embeds?: MusicServiceEmbed[]
   detailPageUrls?: DetailPageUrl[]
 }
