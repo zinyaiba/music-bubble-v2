@@ -169,9 +169,9 @@
   }
 }
 
-/* ホーム画面から起動したスマホでは、メニューを少し上げて押しやすくする */
+/* ホーム画面から起動したスマホでは、メニューを明確に上げて押しやすくする */
 @media (display-mode: standalone) and (max-width: 767px) {
   .navigation-list {
-    transform: translateY(-4px);
+    transform: translateY(-12px);
   }
 }
