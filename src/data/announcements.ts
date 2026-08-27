@@ -18,6 +18,21 @@ export interface Announcement {
  */
 export const announcements: Announcement[] = [
   {
+    id: 'ann-2026-08-28',
+    title: '旧マロバブサイトは閉鎖しました',
+    content: `本サイトに自動遷移するようになります
+
+現在のマロバブ（NextSeason）ではなく、旧マロバブにアクセスした場合、本サイトに自動で遷移するようにしました。
+今までありがとう(涙)
+
+参考）
+<a href="https://zinyaiba.github.io/music-bubble-explorer/">旧：マロバブ</a>
+<a href="https://zinyaiba.github.io/music-bubble-v2/">現：マロバブ NextSeason</a>
+`,
+    date: '2026-08-28',
+    type: 'notice',
+  },
+  {
     id: 'ann-2026-08-25-01',
     title: '備考・メモ欄を追加',
     content: `コラボ・ライブでの出来事などを備考として記載できるようになりました
