@@ -10,12 +10,21 @@
  * - 8.6: 欠落または無効な埋め込みコンテンツを適切に処理
  */
 
-import type { Song, MusicServiceEmbed } from '../../types'
+import type { Song, MusicServiceEmbed, Live } from '../../types'
+import type { SongPerformanceStats } from '../../utils/songPerformanceStats'
 import './SongDetail.css'
 
 export interface SongDetailProps {
   /** 楽曲データ */
   song: Song
+  /** ライブ・セットリストから算出した歌唱実績 */
+  performanceStats: SongPerformanceStats | null
+  /** 歌唱実績を取得中かどうか */
+  isPerformanceLoading?: boolean
+  /** 歌唱実績を取得できなかったかどうか */
+  performanceError?: boolean
+  /** ライブ名クリック時のコールバック */
+  onLiveClick?: (liveId: string) => void
   /** 編集ボタンクリック時のコールバック */
   onEdit?: () => void
   /** 削除ボタンクリック時のコールバック */
@@ -122,16 +131,69 @@ function formatReleaseDate(releaseYear?: number, releaseDate?: string): string |
   return null
 }
 
+/** 日数を表示し、365日を超える場合は年・月の目安を追記する。 */
+function formatDaysWithYearsAndMonths(days: number | null): string {
+  if (days === null) return '-'
+  if (days <= 365) return `${days}日`
+
+  const years = Math.floor(days / 365)
+  const months = Math.floor((days % 365) / 30)
+  return `${days}日（${years}年と${months}ヶ月）`
+}
+
+/** ライブ日を表示用文字列に変換する。 */
+function formatLiveDate(live: Live): string | null {
+  const date = new Date(live.dateTime)
+  if (Number.isNaN(date.getTime())) return null
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+}
+
 /**
  * SongDetail コンポーネント
  * 楽曲の詳細情報を表示
  */
-export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDetailProps) {
+export function SongDetail({
+  song,
+  performanceStats,
+  isPerformanceLoading = false,
+  performanceError = false,
+  onLiveClick,
+  onEdit,
+  onDelete,
+  onBack,
+  onGoBack,
+}: SongDetailProps) {
   const embeds = getEmbeds(song)
   const hasEmbeds = embeds.length > 0
   const hasLinks = song.detailPageUrls && song.detailPageUrls.length > 0
   const hasTags = song.tags && song.tags.length > 0
   const releaseDisplayDate = formatReleaseDate(song.releaseYear, song.releaseDate)
+
+  const renderLive = (live: Live | null) => {
+    if (!live) return '-'
+
+    const liveDate = formatLiveDate(live)
+    const content = (
+      <>
+        {liveDate && <span className="song-detail__performance-live-date">{liveDate}</span>}
+        <span className="song-detail__performance-live-title">{live.title}</span>
+      </>
+    )
+
+    if (!onLiveClick) {
+      return <span className="song-detail__performance-live">{content}</span>
+    }
+
+    return (
+      <button
+        type="button"
+        className="song-detail__performance-link"
+        onClick={() => onLiveClick(live.id)}
+      >
+        {content}
+      </button>
+    )
+  }
 
   return (
     <article className="song-detail">
@@ -227,6 +289,49 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
         </section>
       )}
 
+      {/* 歌唱情報 */}
+      <section className="song-detail__performance-section">
+        <h2 className="song-detail__section-title">ライブ歌唱情報</h2>
+        {isPerformanceLoading ? (
+          <p className="song-detail__performance-status">読み込み中...</p>
+        ) : performanceError || !performanceStats ? (
+          <p className="song-detail__performance-status">歌唱情報を取得できませんでした</p>
+        ) : (
+          <dl className="song-detail__performance-info">
+            <div className="song-detail__performance-item">
+              <dt className="song-detail__performance-label">歌われた回数</dt>
+              <dd className="song-detail__performance-value">
+                {performanceStats.performanceCount}回
+              </dd>
+            </div>
+            <div className="song-detail__performance-item">
+              <dt className="song-detail__performance-label">最後に歌われたライブ</dt>
+              <dd className="song-detail__performance-value">
+                {renderLive(performanceStats.lastLive)}
+              </dd>
+            </div>
+            <div className="song-detail__performance-item">
+              <dt className="song-detail__performance-label">最後の歌唱から</dt>
+              <dd className="song-detail__performance-value">
+                {formatDaysWithYearsAndMonths(performanceStats.daysSinceLastPerformance)}
+              </dd>
+            </div>
+            <div className="song-detail__performance-item">
+              <dt className="song-detail__performance-label">最初に歌われたライブ</dt>
+              <dd className="song-detail__performance-value">
+                {renderLive(performanceStats.firstLive)}
+              </dd>
+            </div>
+            <div className="song-detail__performance-item">
+              <dt className="song-detail__performance-label">発売から初歌唱まで</dt>
+              <dd className="song-detail__performance-value">
+                {formatDaysWithYearsAndMonths(performanceStats.daysFromReleaseToFirstPerformance)}
+              </dd>
+            </div>
+          </dl>
+        )}
+      </section>
+
       {/* タグ */}
       {hasTags && (
         <section className="song-detail__tags-section">
@@ -301,7 +406,7 @@ export function SongDetail({ song, onEdit, onDelete, onBack, onGoBack }: SongDet
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
           楽曲一覧へ戻る

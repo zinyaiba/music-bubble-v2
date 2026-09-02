@@ -263,11 +263,46 @@ function getAnnouncementTypeLabel(type: Announcement['type']): string {
 }
 
 /**
+ * 関連紹介カードの型定義
+ */
+interface RelatedIntroduction {
+  id: string
+  title: string
+  manager: string
+  url: string
+  description: string
+}
+
+/**
+ * 関連紹介データ
+ *
+ * 管理人がカードを追加する場合は、以下の配列にデータを追記してください。
+ */
+const relatedIntroductions: RelatedIntroduction[] = [
+  // {
+  //   id: 'sample-fan-site',
+  //   title: '栗林みな実さん応援ファンサイト（サンプル）',
+  //   manager: '栗家族Aさん',
+  //   url: 'https://example.com/fan-site',
+  //   description:
+  //     '栗林みな実さんの活動情報や楽曲の感想を紹介しているファンサイトです。こちらは表示確認用のサンプルデータです。',
+  // },
+  // {
+  //   id: 'sample-live-database',
+  //   title: 'ライブ情報データベース（サンプル）',
+  //   manager: '栗家族Bさん',
+  //   url: 'https://example.com/live-database',
+  //   description:
+  //     'これまでのライブやイベント情報をまとめたデータベースです。こちらはカードレイアウト確認用のサンプルデータです。',
+  // },
+]
+
+/**
  * InfoPage コンポーネント
  */
 export function InfoPage() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<InfoTab>('announcements')
+  const [activeTab, setActiveTab] = useState<InfoTab | 'related'>('announcements')
 
   // 既読状態を初期化時に取得
   const [readIds, setReadIds] = useState<string[]>(() => getReadAnnouncementIds())
@@ -316,7 +351,11 @@ export function InfoPage() {
 
   return (
     <div className="info-page">
-      <Header title="お知らせ・はじめに・使い方" showBackButton onBack={() => navigate('/')} />
+      <Header
+        title="お知らせ・はじめに・使い方・関連紹介"
+        showBackButton
+        onBack={() => navigate('/')}
+      />
 
       <main className="info-page__main">
         {/* タブ切り替え */}
@@ -343,7 +382,47 @@ export function InfoPage() {
           >
             使い方
           </button>
+          <button
+            type="button"
+            className={`info-page__tab ${activeTab === 'related' ? 'info-page__tab--active' : ''}`}
+            onClick={() => setActiveTab('related')}
+          >
+            関連紹介
+          </button>
         </div>
+
+        {/* 関連紹介タブ */}
+        {activeTab === 'related' && (
+          <div className="info-page__content">
+            {relatedIntroductions.length > 0 ? (
+              <div className="info-page__related-list">
+                {relatedIntroductions.map((item) => (
+                  <article key={item.id} className="info-page__related-item">
+                    <h2 className="info-page__related-title">{item.title}</h2>
+                    <dl className="info-page__related-details">
+                      <div className="info-page__related-detail">
+                        <dt>管理者</dt>
+                        <dd>{item.manager}</dd>
+                      </div>
+                      <div className="info-page__related-detail">
+                        <dt>URL</dt>
+                        <dd>
+                          <a href={item.url} target="_blank" rel="noopener noreferrer">
+                            {item.url}
+                            <span aria-hidden="true"> ↗</span>
+                          </a>
+                        </dd>
+                      </div>
+                    </dl>
+                    <p className="info-page__related-description">{item.description}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="info-page__related-empty">関連紹介は現在準備中です。</p>
+            )}
+          </div>
+        )}
 
         {/* はじめにタブ */}
         {activeTab === 'introduction' && (

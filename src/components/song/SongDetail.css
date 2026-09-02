@@ -233,6 +233,89 @@
   margin: 0;
 }
 
+/* ライブ歌唱情報 */
+.song-detail__performance-section {
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+.song-detail__performance-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+}
+
+.song-detail__performance-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.song-detail__performance-label {
+  flex-shrink: 0;
+  width: 150px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+.song-detail__performance-value {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+}
+
+.song-detail__performance-live,
+.song-detail__performance-link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.song-detail__performance-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary-dark);
+  cursor: pointer;
+}
+
+.song-detail__performance-live-date {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.song-detail__performance-link .song-detail__performance-live-title {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.song-detail__performance-link:hover {
+  color: var(--color-primary);
+}
+
+.song-detail__performance-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--border-radius-sm);
+}
+
+.song-detail__performance-status {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 /* タグ */
 .song-detail__tags-section {
   background: var(--color-surface);
@@ -404,13 +487,29 @@
 
   .song-detail__credit-label,
   .song-detail__release-label {
-    width: 50px;
+    width: 90px;
     font-size: var(--font-size-xs);
   }
 
+  .song-detail__performance-label {
+    width: 140px;
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+  }
+
   .song-detail__credit-value,
-  .song-detail__release-value {
+  .song-detail__release-value,
+  .song-detail__performance-value {
     font-size: var(--font-size-sm);
+  }
+
+  .song-detail__performance-value {
+    overflow-wrap: anywhere;
+  }
+
+  .song-detail__performance-live,
+  .song-detail__performance-link {
+    font-size: 11px;
   }
 
   .song-detail__actions {
@@ -440,20 +539,23 @@
   }
 
   .song-detail__credits,
-  .song-detail__release-info {
+  .song-detail__release-info,
+  .song-detail__performance-info {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--spacing-md);
   }
 
   .song-detail__credit-item,
-  .song-detail__release-item {
+  .song-detail__release-item,
+  .song-detail__performance-item {
     flex-direction: column;
     gap: var(--spacing-xs);
   }
 
   .song-detail__credit-label,
-  .song-detail__release-label {
+  .song-detail__release-label,
+  .song-detail__performance-label {
     width: auto;
   }
 

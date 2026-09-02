@@ -7,13 +7,15 @@
  * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import type { Song } from '../types'
+import type { Live, Song } from '../types'
 import { firebaseService } from '../services/firebaseService'
 import { cacheService } from '../services/cacheService'
 import { errorService } from '../services/errorService'
+import { liveService } from '../services/liveService'
 import { AnalyticsEvents, trackEvent } from '../services/analyticsService'
+import { calculateSongPerformanceStats } from '../utils/songPerformanceStats'
 import { useOnlineStatus } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -36,10 +38,18 @@ export function SongDetailPage() {
 
   // 楽曲データの状態
   const [song, setSong] = useState<Song | null>(null)
+  const [lives, setLives] = useState<Live[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isPerformanceLoading, setIsPerformanceLoading] = useState(true)
+  const [performanceError, setPerformanceError] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const performanceStats = useMemo(
+    () => (song ? calculateSongPerformanceStats(song, lives) : null),
+    [song, lives]
+  )
 
   // ページ閲覧トラッキング
   useEffect(() => {
@@ -118,6 +128,43 @@ export function SongDetailPage() {
     loadSong()
   }, [songId])
 
+  // 歌唱実績の算出に使用するライブデータを取得
+  useEffect(() => {
+    let isActive = true
+
+    const loadLives = async () => {
+      if (!songId || !errorService.getOnlineStatus()) {
+        setIsPerformanceLoading(false)
+        setPerformanceError(true)
+        return
+      }
+
+      setIsPerformanceLoading(true)
+      setPerformanceError(false)
+
+      try {
+        const allLives = await errorService.withRetry(() => liveService.getAllLives(), {
+          maxRetries: 2,
+        })
+        if (isActive) {
+          setLives(allLives)
+          setIsPerformanceLoading(false)
+        }
+      } catch (err) {
+        errorService.logError(err, 'SongDetailPage.loadLives')
+        if (isActive) {
+          setPerformanceError(true)
+          setIsPerformanceLoading(false)
+        }
+      }
+    }
+
+    loadLives()
+    return () => {
+      isActive = false
+    }
+  }, [songId, isOnline])
+
   // 楽曲一覧へ戻る（保存された検索状態を復元）
   const handleBackToList = useCallback(() => {
     try {
@@ -174,6 +221,14 @@ export function SongDetailPage() {
       navigate(`/songs/${songId}/edit`)
     }
   }, [navigate, songId])
+
+  // ライブ詳細ページへ遷移
+  const handleLiveClick = useCallback(
+    (liveId: string) => {
+      navigate(`/lives/${liveId}`)
+    },
+    [navigate]
+  )
 
   // 削除確認ダイアログを表示
   const handleDeleteClick = useCallback(() => {
@@ -301,6 +356,10 @@ export function SongDetailPage() {
           <div className="song-detail-page__content">
             <SongDetail
               song={song}
+              performanceStats={performanceStats}
+              isPerformanceLoading={isPerformanceLoading}
+              performanceError={performanceError}
+              onLiveClick={handleLiveClick}
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
               onBack={handleBackToList}

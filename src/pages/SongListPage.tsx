@@ -8,12 +8,16 @@
  * - 15.1, 15.2, 15.4: エラーハンドリング
  */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import type { Live } from '../types'
 import type { SongSortType } from '../utils/songSorting'
+import { calculateSongPerformanceStats } from '../utils/songPerformanceStats'
 import type { SongDisplayMode } from '../components/song/SongCard'
 import type { ContentFilterValue } from '../components/song/SongList'
 import { AnalyticsEvents, trackEvent, trackSearch } from '../services/analyticsService'
+import { errorService } from '../services/errorService'
+import { liveService } from '../services/liveService'
 import { useDataFetch } from '../hooks'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
@@ -95,6 +99,46 @@ export function SongListPage() {
 
   // 楽曲データの取得（エラーハンドリング統合）
   const { songs, isLoading, error, isOffline, retry } = useDataFetch()
+  const [lives, setLives] = useState<Live[] | null>(null)
+
+  // 歌唱実績ソートに使用するライブデータを取得
+  useEffect(() => {
+    let isActive = true
+
+    const loadLives = async () => {
+      if (isOffline || !errorService.getOnlineStatus()) {
+        setLives(null)
+        return
+      }
+
+      setLives(null)
+      try {
+        const allLives = await errorService.withRetry(() => liveService.getAllLives(), {
+          maxRetries: 2,
+        })
+        if (isActive) setLives(allLives)
+      } catch (err) {
+        errorService.logError(err, 'SongListPage.loadLives')
+        if (isActive) setLives(null)
+      }
+    }
+
+    loadLives()
+    return () => {
+      isActive = false
+    }
+  }, [isOffline])
+
+  // 全曲で同一の基準日時を使い、ソート用の歌唱実績を一度だけ算出
+  const performanceStatsBySongId = useMemo(() => {
+    if (!lives) return undefined
+
+    const now = new Date()
+    return new Map(
+      songs.map((song) => [song.id, calculateSongPerformanceStats(song, lives, now)] as const)
+    )
+  }, [songs, lives])
+
   const [scrollPosition] = useState<number>(() => {
     try {
       const saved = sessionStorage.getItem('songListScrollPosition')
@@ -233,6 +277,7 @@ export function SongListPage() {
         <div className="song-list-page__content">
           <SongList
             songs={songs}
+            performanceStatsBySongId={performanceStatsBySongId}
             onSongClick={handleSongClick}
             emptyMessage="楽曲が登録されていません"
             initialQuery={initialQuery}

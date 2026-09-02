@@ -4,6 +4,7 @@
  */
 
 import type { Song } from '../types'
+import type { SongPerformanceStats } from './songPerformanceStats'
 
 /**
  * 楽曲の並び替えタイプ
@@ -16,6 +17,41 @@ export type SongSortType =
   | 'artist'
   | 'minami'
   | 'wild3'
+  | 'performance-count-desc'
+  | 'performance-count-asc'
+  | 'last-performance-near'
+  | 'last-performance-far'
+  | 'release-to-first-longest'
+  | 'release-to-first-shortest'
+
+type PerformanceMetric =
+  | 'performanceCount'
+  | 'daysSinceLastPerformance'
+  | 'daysFromReleaseToFirstPerformance'
+
+function compareSongIdentity(a: Song, b: Song): number {
+  const titleComparison = a.title.localeCompare(b.title, 'ja')
+  return titleComparison !== 0 ? titleComparison : a.id.localeCompare(b.id)
+}
+
+/** 算出できない値を常に末尾にし、歌唱実績の数値を比較する。 */
+function comparePerformanceMetric(
+  a: Song,
+  b: Song,
+  statsBySongId: ReadonlyMap<string, SongPerformanceStats> | undefined,
+  metric: PerformanceMetric,
+  direction: 'asc' | 'desc'
+): number {
+  const valueA = statsBySongId?.get(a.id)?.[metric] ?? null
+  const valueB = statsBySongId?.get(b.id)?.[metric] ?? null
+
+  if (valueA === null && valueB === null) return compareSongIdentity(a, b)
+  if (valueA === null) return 1
+  if (valueB === null) return -1
+
+  const comparison = direction === 'asc' ? valueA - valueB : valueB - valueA
+  return comparison !== 0 ? comparison : compareSongIdentity(a, b)
+}
 
 /**
  * アーティスト名の優先順位を取得（栗林みな実優先）
@@ -74,7 +110,11 @@ function getArtistPriorityWild3(artists: string[] | undefined): number {
  * @param sortBy 並び替えタイプ
  * @returns 並び替えられた楽曲配列
  */
-export function sortSongs(songs: Song[], sortBy: SongSortType): Song[] {
+export function sortSongs(
+  songs: Song[],
+  sortBy: SongSortType,
+  statsBySongId?: ReadonlyMap<string, SongPerformanceStats>
+): Song[] {
   const sorted = [...songs]
 
   switch (sortBy) {
@@ -195,6 +235,42 @@ export function sortSongs(songs: Song[], sortBy: SongSortType): Song[] {
         // 同じアーティストの場合はタイトルで並び替え
         return a.title.localeCompare(b.title, 'ja')
       })
+      break
+
+    case 'performance-count-desc':
+      sorted.sort((a, b) =>
+        comparePerformanceMetric(a, b, statsBySongId, 'performanceCount', 'desc')
+      )
+      break
+
+    case 'performance-count-asc':
+      sorted.sort((a, b) =>
+        comparePerformanceMetric(a, b, statsBySongId, 'performanceCount', 'asc')
+      )
+      break
+
+    case 'last-performance-near':
+      sorted.sort((a, b) =>
+        comparePerformanceMetric(a, b, statsBySongId, 'daysSinceLastPerformance', 'asc')
+      )
+      break
+
+    case 'last-performance-far':
+      sorted.sort((a, b) =>
+        comparePerformanceMetric(a, b, statsBySongId, 'daysSinceLastPerformance', 'desc')
+      )
+      break
+
+    case 'release-to-first-longest':
+      sorted.sort((a, b) =>
+        comparePerformanceMetric(a, b, statsBySongId, 'daysFromReleaseToFirstPerformance', 'desc')
+      )
+      break
+
+    case 'release-to-first-shortest':
+      sorted.sort((a, b) =>
+        comparePerformanceMetric(a, b, statsBySongId, 'daysFromReleaseToFirstPerformance', 'asc')
+      )
       break
   }
 

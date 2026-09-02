@@ -12,6 +12,7 @@ import type { Song } from '../../types'
 import { searchSongs } from '../../services/songSearchService'
 import { sortSongs } from '../../utils/songSorting'
 import type { SongSortType } from '../../utils/songSorting'
+import type { SongPerformanceStats } from '../../utils/songPerformanceStats'
 import { SongCard } from './SongCard'
 import type { SongDisplayMode } from './SongCard'
 import './SongList.css'
@@ -158,6 +159,8 @@ export interface DateFilterState {
 export interface SongListProps {
   /** 楽曲データ配列 */
   songs: Song[]
+  /** 楽曲IDごとのライブ歌唱実績 */
+  performanceStatsBySongId?: ReadonlyMap<string, SongPerformanceStats>
   /** 楽曲クリック時のコールバック */
   onSongClick: (songId: string) => void
   /** 空の場合のメッセージ */
@@ -204,6 +207,7 @@ export interface SongListProps {
  */
 export function SongList({
   songs,
+  performanceStatsBySongId,
   onSongClick,
   emptyMessage = '楽曲が見つかりません',
   initialQuery = '',
@@ -431,7 +435,7 @@ export function SongList({
       })
     }
 
-    return sortSongs(filtered, sortBy)
+    return sortSongs(filtered, sortBy, performanceStatsBySongId)
   }, [
     songs,
     query,
@@ -442,6 +446,7 @@ export function SongList({
     monthFilter,
     dayFilter,
     weekdayFilter,
+    performanceStatsBySongId,
   ])
 
   // 検索クエリの変更ハンドラ
@@ -639,6 +644,24 @@ export function SongList({
               <option value="artist">栗林みな実を優先</option>
               <option value="minami">Minamiを優先</option>
               <option value="wild3">ワイルド三人娘を優先</option>
+              <option value="performance-count-desc" disabled={!performanceStatsBySongId}>
+                歌われた回数（多い順）
+              </option>
+              <option value="performance-count-asc" disabled={!performanceStatsBySongId}>
+                歌われた回数（少ない順）
+              </option>
+              <option value="last-performance-near" disabled={!performanceStatsBySongId}>
+                最後に歌われて（近い順）
+              </option>
+              <option value="last-performance-far" disabled={!performanceStatsBySongId}>
+                最後に歌われて（遠い順）
+              </option>
+              <option value="release-to-first-longest" disabled={!performanceStatsBySongId}>
+                発売から歌唱まで（長い順）
+              </option>
+              <option value="release-to-first-shortest" disabled={!performanceStatsBySongId}>
+                発売から歌唱まで（短い順）
+              </option>
             </select>
           </div>
           <div className="song-list__control-group">
@@ -758,7 +781,10 @@ export function SongList({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" />
+                  <polygon
+                    points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+                    stroke="currentColor"
+                  />
                   <line x1="18" y1="6" x2="6" y2="18" stroke="#e74c3c" />
                   <line x1="6" y1="6" x2="18" y2="18" stroke="#e74c3c" />
                 </svg>
@@ -779,7 +805,10 @@ export function SongList({
       </div>
 
       {/* 楽曲リスト */}
-      <div className={`song-list__items ${displayMode === 'thumbnail' ? 'song-list__items--grid' : ''}`} ref={scrollContainerRef}>
+      <div
+        className={`song-list__items ${displayMode === 'thumbnail' ? 'song-list__items--grid' : ''}`}
+        ref={scrollContainerRef}
+      >
         {filteredAndSortedSongs.length > 0 ? (
           filteredAndSortedSongs.map((song) => (
             <SongCard
