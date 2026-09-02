@@ -108,7 +108,12 @@ export function LiveDetailPage() {
   const { liveId } = useParams<{ liveId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const fromTimeline = (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
+  const navigationState = location.state as {
+    fromTimeline?: boolean
+    fromSongDetail?: boolean
+  } | null
+  const fromTimeline = navigationState?.fromTimeline === true
+  const fromSongDetail = navigationState?.fromSongDetail === true
   const isOnline = useOnlineStatus()
 
   // ライブデータの状態
@@ -220,9 +225,9 @@ export function LiveDetailPage() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }, [live])
 
-  // 戻るナビゲーション（年表からの遷移、または検索状態を保持した一覧へ戻る）
+  // 戻るナビゲーション（詳細画面からの遷移、または検索状態を保持した一覧へ戻る）
   const handleBack = useCallback(() => {
-    if (fromTimeline) {
+    if (fromTimeline || fromSongDetail) {
       navigate(-1)
       return
     }
@@ -252,7 +257,7 @@ export function LiveDetailPage() {
       console.error('Failed to restore live list state:', err)
     }
     navigate('/lives')
-  }, [navigate, fromTimeline])
+  }, [navigate, fromTimeline, fromSongDetail])
 
   // 編集ページへ遷移
   const handleEdit = useCallback(() => {
@@ -345,12 +350,8 @@ export function LiveDetailPage() {
               type={!isOnline || error.includes('オフライン') ? 'warning' : 'error'}
               onRetry={!isOnline || error.includes('オフライン') ? undefined : handleRetry}
             />
-            <button
-              type="button"
-              className="live-detail-page__back-to-list"
-              onClick={() => navigate('/lives')}
-            >
-              ライブ一覧に戻る
+            <button type="button" className="live-detail-page__back-to-list" onClick={handleBack}>
+              {fromTimeline || fromSongDetail ? '前のページに戻る' : 'ライブ一覧に戻る'}
             </button>
           </div>
         </main>

@@ -141,6 +141,12 @@ function formatDaysWithYearsAndMonths(days: number | null): string {
   return `${days}日（${years}年と${months}ヶ月）`
 }
 
+/** 発売から初歌唱までの日数を、発売前の注記を含めて表示する。 */
+function formatReleaseToFirstPerformanceDays(days: number | null): string {
+  if (days !== null && days < 0) return `${days}日（発売前に歌唱）`
+  return formatDaysWithYearsAndMonths(days)
+}
+
 /** ライブ日を表示用文字列に変換する。 */
 function formatLiveDate(live: Live): string | null {
   const date = new Date(live.dateTime)
@@ -325,7 +331,9 @@ export function SongDetail({
             <div className="song-detail__performance-item">
               <dt className="song-detail__performance-label">発売から初歌唱まで</dt>
               <dd className="song-detail__performance-value">
-                {formatDaysWithYearsAndMonths(performanceStats.daysFromReleaseToFirstPerformance)}
+                {formatReleaseToFirstPerformanceDays(
+                  performanceStats.daysFromReleaseToFirstPerformance
+                )}
               </dd>
             </div>
           </dl>

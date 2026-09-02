@@ -32,8 +32,7 @@ export function SongDetailPage() {
   const { songId } = useParams<{ songId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const fromTimeline =
-    (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
+  const fromTimeline = (location.state as { fromTimeline?: boolean } | null)?.fromTimeline === true
   const isOnline = useOnlineStatus()
 
   // 楽曲データの状態
@@ -175,12 +174,12 @@ export function SongDetailPage() {
         if (state.query) params.set('q', state.query)
         if (state.titleOnly) params.set('titleOnly', 'true')
         if (state.sortBy && state.sortBy !== 'newest') params.set('sort', state.sortBy)
-        if (state.displayMode && state.displayMode !== 'all') params.set('display', state.displayMode)
+        if (state.displayMode && state.displayMode !== 'all')
+          params.set('display', state.displayMode)
         if (state.contentFilter && state.contentFilter !== 'all')
           params.set('content', state.contentFilter)
         if (state.yearFilter && state.yearFilter !== 'all') params.set('year', state.yearFilter)
-        if (state.monthFilter && state.monthFilter !== 'all')
-          params.set('month', state.monthFilter)
+        if (state.monthFilter && state.monthFilter !== 'all') params.set('month', state.monthFilter)
         if (state.dayFilter && state.dayFilter !== 'all') params.set('day', state.dayFilter)
         if (state.weekdayFilter && state.weekdayFilter !== 'all')
           params.set('weekday', state.weekdayFilter)
@@ -225,7 +224,7 @@ export function SongDetailPage() {
   // ライブ詳細ページへ遷移
   const handleLiveClick = useCallback(
     (liveId: string) => {
-      navigate(`/lives/${liveId}`)
+      navigate(`/lives/${liveId}`, { state: { fromSongDetail: true } })
     },
     [navigate]
   )
