@@ -25,6 +25,8 @@ import { TourDetailPage } from './pages/TourDetailPage'
 import { TagPage } from './pages/TagPage'
 import { InfoPage } from './pages/InfoPage'
 import { TimelinePage } from './pages/TimelinePage'
+import { SetlistBingoCreatePage } from './pages/SetlistBingoCreatePage'
+import { SetlistBingoPreviewPage } from './pages/SetlistBingoPreviewPage'
 
 /**
  * プレースホルダーページ（後のフェーズで実装）
@@ -61,7 +63,9 @@ function PlaceholderPage({ title }: { title: string }) {
 /**
  * ルート定義
  */
-const router = createBrowserRouter(
+// The configured router is exported so route-order and basename behavior can be tested.
+// eslint-disable-next-line react-refresh/only-export-components
+export const router = createBrowserRouter(
   [
     {
       path: '/',
@@ -136,6 +140,14 @@ const router = createBrowserRouter(
           // Requirements: 6.1, 6.2, 6.3, 6.4
           path: 'timeline',
           element: <TimelinePage />,
+        },
+        {
+          path: 'setlist-bingo/new',
+          element: <SetlistBingoCreatePage />,
+        },
+        {
+          path: 'setlist-bingo/preview',
+          element: <SetlistBingoPreviewPage />,
         },
         {
           path: '*',

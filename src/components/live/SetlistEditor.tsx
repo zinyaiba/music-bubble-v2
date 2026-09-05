@@ -11,6 +11,10 @@
 
 import { useState, useCallback, useMemo, useRef } from 'react'
 import type { Song } from '../../types'
+import {
+  getSongSuggestions,
+  resolveRegisteredSongId,
+} from '../../utils/songSuggestions'
 import './SetlistEditor.css'
 
 /**
@@ -57,60 +61,16 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
   const editInputRef = useRef<HTMLInputElement>(null)
   const editSuggestionsRef = useRef<HTMLDivElement>(null)
 
-  // サジェストリストをフィルタリング
-  const suggestions = useMemo(() => {
-    // 入力がない場合はサジェストを表示しない
-    if (!inputValue.trim()) {
-      return []
-    }
+  // 追加・編集の双方で同じ候補規則を使用する
+  const suggestions = useMemo(
+    () => getSongSuggestions(songs, inputValue),
+    [songs, inputValue]
+  )
 
-    const normalizedInput = inputValue.toLowerCase().trim()
-    const filtered = songs.filter((song) => song.title.toLowerCase().includes(normalizedInput))
-
-    // 前方一致を優先してソート
-    const sorted = filtered.sort((a, b) => {
-      const aTitle = a.title.toLowerCase()
-      const bTitle = b.title.toLowerCase()
-      const aStartsWith = aTitle.startsWith(normalizedInput)
-      const bStartsWith = bTitle.startsWith(normalizedInput)
-
-      // 前方一致が優先
-      if (aStartsWith && !bStartsWith) return -1
-      if (!aStartsWith && bStartsWith) return 1
-
-      // 両方とも前方一致、または両方とも部分一致の場合はタイトルの長さでソート（短い方が優先）
-      return aTitle.length - bTitle.length
-    })
-
-    return sorted.slice(0, 10)
-  }, [songs, inputValue])
-
-  // 編集用サジェストリストをフィルタリング
-  const editSuggestions = useMemo(() => {
-    if (!editValue.trim()) {
-      return []
-    }
-
-    const normalizedInput = editValue.toLowerCase().trim()
-    const filtered = songs.filter((song) => song.title.toLowerCase().includes(normalizedInput))
-
-    // 前方一致を優先してソート
-    const sorted = filtered.sort((a, b) => {
-      const aTitle = a.title.toLowerCase()
-      const bTitle = b.title.toLowerCase()
-      const aStartsWith = aTitle.startsWith(normalizedInput)
-      const bStartsWith = bTitle.startsWith(normalizedInput)
-
-      // 前方一致が優先
-      if (aStartsWith && !bStartsWith) return -1
-      if (!aStartsWith && bStartsWith) return 1
-
-      // 両方とも前方一致、または両方とも部分一致の場合はタイトルの長さでソート（短い方が優先）
-      return aTitle.length - bTitle.length
-    })
-
-    return sorted.slice(0, 10)
-  }, [songs, editValue])
+  const editSuggestions = useMemo(
+    () => getSongSuggestions(songs, editValue),
+    [songs, editValue]
+  )
 
   // サジェストを表示するかどうか（入力があり、マッチする楽曲がある場合のみ）
   const showSuggestions = isFocused && inputValue.trim().length > 0 && suggestions.length > 0
@@ -229,12 +189,10 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
     }
 
     const trimmedValue = editValue.trim()
-    const matchingSong = songs.find(
-      (song) => song.title.toLowerCase() === trimmedValue.toLowerCase()
-    )
+    const matchingSongId = resolveRegisteredSongId(songs, trimmedValue)
 
     const newItems = items.map((item, i) =>
-      i === editingIndex ? { ...item, songTitle: trimmedValue, songId: matchingSong?.id } : item
+      i === editingIndex ? { ...item, songTitle: trimmedValue, songId: matchingSongId } : item
     )
     onChange(newItems)
     handleCancelEdit()
@@ -339,10 +297,8 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
   const handleAddButtonClick = useCallback(() => {
     if (canAddItem) {
       // 入力値と一致する楽曲があればそのIDを使用
-      const matchingSong = songs.find(
-        (song) => song.title.toLowerCase() === inputValue.trim().toLowerCase()
-      )
-      handleAddItem(inputValue, matchingSong?.id)
+      const matchingSongId = resolveRegisteredSongId(songs, inputValue)
+      handleAddItem(inputValue, matchingSongId)
     }
   }, [canAddItem, inputValue, songs, handleAddItem])
 
@@ -359,10 +315,8 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
           setHighlightedIndex(-1)
         } else if (inputValue.trim()) {
           // フリー入力で追加
-          const matchingSong = songs.find(
-            (song) => song.title.toLowerCase() === inputValue.trim().toLowerCase()
-          )
-          handleAddItem(inputValue, matchingSong?.id)
+          const matchingSongId = resolveRegisteredSongId(songs, inputValue)
+          handleAddItem(inputValue, matchingSongId)
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
@@ -423,11 +377,11 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
    * サジェストリストのタッチムーブハンドラ（スクロール伝播を防ぐ）
    */
   const handleSuggestionsTouchMove = useCallback((e: React.TouchEvent) => {
-    const element = e.currentTarget as HTMLElement
+    const element = e.currentTarget as HTMLElement & { _startY?: number }
     const scrollTop = element.scrollTop
     const scrollHeight = element.scrollHeight
     const height = element.clientHeight
-    const delta = e.touches[0].clientY - (e.currentTarget as any)._startY
+    const delta = e.touches[0].clientY - (element._startY ?? e.touches[0].clientY)
 
     if ((scrollTop === 0 && delta > 0) || (scrollTop + height >= scrollHeight && delta < 0)) {
       e.preventDefault()
@@ -438,7 +392,8 @@ export function SetlistEditor({ items, songs, onChange, disabled = false }: Setl
    * サジェストリストのタッチスタートハンドラ
    */
   const handleSuggestionsTouchStart = useCallback((e: React.TouchEvent) => {
-    ;(e.currentTarget as any)._startY = e.touches[0].clientY
+    const element = e.currentTarget as HTMLElement & { _startY?: number }
+    element._startY = e.touches[0].clientY
   }, [])
 
   return (

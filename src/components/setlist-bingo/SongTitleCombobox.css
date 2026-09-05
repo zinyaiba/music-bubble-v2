@@ -1,0 +1,110 @@
+.song-title-combobox {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.song-title-combobox__label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.song-title-combobox__control {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.song-title-combobox__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  line-height: var(--line-height-normal);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.song-title-combobox__input:focus-visible {
+  border-color: var(--color-text);
+  outline: var(--border-width-normal) solid var(--color-text);
+  outline-offset: var(--spacing-xs);
+}
+
+.song-title-combobox__input[aria-invalid='true'] {
+  border-color: var(--color-error);
+}
+
+.song-title-combobox__input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.song-title-combobox__listbox {
+  position: absolute;
+  z-index: var(--z-index-dropdown);
+  top: calc(100% + var(--spacing-xs));
+  right: 0;
+  left: 0;
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  max-height: min(240px, 50dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.song-title-combobox__option {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 0;
+  border-bottom: var(--border-width-thin) solid var(--color-border-light);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.song-title-combobox__option:last-child {
+  border-bottom: 0;
+}
+
+.song-title-combobox__option:hover,
+.song-title-combobox__option[data-highlighted='true'] {
+  background: var(--color-surface-hover);
+}
+
+.song-title-combobox__error {
+  margin: var(--spacing-xs) 0 0;
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .song-title-combobox__input {
+    transition: none;
+  }
+}

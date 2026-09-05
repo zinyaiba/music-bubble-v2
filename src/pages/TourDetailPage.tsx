@@ -318,6 +318,27 @@ export function TourDetailPage() {
     [navigate, tourName]
   )
 
+  const handleCreateSetlistBingo = useCallback(
+    (performance: Live) => {
+      if (typeof performance.title !== 'string' || performance.title.trim().length === 0) {
+        setError('公演名を取得できないため、セトリ予想を作成できません。')
+        return
+      }
+
+      navigate('/setlist-bingo/new', {
+        state: {
+          kind: 'source-live',
+          sourceLive: {
+            id: performance.id,
+            performanceName: performance.title,
+            tourName,
+          },
+        },
+      })
+    },
+    [navigate, tourName]
+  )
+
   // 編集ページへ遷移 - 要件 5.1, 5.2
   const handleEditClick = useCallback(
     (liveId: string) => {
@@ -728,6 +749,15 @@ export function TourDetailPage() {
 
                     {/* アクションボタン */}
                     <div className="tour-detail-page__actions">
+                      <button
+                        type="button"
+                        className="tour-detail-page__bingo-button"
+                        onClick={() => handleCreateSetlistBingo(performance)}
+                        aria-label={`${performance.tourLocation || performance.venueName}公演のセトリ予想を作る`}
+                        disabled={isDeleting}
+                      >
+                        <span>セトリ予想を作る</span>
+                      </button>
                       <button
                         type="button"
                         className="tour-detail-page__edit-button"

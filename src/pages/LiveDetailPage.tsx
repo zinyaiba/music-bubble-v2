@@ -124,6 +124,7 @@ export function LiveDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [bingoEntryError, setBingoEntryError] = useState<string | null>(null)
 
   // ライブデータと楽曲データを取得
   useEffect(() => {
@@ -224,6 +225,32 @@ export function LiveDetailPage() {
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postContent)}`
     window.open(url, '_blank', 'noopener,noreferrer')
   }, [live])
+
+  // 表示中のライブを起点にセトリ予想ビンゴを作成
+  const handleCreateSetlistBingo = useCallback(() => {
+    if (!live) return
+
+    if (typeof live.title !== 'string' || live.title.trim().length === 0) {
+      setBingoEntryError('公演名を取得できないため、セトリ予想を作成できません。')
+      return
+    }
+
+    if (typeof live.id !== 'string' || live.id.trim().length === 0) {
+      setBingoEntryError('ライブ情報を取得できないため、セトリ予想を作成できません。')
+      return
+    }
+
+    setBingoEntryError(null)
+    navigate('/setlist-bingo/new', {
+      state: {
+        kind: 'source-live',
+        sourceLive: {
+          id: live.id,
+          performanceName: live.title,
+        },
+      },
+    })
+  }, [live, navigate])
 
   // 戻るナビゲーション（詳細画面からの遷移、または検索状態を保持した一覧へ戻る）
   const handleBack = useCallback(() => {
@@ -622,6 +649,24 @@ export function LiveDetailPage() {
                   セットリスト
                 </h2>
                 <SetlistDisplay items={live.setlist} songs={songs} onSongClick={handleSongClick} />
+                <div className="live-detail-page__setlist-bingo-entry">
+                  <button
+                    type="button"
+                    className="live-detail-page__setlist-bingo-button"
+                    onClick={handleCreateSetlistBingo}
+                  >
+                    セトリ予想を作る
+                  </button>
+                  {bingoEntryError && (
+                    <p
+                      className="live-detail-page__setlist-bingo-error"
+                      role="alert"
+                      aria-live="assertive"
+                    >
+                      {bingoEntryError}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* メモセクション */}
