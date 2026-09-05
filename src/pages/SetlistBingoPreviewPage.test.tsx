@@ -84,7 +84,7 @@ function createOperationDependencies(
 
   return {
     generateBingoPng: vi.fn(async () => pngBlob),
-    downloadPng: vi.fn(),
+    shareOrDownloadImage: vi.fn(async () => ({ kind: 'downloaded' as const })),
     createBingoPngFilename: vi.fn(() => 'preview-card.png'),
     createXPostText: vi.fn((performanceName: string, shareUrl?: string) => {
       const shareUrlBlock = shareUrl ? `\n\n${shareUrl}` : ''
@@ -280,13 +280,15 @@ describe('SetlistBingoPreviewPage', () => {
     expect(dependencies.createBingoPngFilename).toHaveBeenCalledWith(
       validBingoState.performanceName,
     )
-    expect(dependencies.downloadPng).toHaveBeenCalledOnce()
-    expect(dependencies.downloadPng).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'image/png' }),
-      'preview-card.png',
+    expect(dependencies.shareOrDownloadImage).toHaveBeenCalledOnce()
+    expect(dependencies.shareOrDownloadImage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'preview-card.png',
+        type: 'image/png',
+      }),
     )
     expect(container.querySelector('[role="status"]')?.textContent).toBe(
-      'ビンゴ画像を保存しました。',
+      '画像の保存・共有操作が完了しました。',
     )
     expect(container.querySelector('.bingo-card')).not.toBeNull()
   })
@@ -315,9 +317,9 @@ describe('SetlistBingoPreviewPage', () => {
     await flushAsyncUpdates()
 
     expect(dependencies.generateBingoPng).toHaveBeenCalledTimes(2)
-    expect(dependencies.downloadPng).toHaveBeenCalledOnce()
+    expect(dependencies.shareOrDownloadImage).toHaveBeenCalledOnce()
     expect(container.querySelector('[role="status"]')?.textContent).toBe(
-      'ビンゴ画像を保存しました。',
+      '画像の保存・共有操作が完了しました。',
     )
   })
 
@@ -332,7 +334,7 @@ describe('SetlistBingoPreviewPage', () => {
     await flushAsyncUpdates()
 
     expect(dependencies.generateBingoPng).not.toHaveBeenCalled()
-    expect(dependencies.downloadPng).not.toHaveBeenCalled()
+    expect(dependencies.shareOrDownloadImage).not.toHaveBeenCalled()
     expect(dependencies.buildCanonicalShareUrl).not.toHaveBeenCalled()
     expect(dependencies.createXPostText).toHaveBeenCalledWith(
       validBingoState.performanceName,
@@ -476,7 +478,7 @@ describe('SetlistBingoPreviewPage', () => {
       await Promise.resolve()
     })
 
-    expect(dependencies.downloadPng).toHaveBeenCalledOnce()
+    expect(dependencies.shareOrDownloadImage).toHaveBeenCalledOnce()
     expect(getButton(container, '画像で保存する').disabled).toBe(false)
   })
 

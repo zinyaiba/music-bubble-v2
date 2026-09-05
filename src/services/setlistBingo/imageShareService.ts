@@ -91,3 +91,44 @@ export async function shareImage(
 
   return { kind: 'manual-attachment-required' }
 }
+
+export type ImageSaveResult =
+  | { kind: 'shared' }
+  | { kind: 'downloaded' }
+  | { kind: 'cancelled' }
+
+export interface ImageSaveBrowserDependencies {
+  navigatorLike: Navigator
+  downloadPng: typeof downloadPng
+}
+
+function createDefaultImageSaveDependencies(): ImageSaveBrowserDependencies {
+  return {
+    navigatorLike: navigator,
+    downloadPng,
+  }
+}
+
+/** Opens the OS image share sheet when available, or downloads the PNG as fallback. */
+export async function shareOrDownloadImage(
+  file: File,
+  dependencies: ImageSaveBrowserDependencies = createDefaultImageSaveDependencies(),
+): Promise<ImageSaveResult> {
+  const { navigatorLike } = dependencies
+
+  if (supportsFileShare(file, navigatorLike)) {
+    try {
+      await navigatorLike.share({ files: [file] })
+      return { kind: 'shared' }
+    } catch (error) {
+      if (isAbortError(error)) {
+        return { kind: 'cancelled' }
+      }
+
+      throw fileShareFailed()
+    }
+  }
+
+  dependencies.downloadPng(file, file.name)
+  return { kind: 'downloaded' }
+}

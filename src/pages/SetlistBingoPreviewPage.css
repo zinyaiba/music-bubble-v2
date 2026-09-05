@@ -74,6 +74,15 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.setlist-bingo-preview-page__save-help {
+  width: 100%;
+  margin: var(--spacing-md) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  overflow-wrap: anywhere;
+}
+
 .setlist-bingo-preview-page__actions {
   display: grid;
   width: 100%;

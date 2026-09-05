@@ -3,10 +3,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { BingoCard } from '../components/setlist-bingo/BingoCard'
+import { shareOrDownloadImage } from '../services/setlistBingo/imageShareService'
 import {
   createBingoPngFilename,
-  downloadPng,
   generateBingoPng,
+  PNG_MIME_TYPE,
 } from '../services/setlistBingo/pngService'
 import {
   buildXIntent,
@@ -31,6 +32,7 @@ export type PreviewOperationErrorCode =
   | 'canvas_unavailable'
   | 'png_blob_failed'
   | 'download_failed'
+  | 'file_share_failed'
   | 'x_intent_blocked'
   | 'decoded_payload_too_large'
   | 'share_url_too_long'
@@ -54,7 +56,7 @@ export interface PreviewOperationFeedback {
 
 export interface PreviewOperationDependencies {
   generateBingoPng: typeof generateBingoPng
-  downloadPng: typeof downloadPng
+  shareOrDownloadImage: typeof shareOrDownloadImage
   createBingoPngFilename: typeof createBingoPngFilename
   createXPostText: typeof createXPostText
   buildCanonicalShareUrl: typeof buildCanonicalShareUrl
@@ -71,7 +73,7 @@ export interface SetlistBingoPreviewPageProps {
 
 const DEFAULT_OPERATION_DEPENDENCIES: PreviewOperationDependencies = {
   generateBingoPng,
-  downloadPng,
+  shareOrDownloadImage,
   createBingoPngFilename,
   createXPostText,
   buildCanonicalShareUrl,
@@ -86,6 +88,7 @@ const OPERATION_ERROR_MESSAGES = {
   canvas_unavailable: '画像を生成できませんでした。もう一度お試しください。',
   png_blob_failed: '画像を生成できませんでした。もう一度お試しください。',
   download_failed: '画像を保存できませんでした。もう一度お試しください。',
+  file_share_failed: '画像の保存画面を開けませんでした。もう一度お試しください。',
   x_intent_blocked: 'Xの投稿画面を開けませんでした。もう一度お試しください。',
   decoded_payload_too_large:
     '共有URLに含める情報が大きすぎるためURLでは共有できません。画像での保存をお試しください。',
@@ -102,7 +105,7 @@ function getFeedbackAnnouncement(feedback: PreviewOperationFeedback | null): str
 
   switch (feedback.action) {
     case 'save-image':
-      return 'ビンゴ画像を保存しました。'
+      return '画像の保存・共有操作が完了しました。'
     case 'share-without-url':
     case 'share-url':
       return 'Xの投稿画面を開きました。'
@@ -121,6 +124,9 @@ function getOperationAnnouncement(
     case 'downloading':
       return 'ビンゴ画像を保存しています。'
     case 'sharing':
+      if (state.action === 'save-image') {
+        return '画像の保存先を開いています。'
+      }
       return state.action === 'share-url'
         ? '共有URLからXの投稿画面を開いています。'
         : 'Xの投稿画面を開いています。'
@@ -266,17 +272,19 @@ export function SetlistBingoPreviewPage({
           resolution.state,
           operationDependencies.getRootStyle(),
         )
-        setOperationState({ status: 'downloading', action: 'save-image' })
-        operationDependencies.downloadPng(
-          blob,
-          operationDependencies.createBingoPngFilename(
-            resolution.state.performanceName,
-          ),
+        const filename = operationDependencies.createBingoPngFilename(
+          resolution.state.performanceName,
         )
+        const file = new File([blob], filename, { type: PNG_MIME_TYPE })
+        setOperationState({ status: 'sharing', action: 'save-image' })
+        const result = await operationDependencies.shareOrDownloadImage(file)
         setOperationState({ status: 'idle' })
+        if (result.kind === 'cancelled') {
+          return
+        }
         setOperationFeedback({ kind: 'success', action: 'save-image' })
       } catch (error) {
-        setOperationError('save-image', error, 'png_blob_failed')
+        setOperationError('save-image', error, 'file_share_failed')
       }
     })
   }
@@ -387,6 +395,10 @@ export function SetlistBingoPreviewPage({
               </button>
             </div>
           )}
+
+          <p className="setlist-bingo-preview-page__save-help">
+            スマートフォンでは、表示された共有画面から「画像を保存」を選択してください。対応していない端末ではPNGをダウンロードします。
+          </p>
 
           <div
             className="setlist-bingo-preview-page__actions"

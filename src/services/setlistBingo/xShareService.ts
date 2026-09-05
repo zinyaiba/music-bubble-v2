@@ -1,6 +1,6 @@
 export const X_INTENT_URL = 'https://twitter.com/intent/tweet' as const
 const X_POST_MESSAGE = '私のセトリ予想はこれです！' as const
-const X_POST_HASHTAGS = '#マロバブ #マロンで予想して' as const
+const X_POST_HASHTAGS = '#栗林みな実 #マロンで予想して' as const
 
 export type XShareErrorCode = 'x_intent_blocked'
 
