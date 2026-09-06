@@ -15,7 +15,7 @@
 }
 
 .prediction-song-grid__description {
-  margin: 0 0 var(--spacing-md);
+  margin: 0 0 var(--spacing-sm);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   overflow-wrap: anywhere;
@@ -27,7 +27,7 @@
   min-width: 0;
   margin: 0;
   padding: 0;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   list-style: none;
 }
 
@@ -36,25 +36,13 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
   border: var(--border-width-thin) solid var(--color-border-light);
   border-radius: var(--border-radius-lg);
   background: var(--color-surface);
-}
-
-.prediction-song-grid__order {
-  display: grid;
-  inline-size: 2rem;
-  block-size: 2rem;
-  place-items: center;
-  margin-top: calc(var(--font-size-sm) + var(--spacing-xs));
-  border-radius: var(--border-radius-full);
-  background: var(--color-primary-alpha);
-  color: var(--color-text);
-  font-weight: var(--font-weight-bold);
 }
 
 .prediction-song-grid__editor {
@@ -73,14 +61,13 @@
   box-sizing: border-box;
   min-width: 2.5rem;
   min-height: 2.5rem;
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-xs);
   border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--border-radius-md);
   background: var(--color-background-light);
   color: var(--color-text);
   font: inherit;
   font-weight: var(--font-weight-semibold);
-  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
@@ -98,10 +85,6 @@
   opacity: 0.5;
 }
 
-.prediction-song-grid__action--clear {
-  min-width: max-content;
-}
-
 .prediction-song-grid__announcement {
   position: absolute;
   inline-size: 1px;
@@ -115,26 +98,18 @@
   border: 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 359px) {
   .prediction-song-grid__slot {
-    grid-template-columns: minmax(0, 1fr);
-    padding: var(--spacing-sm);
-  }
-
-  .prediction-song-grid__order {
-    margin-top: 0;
+    gap: 2px;
+    padding: var(--spacing-xs);
   }
 
   .prediction-song-grid__actions {
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-top: 0;
+    gap: 2px;
   }
 
-  .prediction-song-grid__action,
-  .prediction-song-grid__action--clear {
-    width: 100%;
-    min-width: 0;
+  .prediction-song-grid__action {
+    min-width: 2.25rem;
+    padding-inline: 2px;
   }
 }

@@ -9,7 +9,7 @@ import { getFirestore } from 'firebase/firestore'
 import type { Firestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import type { Auth } from 'firebase/auth'
-import { getAnalytics, isSupported } from 'firebase/analytics'
+import { initializeAnalytics, isSupported } from 'firebase/analytics'
 import type { Analytics } from 'firebase/analytics'
 
 // GitHub Pages用の直接設定（既存プロジェクトと同じ）
@@ -65,7 +65,9 @@ if (isFirebaseConfigured) {
       .then((supported) => {
         if (!supported || !app) return null
 
-        analytics = getAnalytics(app)
+        analytics = initializeAnalytics(app, {
+          config: { send_page_view: false },
+        })
         if (import.meta.env.DEV) {
           console.log('📊 Firebase Analytics初期化完了')
         }

@@ -4,11 +4,11 @@ import type { BingoDesignId, GridSize } from '../types'
 export const SETLIST_BINGO_TELEMETRY_ACTION_TYPES = [
   'save-image',
   'share-image',
+  'share-without-url',
   'share-url',
 ] as const
 
-export type SetlistBingoTelemetryActionType =
-  (typeof SETLIST_BINGO_TELEMETRY_ACTION_TYPES)[number]
+export type SetlistBingoTelemetryActionType = (typeof SETLIST_BINGO_TELEMETRY_ACTION_TYPES)[number]
 
 /**
  * The only metadata accepted by the setlist bingo analytics boundary.
@@ -76,7 +76,7 @@ export interface SetlistBingoDiagnosticAdapter {
 
 /** Rebuilds analytics metadata with the exact three permitted own keys. */
 export function projectSetlistBingoTelemetry(
-  input: SetlistBingoTelemetryProjection,
+  input: SetlistBingoTelemetryProjection
 ): SetlistBingoTelemetryProjection {
   return {
     actionType: input.actionType,
@@ -87,7 +87,7 @@ export function projectSetlistBingoTelemetry(
 
 /** Rebuilds an error/log payload with the exact two permitted own keys. */
 export function projectSetlistBingoSafeLog(
-  input: SetlistBingoSafeLogPayload,
+  input: SetlistBingoSafeLogPayload
 ): SetlistBingoSafeLogPayload {
   return {
     code: input.code,
@@ -98,7 +98,7 @@ export function projectSetlistBingoSafeLog(
 /** Sends only the projected non-content analytics metadata to the adapter. */
 export function trackSetlistBingoTelemetry(
   adapter: SetlistBingoTelemetryAdapter,
-  input: SetlistBingoTelemetryProjection,
+  input: SetlistBingoTelemetryProjection
 ): void {
   adapter.track(projectSetlistBingoTelemetry(input))
 }
@@ -106,7 +106,7 @@ export function trackSetlistBingoTelemetry(
 /** Reports only a fixed code and operation; this API does not accept an exception. */
 export function reportSetlistBingoError(
   adapter: SetlistBingoErrorAdapter,
-  input: SetlistBingoSafeLogPayload,
+  input: SetlistBingoSafeLogPayload
 ): void {
   adapter.report(projectSetlistBingoSafeLog(input))
 }
@@ -114,7 +114,7 @@ export function reportSetlistBingoError(
 /** Logs diagnostics using the same content-free public payload as errors. */
 export function logSetlistBingoDiagnostic(
   adapter: SetlistBingoDiagnosticAdapter,
-  input: SetlistBingoSafeLogPayload,
+  input: SetlistBingoSafeLogPayload
 ): void {
   adapter.log(projectSetlistBingoSafeLog(input))
 }

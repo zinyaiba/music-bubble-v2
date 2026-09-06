@@ -9,6 +9,14 @@ import { PredictionSongGrid } from '../components/setlist-bingo/PredictionSongGr
 import { cacheService } from '../services/cacheService'
 import { firebaseService } from '../services/firebaseService'
 import {
+  reportSetlistBingoAnalyticsError,
+  trackSetlistBingoCreatePageView,
+  trackSetlistBingoCreationComplete,
+  trackSetlistBingoDesignChange,
+  trackSetlistBingoGridChange,
+  trackSetlistBingoRetry,
+} from '../services/setlistBingoAnalytics'
+import {
   GRID_SIZE_OPTIONS,
   MAX_PARTICIPANT_NAME_LENGTH,
   MAX_PERFORMANCE_NAME_LENGTH,
@@ -21,14 +29,8 @@ import {
   type ValidationIssue,
   type ValidationIssueCode,
 } from '../types'
-import {
-  confirmGridShrink,
-  requestGridResize,
-} from '../utils/setlistBingoGrid'
-import {
-  initializeDraft,
-  validateDraftBingoState,
-} from '../utils/setlistBingoValidation'
+import { confirmGridShrink, requestGridResize } from '../utils/setlistBingoGrid'
+import { initializeDraft, validateDraftBingoState } from '../utils/setlistBingoValidation'
 import './SetlistBingoCreatePage.css'
 
 type RegisteredSongLoadStatus = 'loading' | 'ready' | 'error'
@@ -63,7 +65,7 @@ function getValidationMessage(code: ValidationIssueCode): string {
 
 function findIssue(
   issues: readonly ValidationIssue[],
-  path: ValidationIssue['path'],
+  path: ValidationIssue['path']
 ): ValidationIssue | undefined {
   return issues.find((issue) => issue.path === path)
 }
@@ -73,17 +75,18 @@ export function SetlistBingoCreatePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const generatedId = useId().replaceAll(':', '')
-  const [{ draft: initialDraft, sourceLive }] = useState(() => initializeDraft(location.state))
+  const [{ draft: initialDraft, entryMode, sourceLive }] = useState(() =>
+    initializeDraft(location.state)
+  )
   const [draft, setDraft] = useState<DraftBingoState>(initialDraft)
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([])
   const [registeredSongs, setRegisteredSongs] = useState<Song[]>([])
-  const [songLoadStatus, setSongLoadStatus] =
-    useState<RegisteredSongLoadStatus>('loading')
-  const [pendingGridShrink, setPendingGridShrink] =
-    useState<PendingGridShrink | null>(null)
+  const [songLoadStatus, setSongLoadStatus] = useState<RegisteredSongLoadStatus>('loading')
+  const [pendingGridShrink, setPendingGridShrink] = useState<PendingGridShrink | null>(null)
   const [validationAnnouncement, setValidationAnnouncement] = useState('')
   const loadRequestIdRef = useRef(0)
   const shrinkTriggerRef = useRef<HTMLInputElement | null>(null)
+  const pageViewTrackedRef = useRef(false)
 
   const performanceNameId = `${generatedId}-performance-name`
   const performanceNameHelpId = `${performanceNameId}-help`
@@ -95,8 +98,12 @@ export function SetlistBingoCreatePage() {
   const gridErrorId = `${generatedId}-grid-error`
 
   useEffect(() => {
+    if (!pageViewTrackedRef.current) {
+      pageViewTrackedRef.current = true
+      trackSetlistBingoCreatePageView(entryMode)
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-  }, [])
+  }, [entryMode])
 
   const loadRegisteredSongs = useCallback(async () => {
     const requestId = ++loadRequestIdRef.current
@@ -120,6 +127,10 @@ export function SetlistBingoCreatePage() {
       setSongLoadStatus('ready')
     } catch {
       if (requestId !== loadRequestIdRef.current) return
+      reportSetlistBingoAnalyticsError({
+        code: 'registered_songs_load_failed',
+        operation: 'load-registered-songs',
+      })
       setRegisteredSongs([])
       setSongLoadStatus('error')
     }
@@ -155,13 +166,14 @@ export function SetlistBingoCreatePage() {
       (issue) =>
         issue.path === 'gridSize' ||
         (issue.path.startsWith('songs.') &&
-          Number(issue.path.slice('songs.'.length)) >= songs.length),
+          Number(issue.path.slice('songs.'.length)) >= songs.length)
     )
   }
 
   const handleGridSizeChange = (target: GridSize, trigger: HTMLInputElement) => {
     shrinkTriggerRef.current = trigger
-    const result = requestGridResize(draft.gridSize, draft.songs, target)
+    const previousGridSize = draft.gridSize
+    const result = requestGridResize(previousGridSize, draft.songs, target)
 
     if (result.kind === 'confirmation-required') {
       setPendingGridShrink({
@@ -172,12 +184,25 @@ export function SetlistBingoCreatePage() {
     }
 
     applyGridResize(result.gridSize, result.slots)
+    if (previousGridSize !== result.gridSize) {
+      trackSetlistBingoGridChange({
+        from: previousGridSize,
+        to: result.gridSize,
+        confirmed: false,
+      })
+    }
   }
 
   const handleConfirmGridShrink = () => {
     if (!pendingGridShrink) return
+    const previousGridSize = draft.gridSize
     const target = pendingGridShrink.target
     applyGridResize(target, confirmGridShrink(draft.songs, target))
+    trackSetlistBingoGridChange({
+      from: previousGridSize,
+      to: target,
+      confirmed: true,
+    })
     setPendingGridShrink(null)
   }
 
@@ -197,8 +222,10 @@ export function SetlistBingoCreatePage() {
   }
 
   const handleDesignChange = (designId: BingoDesignId) => {
+    if (draft.designId === designId) return
     setDraft((current) => ({ ...current, designId }))
     clearIssues((issue) => issue.path === 'designId')
+    trackSetlistBingoDesignChange(designId)
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -218,6 +245,11 @@ export function SetlistBingoCreatePage() {
       bingoState: result.value,
       ...(sourceLive ? { sourceLive } : {}),
     }
+    trackSetlistBingoCreationComplete({
+      entryMode,
+      gridSize: result.value.gridSize,
+      designId: result.value.designId,
+    })
     navigate('/setlist-bingo/preview', { state: routeState })
   }
 
@@ -254,9 +286,7 @@ export function SetlistBingoCreatePage() {
     const issue = findIssue(validationIssues, `songs.${index}`)
     return issue ? getValidationMessage(issue.code) : undefined
   })
-  const gridDescribedBy = [gridHelpId, gridError ? gridErrorId : '']
-    .filter(Boolean)
-    .join(' ')
+  const gridDescribedBy = [gridHelpId, gridError ? gridErrorId : ''].filter(Boolean).join(' ')
   const songLoadAnnouncement =
     songLoadStatus === 'loading'
       ? '登録曲を読み込んでいます。'
@@ -266,11 +296,7 @@ export function SetlistBingoCreatePage() {
 
   return (
     <div className="setlist-bingo-create-page">
-      <Header
-        title="セトリ予想ビンゴ作成"
-        showBackButton
-        onBack={handleHeaderBack}
-      />
+      <Header title="セトリ予想ビンゴ作成" showBackButton onBack={handleHeaderBack} />
 
       <main className="setlist-bingo-create-page__main">
         <div className="setlist-bingo-create-page__content">
@@ -296,7 +322,13 @@ export function SetlistBingoCreatePage() {
                 <button
                   type="button"
                   className="setlist-bingo-create-page__retry"
-                  onClick={() => void loadRegisteredSongs()}
+                  onClick={() => {
+                    trackSetlistBingoRetry({
+                      action: 'load-registered-songs',
+                      operation: 'load-registered-songs',
+                    })
+                    void loadRegisteredSongs()
+                  }}
                 >
                   登録曲を再読み込み
                 </button>
@@ -304,17 +336,10 @@ export function SetlistBingoCreatePage() {
             )}
           </section>
 
-          <form
-            className="setlist-bingo-create-page__form"
-            noValidate
-            onSubmit={handleSubmit}
-          >
+          <form className="setlist-bingo-create-page__form" noValidate onSubmit={handleSubmit}>
             <section className="setlist-bingo-create-page__section">
               <div className="setlist-bingo-create-page__field">
-                <label
-                  className="setlist-bingo-create-page__label"
-                  htmlFor={performanceNameId}
-                >
+                <label className="setlist-bingo-create-page__label" htmlFor={performanceNameId}>
                   公演名
                 </label>
                 <p id={performanceNameHelpId} className="setlist-bingo-create-page__help">
@@ -345,10 +370,7 @@ export function SetlistBingoCreatePage() {
               </div>
 
               <div className="setlist-bingo-create-page__field">
-                <label
-                  className="setlist-bingo-create-page__label"
-                  htmlFor={participantNameId}
-                >
+                <label className="setlist-bingo-create-page__label" htmlFor={participantNameId}>
                   名前（任意）
                 </label>
                 <p id={participantNameHelpId} className="setlist-bingo-create-page__help">

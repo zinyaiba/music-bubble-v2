@@ -23,10 +23,7 @@ const LEGACY_BINGO_STATE_KEYS = [
   'songTitles',
   'designId',
 ] as const
-const CURRENT_BINGO_STATE_KEYS = [
-  ...LEGACY_BINGO_STATE_KEYS,
-  'participantName',
-] as const
+const CURRENT_BINGO_STATE_KEYS = [...LEGACY_BINGO_STATE_KEYS, 'participantName'] as const
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -49,9 +46,7 @@ function isGridSize(value: unknown): value is GridSize {
 }
 
 function isBingoDesignId(value: unknown): value is BingoDesignId {
-  return (
-    typeof value === 'string' && (BINGO_DESIGN_IDS as readonly string[]).includes(value)
-  )
+  return typeof value === 'string' && (BINGO_DESIGN_IDS as readonly string[]).includes(value)
 }
 
 function isDenseStringArray(value: unknown): value is string[] {
@@ -72,7 +67,12 @@ function isSourceLive(value: unknown): value is SourceLive {
   if (!isRecord(value)) return false
 
   const hasTourName = hasOwn(value, 'tourName')
-  if (!hasExactKeys(value, hasTourName ? ['id', 'performanceName', 'tourName'] : ['id', 'performanceName'])) {
+  if (
+    !hasExactKeys(
+      value,
+      hasTourName ? ['id', 'performanceName', 'tourName'] : ['id', 'performanceName']
+    )
+  ) {
     return false
   }
 
@@ -111,10 +111,11 @@ export function countUnicodeCodePoints(value: string): number {
  */
 export function initializeDraft(state: unknown): {
   draft: DraftBingoState
+  entryMode: 'new' | 'source-live' | 'edit'
   sourceLive?: SourceLive
 } {
   if (!isRecord(state) || typeof state.kind !== 'string') {
-    return { draft: createNewDraft() }
+    return { draft: createNewDraft(), entryMode: 'new' }
   }
 
   if (
@@ -124,6 +125,7 @@ export function initializeDraft(state: unknown): {
   ) {
     return {
       draft: createNewDraft(state.sourceLive.performanceName),
+      entryMode: 'source-live',
       sourceLive: state.sourceLive,
     }
   }
@@ -137,7 +139,7 @@ export function initializeDraft(state: unknown): {
     if (hasExactKeys(state, expectedKeys)) {
       const sourceLive = hasSourceLive ? state.sourceLive : undefined
       if (sourceLive !== undefined && !isSourceLive(sourceLive)) {
-        return { draft: createNewDraft() }
+        return { draft: createNewDraft(), entryMode: 'new' }
       }
 
       const parsed = parseBingoState(state.bingoState)
@@ -150,19 +152,18 @@ export function initializeDraft(state: unknown): {
             songs: parsed.value.songTitles.map((songTitle) => ({ songTitle })),
             designId: parsed.value.designId,
           },
+          entryMode: 'edit',
           ...(isSourceLive(sourceLive) ? { sourceLive } : {}),
         }
       }
     }
   }
 
-  return { draft: createNewDraft() }
+  return { draft: createNewDraft(), entryMode: 'new' }
 }
 
 /** Normalizes and validates all create-page fields without mutating the draft. */
-export function validateDraftBingoState(
-  draft: DraftBingoState
-): ValidationResult<BingoState> {
+export function validateDraftBingoState(draft: DraftBingoState): ValidationResult<BingoState> {
   const issues: ValidationIssue[] = []
   const performanceName =
     typeof draft.performanceName === 'string' ? draft.performanceName.trim() : ''
@@ -230,9 +231,7 @@ export function parseBingoState(input: unknown): ValidationResult<BingoState> {
   }
 
   const hasParticipantName = hasOwn(input, 'participantName')
-  const expectedKeys = hasParticipantName
-    ? CURRENT_BINGO_STATE_KEYS
-    : LEGACY_BINGO_STATE_KEYS
+  const expectedKeys = hasParticipantName ? CURRENT_BINGO_STATE_KEYS : LEGACY_BINGO_STATE_KEYS
   if (!hasExactKeys(input, expectedKeys)) {
     return { ok: false, issues: [] }
   }

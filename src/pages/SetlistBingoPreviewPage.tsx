@@ -1,8 +1,16 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Header } from '../components/common/Header'
 import { Navigation } from '../components/common/Navigation'
 import { BingoCard } from '../components/setlist-bingo/BingoCard'
+import {
+  reportSetlistBingoAnalyticsError,
+  trackSetlistBingoEditStart,
+  trackSetlistBingoInvalidRecovery,
+  trackSetlistBingoPreviewPageView,
+  trackSetlistBingoRetry,
+  trackSetlistBingoShareComplete,
+} from '../services/setlistBingoAnalytics'
 import { shareOrDownloadImage } from '../services/setlistBingo/imageShareService'
 import {
   createBingoPngFilename,
@@ -19,10 +27,8 @@ import {
   createSetlistBingoOperationGate,
   type SetlistBingoOperationGate,
 } from '../utils/setlistBingoOperationGate'
-import {
-  getBingoErrorMessage,
-  resolvePreviewInput,
-} from '../utils/setlistBingoPreviewResolution'
+import type { SetlistBingoLogOperation } from '../utils/setlistBingoTelemetry'
+import { getBingoErrorMessage, resolvePreviewInput } from '../utils/setlistBingoPreviewResolution'
 import { buildCanonicalShareUrl } from '../utils/setlistBingoShareUrl'
 import './SetlistBingoPreviewPage.css'
 
@@ -92,12 +98,11 @@ const OPERATION_ERROR_MESSAGES = {
   x_intent_blocked: 'Xの投稿画面を開けませんでした。もう一度お試しください。',
   decoded_payload_too_large:
     '共有URLに含める情報が大きすぎるためURLでは共有できません。画像での保存をお試しください。',
-  share_url_too_long:
-    '共有URLが長すぎるためURLでは共有できません。画像での保存をお試しください。',
+  share_url_too_long: '共有URLが長すぎるためURLでは共有できません。画像での保存をお試しください。',
 } as const satisfies Record<PreviewOperationErrorCode, string>
 
 const OPERATION_ERROR_CODES = new Set<PreviewOperationErrorCode>(
-  Object.keys(OPERATION_ERROR_MESSAGES) as PreviewOperationErrorCode[],
+  Object.keys(OPERATION_ERROR_MESSAGES) as PreviewOperationErrorCode[]
 )
 
 function getFeedbackAnnouncement(feedback: PreviewOperationFeedback | null): string {
@@ -114,7 +119,7 @@ function getFeedbackAnnouncement(feedback: PreviewOperationFeedback | null): str
 
 function getOperationAnnouncement(
   state: PreviewOperationState,
-  feedback: PreviewOperationFeedback | null,
+  feedback: PreviewOperationFeedback | null
 ): string {
   switch (state.status) {
     case 'idle':
@@ -137,17 +142,33 @@ function getOperationAnnouncement(
 
 function getOperationErrorCode(
   error: unknown,
-  fallback: PreviewOperationErrorCode,
+  fallback: PreviewOperationErrorCode
 ): PreviewOperationErrorCode {
   if (typeof error !== 'object' || error === null || !('code' in error)) {
     return fallback
   }
 
   const code = error.code
-  return typeof code === 'string' &&
-    OPERATION_ERROR_CODES.has(code as PreviewOperationErrorCode)
+  return typeof code === 'string' && OPERATION_ERROR_CODES.has(code as PreviewOperationErrorCode)
     ? (code as PreviewOperationErrorCode)
     : fallback
+}
+
+function getOperationForErrorCode(code: PreviewOperationErrorCode): SetlistBingoLogOperation {
+  switch (code) {
+    case 'canvas_unavailable':
+    case 'png_blob_failed':
+      return 'generate-png'
+    case 'download_failed':
+      return 'download-png'
+    case 'file_share_failed':
+      return 'share-image'
+    case 'decoded_payload_too_large':
+    case 'share_url_too_long':
+      return 'build-share-url'
+    case 'x_intent_blocked':
+      return 'open-x-intent'
+  }
 }
 
 function getRetryLabel(action: PreviewShareAction): string {
@@ -193,18 +214,37 @@ export function SetlistBingoPreviewPage({
 }: SetlistBingoPreviewPageProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const [resolution] = useState(() =>
-    resolvePreviewInput(window.location.href, location.state),
-  )
+  const [resolution] = useState(() => resolvePreviewInput(window.location.href, location.state))
   const [operationState, setOperationState] = useState<PreviewOperationState>({
     status: 'idle',
   })
-  const [operationFeedback, setOperationFeedback] =
-    useState<PreviewOperationFeedback | null>(null)
+  const [operationFeedback, setOperationFeedback] = useState<PreviewOperationFeedback | null>(null)
   const operationGateRef = useRef<SetlistBingoOperationGate | null>(null)
+  const pageViewTrackedRef = useRef(false)
   if (operationGateRef.current == null) {
     operationGateRef.current = createSetlistBingoOperationGate()
   }
+
+  useEffect(() => {
+    if (pageViewTrackedRef.current) return
+    pageViewTrackedRef.current = true
+
+    if (resolution.kind === 'invalid') {
+      trackSetlistBingoPreviewPageView({ kind: 'invalid' })
+      reportSetlistBingoAnalyticsError({
+        code: resolution.code,
+        operation: 'resolve-preview',
+      })
+      return
+    }
+
+    trackSetlistBingoPreviewPageView({
+      kind: 'valid',
+      source: resolution.source,
+      gridSize: resolution.state.gridSize,
+      designId: resolution.state.designId,
+    })
+  }, [resolution])
 
   const handleNavigation = (path: string) => navigate(path)
 
@@ -218,14 +258,15 @@ export function SetlistBingoPreviewPage({
             className="setlist-bingo-preview-page__invalid"
             aria-labelledby="setlist-bingo-preview-invalid-title"
           >
-            <h2 id="setlist-bingo-preview-invalid-title">
-              プレビューを表示できません
-            </h2>
+            <h2 id="setlist-bingo-preview-invalid-title">プレビューを表示できません</h2>
             <p role="alert">{getBingoErrorMessage(resolution.code)}</p>
             <button
               type="button"
               className="setlist-bingo-preview-page__primary-action"
-              onClick={() => navigate('/setlist-bingo/new')}
+              onClick={() => {
+                trackSetlistBingoInvalidRecovery(resolution.code)
+                navigate('/setlist-bingo/new')
+              }}
             >
               新しく作る
             </button>
@@ -245,24 +286,30 @@ export function SetlistBingoPreviewPage({
   const setOperationError = (
     action: PreviewShareAction,
     error: unknown,
-    fallback: PreviewOperationErrorCode,
+    fallback: PreviewOperationErrorCode
   ) => {
+    const code = getOperationErrorCode(error, fallback)
     setOperationFeedback(null)
     setOperationState({
       status: 'error',
       action,
-      code: getOperationErrorCode(error, fallback),
+      code,
+    })
+    reportSetlistBingoAnalyticsError({
+      code,
+      operation: getOperationForErrorCode(code),
     })
   }
 
-  const startGatedOperation = (operation: () => Promise<void>) => {
+  const startGatedOperation = (operation: () => Promise<void>, onAccepted?: () => void) => {
     const pendingOperation = operationGateRef.current?.run(operation)
-    if (pendingOperation) {
-      void pendingOperation
-    }
+    if (!pendingOperation) return
+
+    onAccepted?.()
+    void pendingOperation
   }
 
-  const runSaveImage = () => {
+  const runSaveImage = (onAccepted?: () => void) => {
     startGatedOperation(async () => {
       setOperationFeedback(null)
       setOperationState({ status: 'generating', action: 'save-image' })
@@ -270,10 +317,10 @@ export function SetlistBingoPreviewPage({
       try {
         const blob = await operationDependencies.generateBingoPng(
           resolution.state,
-          operationDependencies.getRootStyle(),
+          operationDependencies.getRootStyle()
         )
         const filename = operationDependencies.createBingoPngFilename(
-          resolution.state.performanceName,
+          resolution.state.performanceName
         )
         const file = new File([blob], filename, { type: PNG_MIME_TYPE })
         setOperationState({ status: 'sharing', action: 'save-image' })
@@ -282,34 +329,42 @@ export function SetlistBingoPreviewPage({
         if (result.kind === 'cancelled') {
           return
         }
+        trackSetlistBingoShareComplete({
+          action: result.kind === 'downloaded' ? 'save-image' : 'share-image',
+          gridSize: resolution.state.gridSize,
+          designId: resolution.state.designId,
+        })
         setOperationFeedback({ kind: 'success', action: 'save-image' })
       } catch (error) {
         setOperationError('save-image', error, 'file_share_failed')
       }
-    })
+    }, onAccepted)
   }
 
-  const runShareWithoutUrl = () => {
+  const runShareWithoutUrl = (onAccepted?: () => void) => {
     startGatedOperation(async () => {
       setOperationFeedback(null)
       setOperationState({ status: 'sharing', action: 'share-without-url' })
 
       try {
         const intent = operationDependencies.buildXIntent({
-          text: operationDependencies.createXPostText(
-            resolution.state.performanceName,
-          ),
+          text: operationDependencies.createXPostText(resolution.state.performanceName),
         })
         operationDependencies.openExternalNoOpener(intent)
+        trackSetlistBingoShareComplete({
+          action: 'share-without-url',
+          gridSize: resolution.state.gridSize,
+          designId: resolution.state.designId,
+        })
         setOperationState({ status: 'idle' })
         setOperationFeedback({ kind: 'success', action: 'share-without-url' })
       } catch (error) {
         setOperationError('share-without-url', error, 'x_intent_blocked')
       }
-    })
+    }, onAccepted)
   }
 
-  const runShareUrl = () => {
+  const runShareUrl = (onAccepted?: () => void) => {
     startGatedOperation(async () => {
       setOperationFeedback(null)
       setOperationState({ status: 'sharing', action: 'share-url' })
@@ -318,7 +373,7 @@ export function SetlistBingoPreviewPage({
         const shareUrl = operationDependencies.buildCanonicalShareUrl(
           resolution.state,
           operationDependencies.getOrigin(),
-          operationDependencies.getBaseUrl(),
+          operationDependencies.getBaseUrl()
         )
 
         if (!shareUrl.ok) {
@@ -329,32 +384,51 @@ export function SetlistBingoPreviewPage({
         const intent = operationDependencies.buildXIntent({
           text: operationDependencies.createXPostText(
             resolution.state.performanceName,
-            shareUrl.url,
+            shareUrl.url
           ),
         })
         operationDependencies.openExternalNoOpener(intent)
+        trackSetlistBingoShareComplete({
+          action: 'share-url',
+          gridSize: resolution.state.gridSize,
+          designId: resolution.state.designId,
+        })
         setOperationState({ status: 'idle' })
         setOperationFeedback({ kind: 'success', action: 'share-url' })
       } catch (error) {
         setOperationError('share-url', error, 'x_intent_blocked')
       }
-    })
+    }, onAccepted)
   }
 
-  const runAction = (action: PreviewShareAction) => {
+  const runAction = (action: PreviewShareAction, onAccepted?: () => void) => {
     switch (action) {
       case 'save-image':
-        runSaveImage()
+        runSaveImage(onAccepted)
         return
       case 'share-without-url':
-        runShareWithoutUrl()
+        runShareWithoutUrl(onAccepted)
         return
       case 'share-url':
-        runShareUrl()
+        runShareUrl(onAccepted)
     }
   }
 
+  const handleRetry = (action: PreviewShareAction, code: PreviewOperationErrorCode) => {
+    runAction(action, () => {
+      trackSetlistBingoRetry({
+        action,
+        operation: getOperationForErrorCode(code),
+      })
+    })
+  }
+
   const handleEdit = () => {
+    trackSetlistBingoEditStart({
+      source: resolution.source,
+      gridSize: resolution.state.gridSize,
+      designId: resolution.state.designId,
+    })
     const routeState: CreateRouteState = {
       kind: 'edit-bingo',
       bingoState: resolution.state,
@@ -375,10 +449,7 @@ export function SetlistBingoPreviewPage({
 
           <BingoCard state={resolution.state} mode="preview" />
 
-          <PreviewOperationAnnouncement
-            state={operationState}
-            feedback={operationFeedback}
-          />
+          <PreviewOperationAnnouncement state={operationState} feedback={operationFeedback} />
 
           {operationState.status === 'error' && (
             <div className="setlist-bingo-preview-page__recovery">
@@ -389,7 +460,7 @@ export function SetlistBingoPreviewPage({
                 type="button"
                 className="setlist-bingo-preview-page__secondary-action"
                 disabled={isBusy}
-                onClick={() => runAction(operationState.action)}
+                onClick={() => handleRetry(operationState.action, operationState.code)}
               >
                 {getRetryLabel(operationState.action)}
               </button>
@@ -416,7 +487,7 @@ export function SetlistBingoPreviewPage({
               type="button"
               className="setlist-bingo-preview-page__primary-action"
               disabled={isBusy}
-              onClick={runSaveImage}
+              onClick={() => runSaveImage()}
             >
               画像で保存する
             </button>
@@ -424,7 +495,7 @@ export function SetlistBingoPreviewPage({
               type="button"
               className="setlist-bingo-preview-page__primary-action"
               disabled={isBusy}
-              onClick={runShareWithoutUrl}
+              onClick={() => runShareWithoutUrl()}
             >
               Xでポストする（URLなし）※画像添付用
             </button>
@@ -432,7 +503,7 @@ export function SetlistBingoPreviewPage({
               type="button"
               className="setlist-bingo-preview-page__primary-action"
               disabled={isBusy}
-              onClick={runShareUrl}
+              onClick={() => runShareUrl()}
             >
               Xでポストする（URLあり）
             </button>
@@ -441,7 +512,6 @@ export function SetlistBingoPreviewPage({
       </main>
 
       <Navigation currentPath="/lives" onNavigate={handleNavigation} />
-
     </div>
   )
 }

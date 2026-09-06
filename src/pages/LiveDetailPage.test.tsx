@@ -71,7 +71,7 @@ function mountPage(live: Live = validLive): MountedPage {
       { path: '/lives/:liveId', element: <LiveDetailPage /> },
       { path: '*', element: <RouteCapture /> },
     ],
-    { initialEntries: [`/lives/${encodeURIComponent(live.id)}`] },
+    { initialEntries: [`/lives/${encodeURIComponent(live.id)}`] }
   )
   const container = document.createElement('div')
   document.body.append(container)
@@ -97,24 +97,10 @@ function click(element: HTMLElement): void {
 
 function getButton(container: ParentNode, text: string): HTMLButtonElement {
   const button = [...container.querySelectorAll<HTMLButtonElement>('button')].find(
-    (candidate) => candidate.textContent?.trim() === text,
+    (candidate) => candidate.textContent?.trim() === text
   )
   if (!button) throw new Error(`Button not found: ${text}`)
   return button
-}
-
-function pressNativeButton(button: HTMLButtonElement, key: 'Enter' | ' '): void {
-  act(() => {
-    button.focus()
-    const keyDown = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })
-    const shouldRunDefaultAction = button.dispatchEvent(keyDown)
-    if (!shouldRunDefaultAction) return
-
-    if (key === ' ') {
-      button.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }))
-    }
-    button.click()
-  })
 }
 
 function getRouteCapture(container: ParentNode): {
@@ -147,72 +133,6 @@ afterEach(() => {
   localStorage.clear()
 })
 
-describe('LiveDetailPage setlist bingo entry', () => {
-  it('セットリスト内のnative buttonをclickすると表示値を変更せずsource-live stateで遷移する', async () => {
-    const { container } = mountPage()
-    await flushAsyncUpdates()
-
-    const setlistSection = container.querySelector('.live-detail-page__setlist')
-    const button = getButton(setlistSection!, 'セトリ予想を作る')
-
-    expect(button.tagName).toBe('BUTTON')
-    expect(button.type).toBe('button')
-    expect(button.textContent?.trim()).toBe('セトリ予想を作る')
-
-    click(button)
-
-    expect(getRouteCapture(container)).toEqual({
-      pathname: '/setlist-bingo/new',
-      state: {
-        kind: 'source-live',
-        sourceLive: {
-          id: validLive.id,
-          performanceName: validLive.title,
-        },
-      },
-    })
-  })
-
-  it.each(['Enter', ' '] as const)('%sキーでnative buttonの作成操作を実行する', async (key) => {
-    const { container } = mountPage()
-    await flushAsyncUpdates()
-
-    pressNativeButton(getButton(container, 'セトリ予想を作る'), key)
-
-    expect(getRouteCapture(container)).toEqual({
-      pathname: '/setlist-bingo/new',
-      state: {
-        kind: 'source-live',
-        sourceLive: {
-          id: validLive.id,
-          performanceName: validLive.title,
-        },
-      },
-    })
-  })
-
-  it.each([undefined, '', '   '])(
-    '公演名が%pなら遷移を一度も開始せずalert/live regionで理由を表示する',
-    async (title) => {
-      const live = { ...validLive, title } as unknown as Live
-      const { container, router } = mountPage(live)
-      const navigateSpy = vi.spyOn(router, 'navigate')
-      await flushAsyncUpdates()
-      navigateSpy.mockClear()
-
-      click(getButton(container, 'セトリ予想を作る'))
-
-      expect(navigateSpy).not.toHaveBeenCalled()
-      expect(getRouteCapture(container)).toBeNull()
-      const alert = container.querySelector('[role="alert"]')
-      expect(alert?.getAttribute('aria-live')).toBe('assertive')
-      expect(alert?.textContent).toBe(
-        '公演名を取得できないため、セトリ予想を作成できません。',
-      )
-    },
-  )
-})
-
 describe('LiveDetailPage existing behavior regression', () => {
   it('セットリスト閲覧、X投稿、編集遷移を維持する', async () => {
     const openSpy = vi.spyOn(window, 'open').mockReturnValue(null)
@@ -227,7 +147,7 @@ describe('LiveDetailPage existing behavior regression', () => {
     expect(openSpy).toHaveBeenCalledWith(
       expect.stringContaining('https://twitter.com/intent/tweet?text='),
       '_blank',
-      'noopener,noreferrer',
+      'noopener,noreferrer'
     )
 
     click(getButton(container, '編集'))

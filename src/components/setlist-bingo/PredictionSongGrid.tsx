@@ -1,7 +1,6 @@
 import { useId, useMemo, useRef, useState } from 'react'
 import type { GridSize, PredictionSongDraft, Song } from '../../types'
 import {
-  clearPredictionSong,
   gridSizeToSongCount,
   movePredictionSong,
   selectPredictionSong,
@@ -21,7 +20,7 @@ export interface PredictionSongGridProps {
 
 function normalizeSlots(
   slots: readonly PredictionSongDraft[],
-  slotCount: number,
+  slotCount: number
 ): PredictionSongDraft[] {
   return Array.from({ length: slotCount }, (_, index) => slots[index] ?? { songTitle: '' })
 }
@@ -48,7 +47,7 @@ export function PredictionSongGrid({
         selectPredictionSong(normalizedSlots, index, {
           id: value.registeredSongId,
           title: value.songTitle,
-        }),
+        })
       )
       return
     }
@@ -74,9 +73,6 @@ export function PredictionSongGrid({
 
           return (
             <li key={inputId} className="prediction-song-grid__slot">
-              <span className="prediction-song-grid__order" aria-hidden="true">
-                {index + 1}
-              </span>
               <div className="prediction-song-grid__editor">
                 <SongTitleCombobox
                   id={inputId}
@@ -111,15 +107,6 @@ export function PredictionSongGrid({
                   onClick={() => moveSlot(index, index + 1)}
                 >
                   <span aria-hidden="true">↓</span>
-                </button>
-                <button
-                  className="prediction-song-grid__action prediction-song-grid__action--clear"
-                  type="button"
-                  disabled={disabled}
-                  aria-label={`${index + 1}曲目を空にする`}
-                  onClick={() => onChange(clearPredictionSong(normalizedSlots, index))}
-                >
-                  空にする
                 </button>
               </div>
             </li>

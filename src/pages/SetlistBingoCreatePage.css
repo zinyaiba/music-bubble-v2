@@ -17,9 +17,9 @@
 .setlist-bingo-create-page__main {
   width: 100%;
   min-width: 0;
-  padding-top: calc(var(--header-height) + var(--spacing-md));
+  padding-top: calc(var(--header-height) + var(--spacing-sm));
   padding-right: calc(var(--spacing-md) + var(--safe-area-right));
-  padding-bottom: calc(var(--navigation-height) + var(--spacing-xl));
+  padding-bottom: calc(var(--navigation-height) + var(--spacing-lg));
   padding-left: calc(var(--spacing-md) + var(--safe-area-left));
 }
 
@@ -31,7 +31,7 @@
 }
 
 .setlist-bingo-create-page__intro {
-  margin: 0 0 var(--spacing-md);
+  margin: 0 0 var(--spacing-sm);
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
 }
@@ -62,7 +62,7 @@
 
 .setlist-bingo-create-page__song-load {
   min-width: 0;
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-sm);
 }
 
 .setlist-bingo-create-page__announcement {
@@ -79,9 +79,9 @@
   min-width: 0;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   margin-top: var(--spacing-sm);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   border: var(--border-width-thin) solid var(--color-error);
   border-radius: var(--border-radius-lg);
   background: var(--color-surface);
@@ -99,14 +99,14 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  margin-top: var(--spacing-lg);
-  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  gap: var(--spacing-md);
 }
 
 .setlist-bingo-create-page__section {
   width: 100%;
   min-width: 0;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border: var(--border-width-thin) solid var(--color-border-light);
   border-radius: var(--border-radius-xl);
   background: var(--color-surface);
@@ -118,7 +118,7 @@
 }
 
 .setlist-bingo-create-page__field + .setlist-bingo-create-page__field {
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-md);
 }
 
 .setlist-bingo-create-page__label,
@@ -131,7 +131,7 @@
 }
 
 .setlist-bingo-create-page__help {
-  margin: 0 0 var(--spacing-sm);
+  margin: 0 0 var(--spacing-xs);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   overflow-wrap: anywhere;
@@ -155,7 +155,7 @@
 
 .setlist-bingo-create-page__grid-size {
   min-width: 0;
-  margin: var(--spacing-lg) 0 0;
+  margin: var(--spacing-md) 0 0;
   padding: 0;
   border: 0;
 }
@@ -164,17 +164,17 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   min-width: 0;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .setlist-bingo-create-page__grid-option {
   position: relative;
   display: flex;
   min-width: 0;
-  min-height: 3rem;
+  min-height: 2.75rem;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
   border: var(--border-width-normal) solid var(--color-border);
   border-radius: var(--border-radius-lg);
   background: var(--color-background);
@@ -208,7 +208,7 @@
 }
 
 .setlist-bingo-create-page__validation-summary {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   border: var(--border-width-thin) solid var(--color-error);
   border-radius: var(--border-radius-md);
   background: var(--color-surface);
@@ -257,14 +257,6 @@
   .setlist-bingo-create-page__main {
     padding-right: calc(var(--spacing-sm) + var(--safe-area-right));
     padding-left: calc(var(--spacing-sm) + var(--safe-area-left));
-  }
-
-  .setlist-bingo-create-page__section {
-    padding: var(--spacing-md);
-  }
-
-  .setlist-bingo-create-page__grid-options {
-    grid-template-columns: 1fr;
   }
 
   .setlist-bingo-create-page__load-error {

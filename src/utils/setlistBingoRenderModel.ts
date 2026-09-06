@@ -1,8 +1,4 @@
-import {
-  DEFAULT_BINGO_DESIGN_ID,
-  type BingoDesignId,
-  type BingoState,
-} from '../types'
+import { DEFAULT_BINGO_DESIGN_ID, type BingoDesignId, type BingoState } from '../types'
 import { indexToGridCoordinate } from './setlistBingoGrid'
 import { contrastRatio } from './wcagContrast'
 
@@ -93,7 +89,7 @@ export const BINGO_DESIGN_TOKEN_FALLBACKS: Readonly<Record<DesignTokenName, stri
 }
 
 const DESIGN_BY_ID = new Map<BingoDesignId, BingoDesignDefinition>(
-  BINGO_DESIGNS.map((design) => [design.id, design]),
+  BINGO_DESIGNS.map((design) => [design.id, design])
 )
 
 export const DEFAULT_BINGO_DESIGN = DESIGN_BY_ID.get(DEFAULT_BINGO_DESIGN_ID)!
@@ -120,7 +116,7 @@ function resolveToken(token: DesignTokenName, rootStyle: CSSStyleDeclaration): s
 /** Resolves one registry entry for both DOM and Canvas consumers. */
 export function resolveBingoTheme(
   designId: BingoDesignId,
-  rootStyle: CSSStyleDeclaration,
+  rootStyle: CSSStyleDeclaration
 ): ResolvedBingoTheme {
   const { id, tokens } = getDesignDefinition(designId)
 
@@ -146,9 +142,7 @@ export interface BingoThemeContrast {
 /** Uses the existing WCAG helper so design validation has one contrast algorithm. */
 export function calculateBingoThemeContrast(theme: ResolvedBingoTheme): BingoThemeContrast {
   const heading = contrastRatio(theme.headingText, theme.headingBackground)
-  const cells = theme.cellBackgrounds.map((background) =>
-    contrastRatio(theme.cellText, background),
-  )
+  const cells = theme.cellBackgrounds.map((background) => contrastRatio(theme.cellText, background))
   const minimum = Math.min(heading, ...cells)
 
   return {
@@ -200,6 +194,34 @@ export interface BingoCardRenderModel {
 const HEADER_RECT: Rect = { x: 48, y: 48, width: 984, height: 144 }
 const GRID_RECT: Rect = { x: 132, y: 216, width: 816, height: 816 }
 
+// Keep the 1080px canvas proportional to BingoCard.css. Container query units
+// use the card's content box after 4.444444% padding and the 3px border:
+// font-size: clamp(6px, 9cqi / grid-size, 52px)
+// padding: clamp(2px, 1.4cqi, 16px)
+const CARD_PADDING = 48
+const CARD_BORDER_WIDTH = 3
+const CARD_CONTENT_SIZE = BINGO_CARD_SIZE - CARD_PADDING * 2 - CARD_BORDER_WIDTH * 2
+const CELL_FONT_SIZE_RATIO = 0.09
+const CELL_FONT_SIZE_MAX = 52
+const CELL_FONT_SIZE_MIN = 6
+const CELL_TEXT_INSET_RATIO = 0.014
+const CELL_TEXT_INSET_MIN = 2
+const CELL_TEXT_INSET_MAX = 16
+
+function getCellFontSize(gridSize: BingoState['gridSize']): number {
+  return Math.min(
+    CELL_FONT_SIZE_MAX,
+    Math.round((CARD_CONTENT_SIZE * CELL_FONT_SIZE_RATIO) / gridSize)
+  )
+}
+
+function getCellTextInset(): number {
+  return Math.min(
+    CELL_TEXT_INSET_MAX,
+    Math.max(CELL_TEXT_INSET_MIN, CARD_CONTENT_SIZE * CELL_TEXT_INSET_RATIO)
+  )
+}
+
 function insetRect(rect: Rect, inset: number): Rect {
   return {
     x: rect.x + inset,
@@ -215,10 +237,11 @@ function insetRect(rect: Rect, inset: number): Rect {
  */
 export function buildBingoCardRenderModel(
   state: BingoState,
-  theme: ResolvedBingoTheme,
+  theme: ResolvedBingoTheme
 ): BingoCardRenderModel {
   const cellSize = GRID_RECT.width / state.gridSize
-  const textInset = Math.max(16, Math.floor(cellSize * 0.08))
+  const textInset = getCellTextInset()
+  const cellFontSize = getCellFontSize(state.gridSize)
   const cells = state.songTitles.map((songTitle, index) => {
     const coordinate = indexToGridCoordinate(index, state.gridSize)
     if (!coordinate) {
@@ -238,17 +261,15 @@ export function buildBingoCardRenderModel(
       column: coordinate.column,
       rect,
       background:
-        theme.cellBackgrounds[
-          (coordinate.row + coordinate.column) % theme.cellBackgrounds.length
-        ],
+        theme.cellBackgrounds[(coordinate.row + coordinate.column) % theme.cellBackgrounds.length],
       text: {
         text: songTitle,
         rect: insetRect(rect, textInset),
         horizontalAlign: 'center',
         verticalAlign: 'middle',
         fontWeight: 700,
-        maxFontSize: state.gridSize === 2 ? 52 : state.gridSize === 3 ? 42 : 34,
-        minFontSize: 16,
+        maxFontSize: cellFontSize,
+        minFontSize: CELL_FONT_SIZE_MIN,
         lineHeight: 1.2,
       },
     } satisfies BingoCellRenderModel
