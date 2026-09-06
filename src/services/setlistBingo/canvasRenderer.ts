@@ -1,12 +1,10 @@
 import type {
+  BingoHeadingRenderModel,
   BingoCardRenderModel,
+  HeadingLine,
   Rect,
   TextBlock,
 } from '../../utils/setlistBingoRenderModel'
-
-/** OS-provided fonts only; PNG generation never waits for or fetches a web font. */
-export const BINGO_CANVAS_FONT_FAMILY =
-  'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
 
 const CARD_BORDER_WIDTH = 8
 const HEADER_BORDER_WIDTH = 4
@@ -33,11 +31,7 @@ function isLineBreak(unit: string): boolean {
   return unit === '\n' || unit === '\r' || unit === '\r\n' || unit === '\u2028' || unit === '\u2029'
 }
 
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  maxWidth: number,
-): string[] {
+function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const lines: string[] = []
   let currentLine = ''
 
@@ -65,40 +59,25 @@ function wrapText(
 }
 
 function createFont(block: TextBlock, fontSize: number): string {
-  return `${block.fontWeight} ${fontSize}px ${BINGO_CANVAS_FONT_FAMILY}`
+  return `${block.fontWeight} ${fontSize}px ${block.fontFamily}`
 }
 
+/**
+ * Lays out text at the model's fixed font size, wrapping only. This mirrors the
+ * DOM card, which keeps its CSS `clamp()` size and never shrinks text, so the
+ * PNG produces the same font size and line breaks as the preview.
+ */
 function layoutText(ctx: CanvasRenderingContext2D, block: TextBlock): TextLayout {
-  const maximum = Math.max(block.minFontSize, Math.floor(block.maxFontSize))
-  const minimum = Math.max(1, Math.floor(block.minFontSize))
-  let fallback: TextLayout | undefined
-
-  for (let fontSize = maximum; fontSize >= minimum; fontSize -= 1) {
-    ctx.font = createFont(block, fontSize)
-    const lines = wrapText(ctx, block.text, block.rect.width)
-    const lineHeight = fontSize * block.lineHeight
-    const candidate = { fontSize, lineHeight, lines }
-    fallback = candidate
-
-    if (lines.length * lineHeight <= block.rect.height) {
-      return candidate
-    }
-  }
-
-  // Valid states are bounded to 80/50 code points and fit at the model minimum.
-  // Keep every text unit if a non-browser/mock metric reports an unusually wide glyph.
-  return fallback ?? {
-    fontSize: minimum,
-    lineHeight: minimum * block.lineHeight,
-    lines: [block.text],
+  const fontSize = Math.max(1, block.fontSize)
+  ctx.font = createFont(block, fontSize)
+  return {
+    fontSize,
+    lineHeight: fontSize * block.lineHeight,
+    lines: wrapText(ctx, block.text, block.rect.width),
   }
 }
 
-function drawFilledRect(
-  ctx: CanvasRenderingContext2D,
-  rect: Rect,
-  fillStyle: string,
-): void {
+function drawFilledRect(ctx: CanvasRenderingContext2D, rect: Rect, fillStyle: string): void {
   ctx.fillStyle = fillStyle
   ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
 }
@@ -107,18 +86,14 @@ function drawStrokedRect(
   ctx: CanvasRenderingContext2D,
   rect: Rect,
   strokeStyle: string,
-  lineWidth: number,
+  lineWidth: number
 ): void {
   ctx.strokeStyle = strokeStyle
   ctx.lineWidth = lineWidth
   ctx.strokeRect(rect.x, rect.y, rect.width, rect.height)
 }
 
-function drawTextBlock(
-  ctx: CanvasRenderingContext2D,
-  block: TextBlock,
-  color: string,
-): void {
+function drawTextBlock(ctx: CanvasRenderingContext2D, block: TextBlock, color: string): void {
   const layout = layoutText(ctx, block)
   const centerX = block.rect.x + block.rect.width / 2
   const firstLineY =
@@ -130,7 +105,61 @@ function drawTextBlock(
   ctx.textBaseline = block.verticalAlign
 
   layout.lines.forEach((line, index) => {
-    ctx.fillText(line, centerX, firstLineY + index * layout.lineHeight, block.rect.width)
+    ctx.fillText(line, centerX, firstLineY + index * layout.lineHeight)
+  })
+}
+
+interface WrappedHeadingLine {
+  lines: readonly string[]
+  fontSize: number
+  lineHeight: number
+  fontFamily: string
+  fontWeight: HeadingLine['fontWeight']
+}
+
+/**
+ * Draws the header as a vertically centered stack of wrapped lines, mirroring
+ * the DOM `.bingo-card__heading` flex column. Each entry keeps its fixed font
+ * size and the whole stack is centered, so a multi-line title or name never
+ * clips the way a fixed rectangle would.
+ */
+function drawHeading(
+  ctx: CanvasRenderingContext2D,
+  heading: BingoHeadingRenderModel,
+  color: string
+): void {
+  const wrapped: WrappedHeadingLine[] = heading.lines.map((line) => {
+    const fontSize = Math.max(1, line.fontSize)
+    ctx.font = `${line.fontWeight} ${fontSize}px ${line.fontFamily}`
+    return {
+      lines: wrapText(ctx, line.text, heading.contentWidth),
+      fontSize,
+      lineHeight: fontSize * line.lineHeight,
+      fontFamily: line.fontFamily,
+      fontWeight: line.fontWeight,
+    }
+  })
+
+  const totalHeight =
+    wrapped.reduce((sum, entry) => sum + entry.lines.length * entry.lineHeight, 0) +
+    heading.gap * Math.max(0, wrapped.length - 1)
+
+  const centerX = heading.rect.x + heading.rect.width / 2
+  let cursorY = heading.rect.y + heading.rect.height / 2 - totalHeight / 2
+
+  ctx.fillStyle = color
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+
+  wrapped.forEach((entry, entryIndex) => {
+    ctx.font = `${entry.fontWeight} ${entry.fontSize}px ${entry.fontFamily}`
+    entry.lines.forEach((line) => {
+      ctx.fillText(line, centerX, cursorY)
+      cursorY += entry.lineHeight
+    })
+    if (entryIndex < wrapped.length - 1) {
+      cursorY += heading.gap
+    }
   })
 }
 
@@ -140,7 +169,7 @@ function drawTextBlock(
  */
 export function renderBingoCardToCanvas(
   ctx: CanvasRenderingContext2D,
-  model: BingoCardRenderModel,
+  model: BingoCardRenderModel
 ): void {
   ctx.save()
 
@@ -151,7 +180,7 @@ export function renderBingoCardToCanvas(
     drawFilledRect(
       ctx,
       { x: 0, y: 0, width: model.width, height: model.height },
-      model.theme.cardBackground,
+      model.theme.cardBackground
     )
     drawStrokedRect(
       ctx,
@@ -162,16 +191,11 @@ export function renderBingoCardToCanvas(
         height: model.height - CARD_BORDER_WIDTH,
       },
       model.theme.cardBorder,
-      CARD_BORDER_WIDTH,
+      CARD_BORDER_WIDTH
     )
 
     drawFilledRect(ctx, model.headerRect, model.theme.headingBackground)
-    drawStrokedRect(
-      ctx,
-      model.headerRect,
-      model.theme.cardBorder,
-      HEADER_BORDER_WIDTH,
-    )
+    drawStrokedRect(ctx, model.headerRect, model.theme.cardBorder, HEADER_BORDER_WIDTH)
 
     for (const cell of model.cells) {
       drawFilledRect(ctx, cell.rect, cell.background)
@@ -179,10 +203,7 @@ export function renderBingoCardToCanvas(
     }
     drawStrokedRect(ctx, model.gridRect, model.theme.gridBorder, GRID_BORDER_WIDTH)
 
-    drawTextBlock(ctx, model.title, model.theme.headingText)
-    if (model.participantName) {
-      drawTextBlock(ctx, model.participantName, model.theme.headingText)
-    }
+    drawHeading(ctx, model.heading, model.theme.headingText)
     for (const cell of model.cells) {
       drawTextBlock(ctx, cell.text, model.theme.cellText)
     }

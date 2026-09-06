@@ -1,5 +1,6 @@
 import type { BingoState } from '../../types'
 import {
+  BINGO_CARD_FONT_FAMILY,
   BINGO_CARD_SIZE,
   buildBingoCardRenderModel,
   resolveBingoTheme,
@@ -13,10 +14,7 @@ const MAX_FILENAME_STEM_LENGTH = 64
 const UNSAFE_FILENAME_CHARACTERS = /[\p{Cc}\p{Cf}<>:"/\\|?*]/gu
 const WINDOWS_RESERVED_FILENAME = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/iu
 
-export type BingoPngErrorCode =
-  | 'canvas_unavailable'
-  | 'png_blob_failed'
-  | 'download_failed'
+export type BingoPngErrorCode = 'canvas_unavailable' | 'png_blob_failed' | 'download_failed'
 
 /** Error exposed by the PNG boundary without browser exceptions or bingo content. */
 export class BingoPngError extends Error {
@@ -32,6 +30,39 @@ export class BingoPngError extends Error {
 export interface PngGenerationDependencies {
   createCanvas: () => HTMLCanvasElement
   renderToCanvas: typeof renderBingoCardToCanvas
+  /**
+   * Ensures the shared card font is loaded before measuring/wrapping text, so
+   * canvas line breaks match the DOM preview. Resolves quickly if unsupported.
+   */
+  ensureFontsReady: (sampleText: string) => Promise<void>
+}
+
+/** All glyphs the card will draw, so a subsetted font resolves before measuring. */
+function collectCardText(state: BingoState): string {
+  const parts = [state.performanceName, state.participantName ?? '', ...state.songTitles]
+  return Array.from(new Set(Array.from(parts.join('')))).join('')
+}
+
+/** Preloads the bingo card fonts so canvas text metrics match the DOM. */
+async function ensureBingoFontsReady(sampleText: string): Promise<void> {
+  if (typeof document === 'undefined' || !document.fonts) {
+    return
+  }
+
+  // Load against the actual card glyphs so a subsetted Noto Sans JP resolves the
+  // exact characters measureText will use.
+  const sample = `${sampleText}あ亜A0`
+
+  try {
+    await Promise.all([
+      document.fonts.load(`700 52px ${BINGO_CARD_FONT_FAMILY}`, sample),
+      document.fonts.load(`700 16px ${BINGO_CARD_FONT_FAMILY}`, sample),
+    ])
+    await document.fonts.ready
+  } catch {
+    // A font that will not load must not block PNG generation; fall back to
+    // whatever metrics are available.
+  }
 }
 
 export interface PngDownloadDependencies {
@@ -44,6 +75,7 @@ export interface PngDownloadDependencies {
 const DEFAULT_GENERATION_DEPENDENCIES: PngGenerationDependencies = {
   createCanvas: () => document.createElement('canvas'),
   renderToCanvas: renderBingoCardToCanvas,
+  ensureFontsReady: ensureBingoFontsReady,
 }
 
 const DEFAULT_DOWNLOAD_DEPENDENCIES: PngDownloadDependencies = {
@@ -96,7 +128,7 @@ function pngError(code: BingoPngErrorCode): BingoPngError {
 export async function generateBingoPng(
   state: BingoState,
   rootStyle: CSSStyleDeclaration,
-  dependencies: PngGenerationDependencies = DEFAULT_GENERATION_DEPENDENCIES,
+  dependencies: PngGenerationDependencies = DEFAULT_GENERATION_DEPENDENCIES
 ): Promise<Blob> {
   let canvas: HTMLCanvasElement
   let context: CanvasRenderingContext2D | null
@@ -113,6 +145,8 @@ export async function generateBingoPng(
   if (!context) {
     throw pngError('canvas_unavailable')
   }
+
+  await dependencies.ensureFontsReady(collectCardText(state))
 
   try {
     const theme = resolveBingoTheme(state.designId, rootStyle)
@@ -145,7 +179,7 @@ export async function generateBingoPng(
 export function downloadPng(
   blob: Blob,
   filename: string,
-  dependencies: PngDownloadDependencies = DEFAULT_DOWNLOAD_DEPENDENCIES,
+  dependencies: PngDownloadDependencies = DEFAULT_DOWNLOAD_DEPENDENCIES
 ): void {
   if (blob.type !== PNG_MIME_TYPE) {
     throw pngError('download_failed')

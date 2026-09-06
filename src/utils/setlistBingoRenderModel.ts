@@ -166,8 +166,13 @@ export interface TextBlock {
   horizontalAlign: 'center'
   verticalAlign: 'middle'
   fontWeight: 700
-  maxFontSize: number
-  minFontSize: number
+  /**
+   * Fixed font size in canvas pixels, mirroring the CSS `clamp()` result.
+   * The canvas renderer wraps at this size and never shrinks, so the PNG
+   * matches the DOM preview's font size and line breaks.
+   */
+  fontSize: number
+  fontFamily: string
   lineHeight: number
 }
 
@@ -180,13 +185,34 @@ export interface BingoCellRenderModel {
   text: TextBlock
 }
 
+/** One text line stacked vertically and centered inside the header, like the DOM flex column. */
+export interface HeadingLine {
+  text: string
+  fontWeight: 700
+  fontFamily: string
+  fontSize: number
+  lineHeight: number
+}
+
+/**
+ * Header content laid out as a centered vertical stack, mirroring the DOM
+ * `.bingo-card__heading` flex column so multi-line titles or names do not clip.
+ */
+export interface BingoHeadingRenderModel {
+  rect: Rect
+  /** Max text width for wrapping, matching the DOM heading horizontal padding. */
+  contentWidth: number
+  /** Vertical gap between stacked lines, matching the DOM heading `gap`. */
+  gap: number
+  lines: readonly HeadingLine[]
+}
+
 export interface BingoCardRenderModel {
   width: typeof BINGO_CARD_SIZE
   height: typeof BINGO_CARD_SIZE
   headerRect: Rect
   gridRect: Rect
-  title: TextBlock
-  participantName?: TextBlock
+  heading: BingoHeadingRenderModel
   cells: readonly BingoCellRenderModel[]
   theme: ResolvedBingoTheme
 }
@@ -194,32 +220,68 @@ export interface BingoCardRenderModel {
 const HEADER_RECT: Rect = { x: 48, y: 48, width: 984, height: 144 }
 const GRID_RECT: Rect = { x: 132, y: 216, width: 816, height: 816 }
 
-// Keep the 1080px canvas proportional to BingoCard.css. Container query units
-// use the card's content box after 4.444444% padding and the 3px border:
-// font-size: clamp(6px, 9cqi / grid-size, 52px)
-// padding: clamp(2px, 1.4cqi, 16px)
+/**
+ * Font stack shared with the DOM card (`--font-family` in variables.css) so the
+ * PNG uses identical glyph metrics and therefore identical line breaks.
+ */
+export const BINGO_CARD_FONT_FAMILY =
+  "'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+
+// The 1080px canvas mirrors BingoCard.css. Container query units (cqi) resolve
+// against the card's content box: 1080 - 4.444444% padding * 2 - 3px border * 2.
 const CARD_PADDING = 48
 const CARD_BORDER_WIDTH = 3
 const CARD_CONTENT_SIZE = BINGO_CARD_SIZE - CARD_PADDING * 2 - CARD_BORDER_WIDTH * 2
-const CELL_FONT_SIZE_RATIO = 0.09
-const CELL_FONT_SIZE_MAX = 52
-const CELL_FONT_SIZE_MIN = 6
-const CELL_TEXT_INSET_RATIO = 0.014
-const CELL_TEXT_INSET_MIN = 2
-const CELL_TEXT_INSET_MAX = 16
+const ONE_CQI = CARD_CONTENT_SIZE / 100
 
-function getCellFontSize(gridSize: BingoState['gridSize']): number {
-  return Math.min(
-    CELL_FONT_SIZE_MAX,
-    Math.round((CARD_CONTENT_SIZE * CELL_FONT_SIZE_RATIO) / gridSize)
-  )
+/** Root font size (1rem) used to resolve the rem bounds of each CSS `clamp()`. */
+const ROOT_FONT_SIZE = 16
+
+/** Mirrors CSS `clamp(min, preferred, max)` with px inputs. */
+function clampFontSize(minRem: number, cqiFactor: number, maxRem: number): number {
+  const preferred = cqiFactor * ONE_CQI
+  return Math.min(maxRem * ROOT_FONT_SIZE, Math.max(minRem * ROOT_FONT_SIZE, preferred))
 }
 
+/** .bingo-card__cell: clamp(0.375rem, 9cqi / grid-size, 3.25rem). */
+function getCellFontSize(gridSize: BingoState['gridSize']): number {
+  return clampFontSize(0.375, 9 / gridSize, 3.25)
+}
+
+/** .bingo-card__cell padding: clamp(2px, 1.4cqi, 16px). */
 function getCellTextInset(): number {
-  return Math.min(
-    CELL_TEXT_INSET_MAX,
-    Math.max(CELL_TEXT_INSET_MIN, CARD_CONTENT_SIZE * CELL_TEXT_INSET_RATIO)
-  )
+  return Math.min(16, Math.max(2, 1.4 * ONE_CQI))
+}
+
+interface HeadingFontSpec {
+  fontSize: number
+  lineHeight: number
+}
+
+/**
+ * Resolves the heading font size and line-height exactly like BingoCard.css,
+ * including the length-based (`--long` / `--very-long`) and participant-name
+ * modifiers, so the title wraps at the same size in the PNG.
+ */
+function getHeadingFontSpec(title: string, hasParticipant: boolean): HeadingFontSpec {
+  const length = Array.from(title).length
+  const isVeryLong = length > 48
+  const isLong = length > 24
+
+  if (hasParticipant) {
+    if (isVeryLong) return { fontSize: clampFontSize(0.4, 1.7, 1.125), lineHeight: 1.05 }
+    if (isLong) return { fontSize: clampFontSize(0.45, 2.7, 2), lineHeight: 1.05 }
+    return { fontSize: clampFontSize(0.5, 3.6, 2.75), lineHeight: 1.05 }
+  }
+
+  if (isVeryLong) return { fontSize: clampFontSize(0.5, 1.9, 1.25), lineHeight: 1.05 }
+  if (isLong) return { fontSize: clampFontSize(0.5, 3.2, 2), lineHeight: 1.15 }
+  return { fontSize: clampFontSize(0.625, 5, 3.375), lineHeight: 1.15 }
+}
+
+/** .bingo-card__participant-name: clamp(0.4rem, 2.2cqi, 1.5rem). */
+function getParticipantFontSize(): number {
+  return clampFontSize(0.4, 2.2, 1.5)
 }
 
 function insetRect(rect: Rect, inset: number): Rect {
@@ -242,6 +304,7 @@ export function buildBingoCardRenderModel(
   const cellSize = GRID_RECT.width / state.gridSize
   const textInset = getCellTextInset()
   const cellFontSize = getCellFontSize(state.gridSize)
+  const headingSpec = getHeadingFontSpec(state.performanceName, Boolean(state.participantName))
   const cells = state.songTitles.map((songTitle, index) => {
     const coordinate = indexToGridCoordinate(index, state.gridSize)
     if (!coordinate) {
@@ -268,44 +331,46 @@ export function buildBingoCardRenderModel(
         horizontalAlign: 'center',
         verticalAlign: 'middle',
         fontWeight: 700,
-        maxFontSize: cellFontSize,
-        minFontSize: CELL_FONT_SIZE_MIN,
+        fontSize: cellFontSize,
+        fontFamily: BINGO_CARD_FONT_FAMILY,
         lineHeight: 1.2,
       },
     } satisfies BingoCellRenderModel
   })
+
+  const headingLines: HeadingLine[] = [
+    {
+      text: state.performanceName,
+      fontWeight: 700,
+      fontFamily: BINGO_CARD_FONT_FAMILY,
+      fontSize: headingSpec.fontSize,
+      lineHeight: headingSpec.lineHeight,
+    },
+  ]
+  if (state.participantName) {
+    headingLines.push({
+      text: state.participantName,
+      fontWeight: 700,
+      fontFamily: BINGO_CARD_FONT_FAMILY,
+      fontSize: getParticipantFontSize(),
+      lineHeight: 1.05,
+    })
+  }
 
   return {
     width: BINGO_CARD_SIZE,
     height: BINGO_CARD_SIZE,
     headerRect: { ...HEADER_RECT },
     gridRect: { ...GRID_RECT },
-    title: {
-      text: state.performanceName,
-      rect: state.participantName
-        ? { x: 72, y: 60, width: 936, height: 76 }
-        : insetRect(HEADER_RECT, 24),
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      fontWeight: 700,
-      maxFontSize: state.participantName ? 44 : 54,
-      minFontSize: state.participantName ? 18 : 20,
-      lineHeight: 1.15,
+    heading: {
+      rect: { ...HEADER_RECT },
+      // .bingo-card__heading horizontal padding is 2.439024% of the header width,
+      // plus its 2px (--border-width-normal) border on each side.
+      contentWidth: HEADER_RECT.width - HEADER_RECT.width * 0.02439024 * 2 - 2 * 2,
+      // .bingo-card__heading--with-participant gap: clamp(1px, 0.5cqi, 6px).
+      gap: state.participantName ? Math.min(6, Math.max(1, 0.5 * ONE_CQI)) : 0,
+      lines: headingLines,
     },
-    ...(state.participantName
-      ? {
-          participantName: {
-            text: `名前：${state.participantName}`,
-            rect: { x: 72, y: 140, width: 936, height: 36 },
-            horizontalAlign: 'center' as const,
-            verticalAlign: 'middle' as const,
-            fontWeight: 700 as const,
-            maxFontSize: 28,
-            minFontSize: 14,
-            lineHeight: 1.1,
-          },
-        }
-      : {}),
     cells,
     theme,
   }

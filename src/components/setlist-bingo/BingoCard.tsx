@@ -1,9 +1,6 @@
 import type { CSSProperties, Ref } from 'react'
 import type { BingoState } from '../../types'
-import {
-  buildBingoCardRenderModel,
-  resolveBingoTheme,
-} from '../../utils/setlistBingoRenderModel'
+import { buildBingoCardRenderModel, resolveBingoTheme } from '../../utils/setlistBingoRenderModel'
 import './BingoCard.css'
 
 export interface BingoCardProps {
@@ -33,22 +30,21 @@ function getHeadingLengthClass(title: string): string {
 
 /** DOM adapter for the render model shared with the PNG canvas renderer. */
 export function BingoCard({ state, mode, cardRef }: BingoCardProps) {
-  const model = buildBingoCardRenderModel(
-    state,
-    resolveBingoTheme(state.designId, getRootStyle()),
-  )
+  const model = buildBingoCardRenderModel(state, resolveBingoTheme(state.designId, getRootStyle()))
   const cardStyle = {
     '--bingo-grid-size': state.gridSize,
     '--bingo-grid-width': `${(model.gridRect.width / model.headerRect.width) * 100}%`,
     backgroundColor: model.theme.cardBackground,
     borderColor: model.theme.cardBorder,
   } as CSSProperties
-  const headingClass = `bingo-card__heading${getHeadingLengthClass(model.title.text)}${
-    model.participantName ? ' bingo-card__heading--with-participant' : ''
+  const title = state.performanceName
+  const participantName = state.participantName ?? ''
+  const headingClass = `bingo-card__heading${getHeadingLengthClass(title)}${
+    participantName ? ' bingo-card__heading--with-participant' : ''
   }`
-  const accessibleName = model.participantName
-    ? `${model.participantName.text}、${model.title.text}のセトリ予想ビンゴ`
-    : `${model.title.text}のセトリ予想ビンゴ`
+  const accessibleName = participantName
+    ? `${participantName}、${title}のセトリ予想ビンゴ`
+    : `${title}のセトリ予想ビンゴ`
 
   return (
     <div
@@ -68,15 +64,13 @@ export function BingoCard({ state, mode, cardRef }: BingoCardProps) {
           color: model.theme.headingText,
         }}
       >
-        {model.participantName ? (
+        {participantName ? (
           <>
-            <span className="bingo-card__title">{model.title.text}</span>
-            <span className="bingo-card__participant-name">
-              {model.participantName.text}
-            </span>
+            <span className="bingo-card__title">{title}</span>
+            <span className="bingo-card__participant-name">{participantName}</span>
           </>
         ) : (
-          model.title.text
+          title
         )}
       </div>
       <div
