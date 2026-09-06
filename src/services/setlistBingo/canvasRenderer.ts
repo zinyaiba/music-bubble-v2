@@ -31,28 +31,103 @@ function isLineBreak(unit: string): boolean {
   return unit === '\n' || unit === '\r' || unit === '\r\n' || unit === '\u2028' || unit === '\u2029'
 }
 
+function isSpace(unit: string): boolean {
+  return unit === ' ' || unit === '\t' || unit === '\u3000'
+}
+
+/**
+ * Breaks a single word (no spaces) at grapheme boundaries when it is wider than
+ * the line, matching CSS `overflow-wrap: anywhere` / `word-break: break-word`.
+ */
+function breakLongWord(
+  ctx: CanvasRenderingContext2D,
+  word: string,
+  maxWidth: number,
+  initialLine: string
+): { lines: string[]; lastLine: string } {
+  const lines: string[] = []
+  let line = initialLine
+
+  for (const unit of getTextUnits(word)) {
+    const candidate = line + unit
+    if (line !== '' && ctx.measureText(candidate).width > maxWidth) {
+      lines.push(line)
+      line = unit
+    } else {
+      line = candidate
+    }
+  }
+
+  return { lines, lastLine: line }
+}
+
+/**
+ * Wraps text like the DOM bingo cell: prefer breaking at spaces, and only split
+ * inside a word when that single word is wider than the line. Mirrors the CSS
+ * `overflow-wrap: anywhere` + `word-break: break-word` behavior so the PNG line
+ * breaks match the preview.
+ */
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const lines: string[] = []
   let currentLine = ''
 
+  // Trailing spaces do not affect centered rendering; drop them per line.
+  const flush = () => {
+    lines.push(currentLine.replace(/[ \t\u3000]+$/u, ''))
+    currentLine = ''
+  }
+
+  // Split on explicit line breaks first; each segment wraps independently.
+  const segments: string[] = []
+  let segment = ''
   for (const unit of getTextUnits(text)) {
     if (isLineBreak(unit)) {
-      lines.push(currentLine)
-      currentLine = ''
-      continue
-    }
-
-    const candidate = currentLine + unit
-    if (currentLine !== '' && ctx.measureText(candidate).width > maxWidth) {
-      lines.push(currentLine)
-      currentLine = unit
+      segments.push(segment)
+      segment = ''
     } else {
-      currentLine = candidate
+      segment += unit
+    }
+  }
+  segments.push(segment)
+
+  for (let segmentIndex = 0; segmentIndex < segments.length; segmentIndex += 1) {
+    if (segmentIndex > 0) flush()
+
+    // Tokenize into words and whitespace runs so we can break at spaces first.
+    const tokens = segments[segmentIndex].match(/\s+|\S+/gu) ?? []
+
+    for (const token of tokens) {
+      if (isSpace(token[0] ?? '')) {
+        // Collapse trailing spaces at a line end; otherwise keep them in place.
+        if (currentLine !== '') currentLine += token
+        continue
+      }
+
+      const candidate = currentLine + token
+      if (currentLine === '' || ctx.measureText(candidate).width <= maxWidth) {
+        currentLine = candidate
+        continue
+      }
+
+      // The word does not fit after the current content: move it to a new line.
+      flush()
+      if (ctx.measureText(token).width <= maxWidth) {
+        currentLine = token
+        continue
+      }
+
+      // The word alone is wider than the line: break it at grapheme boundaries.
+      const broken = breakLongWord(ctx, token, maxWidth, '')
+      for (const brokenLine of broken.lines) {
+        currentLine = brokenLine
+        flush()
+      }
+      currentLine = broken.lastLine
     }
   }
 
   if (currentLine !== '' || lines.length === 0) {
-    lines.push(currentLine)
+    lines.push(currentLine.replace(/[ \t\u3000]+$/u, ''))
   }
 
   return lines
